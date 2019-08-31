@@ -53,6 +53,7 @@ class Vk:
         self.version_api = get_val(kwargs, 'version_api', '5.101') # Can be float / integer / string
         self.group_id = get_val(kwargs, 'group_id') # can be string or integer
         self.lang = get_val(kwargs, 'lang', 'en') # must be string
+        self.verison = '0.0.8'
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -259,7 +260,7 @@ class Vk:
 
     # Handlers:
     # use handlers:
-    # @vk.*nam function*
+    # @vk.*name function*
     # def function(obj):
     #     pass
     #
@@ -313,20 +314,22 @@ class Vk:
     #   print(obj.text)
     def listen_wrapper(self, type_value, class_wrapper, function, user=False, e='type'):
         def listen(e=e):
-            if self.group_id:
-                for event in self.longpoll.listen():
-                    if event.update[e] == type_value:
-                        if self.debug: print(type_value)
-                        try: function(class_wrapper(event.update))
-                        except Exception as e:
-                            exc_type, exc_obj, exc_tb = sys.exc_info()
-                            line = traceback.extract_tb(exc_tb)[-1][1]
-                            self.longpoll.errors.append(Error(line=line, message=str(e), code=type(e).__name__))
+            for event in self.longpoll.listen():
+                if event.update[e if type(type_value) == str else 0] == type_value:
+                    if self.debug: print(type_value)
+                    try: function(class_wrapper(event.update))
+                    except Exception as e:
+                        exc_type, exc_obj, exc_tb = sys.exc_info()
+                        line = traceback.extract_tb(exc_tb)[-1][1]
+                        self.longpoll.errors.append(Error(line=line, message=str(e), code=type(e).__name__))
         Thread_VK(listen).start()
 
     def __getattr__(self, method):
         if method.startswith('on_'):
-            return lambda function: self.listen_wrapper(method[3:], Obj, function)
+            if method[3:] not in users_event.keys():
+                return lambda function: self.listen_wrapper(method[3:], Obj, function)
+            else:
+                return lambda function: self.listen_wrapper(users_event[method[3:]], Obj, function)
         else: return Method(access_token=self.token_vk, version_api=self.version_api, method=method)
 
     def __str__(self):
@@ -543,12 +546,13 @@ class Error:
 class Obj:
     def __init__(self, obj):
         self.obj = obj
-        self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj.keys() else None
+        if type(self.obj) == dict:
+            self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj.keys() else None
     def has(self, key):
         return key in self.obj
     def __getattr__(self, attribute):
         val = get_val(self.obj, attribute)
-        return val if val else get_val(self.obj['object'], attribute)
+        return val if val else get_val(self.obj['object'] if type(self.obj) == dict else self.obj[6] if attribute in self.obj[6].keys() else self.obj[7], attribute)
 
 class New_user_message(Obj):
     def __init__(self, obj):
@@ -576,8 +580,12 @@ class Edit_user_message(Obj):
 
 class Translator_debug:
     def __init__(self, *args, **kwargs):
-        with open(f'{os.path.dirname(os.path.abspath(__file__))}\\translate.py', 'r', encoding='utf-8') as f:
-            self.base = json.loads(f.read())
+        try:
+            with open(f'{os.path.dirname(os.path.abspath(__file__))}\\translate.py', 'r', encoding='utf-8') as f:
+                self.base = json.loads(f.read())
+        except:
+            with open(f'{os.path.dirname(os.path.abspath(__file__))}/translate.py', 'r', encoding='utf-8') as f:
+                self.base = json.loads(f.read())
 
     def translate(self, *args):
         text = args[0]
@@ -623,7 +631,7 @@ class Help:
             params = { i.split('<td')[1].split('>')[1].split('</td')[0] : i.split('<td')[2].split('>', 1)[1].split('</td')[0] for i in response.split('<tr') if len(i) > 2 }
 
             for i in params.keys():
-                params[i] = params[i].replace('\n', ' ').replace('&lt;', '«').replace('&gt;', '»')
+                params[i] = params[i].replace('\n', ' ').replace('&lt;', '{').replace('&gt;', '}')
                 while '<' in params[i]:
                     pos = [params[i].find('<'), params[i].find('>')]
                     params[i] = f'{params[i][:pos[0]]}{params[i][pos[1]+1:]}'
