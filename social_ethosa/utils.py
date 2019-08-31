@@ -1,3 +1,5 @@
+import requests
+
 def get_val(obj, string, returned=None):
     return obj[string] if string in obj.keys() else returned
 

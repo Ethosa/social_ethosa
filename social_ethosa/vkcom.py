@@ -152,7 +152,7 @@ class Vk:
             if self.debug:
                 print(self.translate('Файлов не должно быть больше 1! Я автоматически урезала количество файлов до нужной длины.', self.lang))
         upload_url = self.photos.getMessagesUploadServer(peer_id=peer_id, **kwargs)['response']['upload_url']
-        filess = upl(file, 'photo')
+        filess = {f'photo' : open(files[current], 'rb') for current in range(len(files))}
         response = upload_files(upload_url, filess)
         response = self.method(method='photos.saveMessagesPhoto', hash=response['hash'],
                                         server=response['server'], photo=response['photo'])['response'][0]
