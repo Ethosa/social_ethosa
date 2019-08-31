@@ -37,5 +37,5 @@ print(vk.help())
 print()
 print(vk.help('messages'))
 print()
-print('vk.help('messages.send'))
+print(vk.help('messages.send'))
 ```
