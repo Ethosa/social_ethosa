@@ -30,3 +30,12 @@ def get_error(error):
   print(error.code) # Example: ModuleNotFoundError
   
 ```
+
+need help? no problem!
+```python
+print(vk.help())
+print()
+print(vk.help('messages'))
+print()
+print('vk.help('messages.send'))
+```
