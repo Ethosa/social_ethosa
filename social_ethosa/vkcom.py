@@ -618,7 +618,7 @@ class Help:
             response = [i.split('</span>', 1)[0] for i in response if len(i.split('</span>', 1)[0]) <= 35]
             return response
         else:
-            response = requests.get('https://vk.com/dev/messages.send').text.split('<table class="dev_params_table">')[1].split('</table>')[0]
+            response = requests.get(f'https://vk.com/dev/{method}').text.split('<table class="dev_params_table">')[1].split('</table>')[0]
 
             params = { i.split('<td')[1].split('>')[1].split('</td')[0] : i.split('<td')[2].split('>', 1)[1].split('</td')[0] for i in response.split('<tr') if len(i) > 2 }
 
