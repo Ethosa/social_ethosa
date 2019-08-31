@@ -39,3 +39,10 @@ print(vk.help('messages'))
 print()
 print(vk.help('messages.send'))
 ```
+
+You can also use Smile to get smiley codes!
+```python
+print(Smile('Улыбка'))
+print(Smile('Красная книга'))
+print(Smile().smiles) # it return ALL SMILEY CODES!
+```
