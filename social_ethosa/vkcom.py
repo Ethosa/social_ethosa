@@ -576,7 +576,7 @@ class Edit_user_message(Obj):
 
 class Translator_debug:
     def __init__(self, *args, **kwargs):
-        with open(f'{os.path.dirname(os.path.abspath(__file__))}\\translate.json', 'r', encoding='utf-8') as f:
+        with open(f'{os.path.dirname(os.path.abspath(__file__))}\\translate.py', 'r', encoding='utf-8') as f:
             self.base = json.loads(f.read())
 
     def translate(self, *args):
