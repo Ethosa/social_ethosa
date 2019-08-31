@@ -318,10 +318,10 @@ class Vk:
                 if event.update[e if type(type_value) == str else 0] == type_value:
                     if self.debug: print(type_value)
                     try: function(class_wrapper(event.update))
-                    except Exception as e:
+                    except Exception as error_msg:
                         exc_type, exc_obj, exc_tb = sys.exc_info()
                         line = traceback.extract_tb(exc_tb)[-1][1]
-                        self.longpoll.errors.append(Error(line=line, message=str(e), code=type(e).__name__))
+                        self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
         Thread_VK(listen).start()
 
     def __getattr__(self, method):
