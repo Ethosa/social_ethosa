@@ -46,3 +46,21 @@ print(Smile('Улыбка'))
 print(Smile('Красная книга'))
 print(Smile().smiles) # it return ALL SMILEY CODES!
 ```
+
+
+Example audio message:
+```python
+from social_ethosa.vkcom import *
+
+token = 'token group'
+
+vk = Vk(token=token, debug=True, lang='ru', group_id='185684225')
+
+@vk.on_message_new
+def lol(obj):
+    if obj.text == '/lol':
+        response = vk.upload_audio_message(peer_id=obj.peer_id, file='mil_tokyo1.ogg')
+        audio = f'doc{response["audio_message"]["owner_id"]}_{response["audio_message"]["id"]}'
+        print(audio)
+        vk.messages.send(attachment=audio, message='ban :|', random_id=random.randint(0, 100), peer_id=obj.peer_id)
+```
