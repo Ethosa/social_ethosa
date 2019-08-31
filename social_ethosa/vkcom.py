@@ -6,13 +6,14 @@ except:
 
 from threading import Thread
 from .smiles import *
-from pprint import pprint
+from .utils import *
 import traceback
 import datetime
 import random
 import time
 import json
 import sys
+import os
 
 class Vk:
     '''
@@ -56,6 +57,7 @@ class Vk:
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
         self.method = Method(access_token=self.token_vk, version_api=self.version_api).use
+        self.help = Help
 
         # Other variables:
         self.translate = Translator_debug().translate
@@ -65,6 +67,8 @@ class Vk:
             if self.debug: print(self.translate('Токен установлен. Проверяем его валидность ...', self.lang))
             test = ''.join(requests.get(f'{self.vk_api_url}messages.getLongPollServer?access_token={self.token_vk}&v={self.version_api}{f"&group_id={self.group_id}" if self.group_id else ""}').json().keys())
             if self.debug: print(self.translate('Ошибка' if test == 'error' else 'Успешно!', self.lang))
+        else:
+            if self.debug: print(self.translate('Ошибка', self.lang))
 
 
     # Also you can use the easy way to upload files in vk!
@@ -84,7 +88,7 @@ class Vk:
             if self.debug: print(self.translate('Файлов не должно быть больше 5! Я автоматически урезала количество файлов до нужной длины.', self.lang))
         upload_url = self.photos.getUploadServer(album_id=album_id, **kwargs)['response']['upload_url']
         filess = {f'file{current+1}' : open(files[current], 'rb') for current in range(len(files))}
-        response = requests.post(upload_url, files=filess, verify=False).json()
+        response = upload_files(upload_url, filess)
         response = self.method(method='photos.save', hash=response['hash'], album_id=album_id,
                                 server=response['server'], photos_list=response['photos_list'], aid=response['aid'])['response']
         if not first: return response
@@ -115,7 +119,7 @@ class Vk:
                 print(self.translate('Файлов не должно быть больше 1! Я автоматически урезала количество файлов до нужной длины.', self.lang))
         upload_url = self.photos.getWallUploadServer(**kwargs)['response']['upload_url']
         filess = {f'file{current+1}' : open(files[current], 'rb') for current in range(len(files))}
-        response = requests.post(upload_url, files=filess, verify=False).json()
+        response = upload_files(upload_url, filess)
         if group_id:
             response = self.method(method='photos.saveWallPhoto', hash=response['hash'],
                                     server=response['server'], photo=response['photo'], group_id=group_id)['response'][0]
@@ -148,8 +152,8 @@ class Vk:
             if self.debug:
                 print(self.translate('Файлов не должно быть больше 1! Я автоматически урезала количество файлов до нужной длины.', self.lang))
         upload_url = self.photos.getMessagesUploadServer(peer_id=peer_id, **kwargs)['response']['upload_url']
-        filess = { 'photo' : open(files[0], 'rb') }
-        response = requests.post(upload_url, files=filess, verify=False).json()
+        filess = upl(file, 'photo')
+        response = upload_files(upload_url, filess)
         response = self.method(method='photos.saveMessagesPhoto', hash=response['hash'],
                                         server=response['server'], photo=response['photo'])['response'][0]
         if not first: return response
@@ -169,8 +173,8 @@ class Vk:
 
         file = get_val(kwargs, 'file', '')
         upload_url = self.photos.getOwnerPhotoUploadServer(user_id)['response']['upload_url']
-        file = { 'photo' : open(file, 'rb') }
-        response = requests.post(upload_url, files=file, verify=False).json()
+        file = upl(file, 'photo')
+        response = upload_files(upload_url, file)
         response = self.method(method='photos.saveOwnerPhoto', hash=response['hash'],
                                 server=response['server'], photo=response['photo'])['response']
         return response
@@ -182,8 +186,8 @@ class Vk:
 
         file = get_val(kwargs, 'file', '')
         upload_url = self.photos.getChatUploadServer(chat_id)['response']['upload_url']
-        file = { 'photo' : open(file, 'rb') }
-        response = requests.post(upload_url, files=file, verify=False).json()
+        file = upl(file, 'photo')
+        response = upload_files(upload_url, file)
         response = self.method(method='messages.setChatPhoto', file=response['response'])['response']
         return response
 
@@ -194,8 +198,8 @@ class Vk:
 
         file = get_val(kwargs, 'file', '')
         upload_url = self.photos.getMarketUploadServer(group_id=group_id)['response']['upload_url']
-        file = { 'photo' : open(file, 'rb') }
-        response = requests.post(upload_url, files=file, verify=False).json()
+        file = upl(file, 'photo')
+        response = upload_files(upload_url, file)
         response = self.method(method='photos.saveMarketPhoto', group_id=group_id, photo=response['photo'],
                                 hash=response['hash'], server=response['server'], crop_data=response['crop_data'],
                                 crop_hash=response['crop_hash'])['response']
@@ -210,7 +214,7 @@ class Vk:
         file = get_val(kwargs, 'file', '')
         upload_url = self.photos.getMarketAlbumUploadServer(group_id=group_id)['response']['upload_url']
         file = upl(file, 'file')
-        response = requests.post(upload_url, files=file, verify=False).json()
+        response = upload_files(upload_url, file)
         response = self.method(method='photos.saveMarketAlbumPhoto', group_id=group_id, photo=response['photo'],
                                 hash=response['hash'], server=response['server'])['response']
         return response
@@ -223,8 +227,7 @@ class Vk:
         file = get_val(kwargs, 'file', '')
         upload_url = self.audio.getUploadServer()['response']['upload_url']
         file = upl(file, 'file')
-        response = requests.post(upload_url, files=file, verify=False).json()
-        print(response)
+        response = upload_files(upload_url, file)
         response = self.method(method='audio.save', title=title, artist=artist, audio=response['audio'],
                                 hash=response['hash'], server=response['server'])['response']
         return response
@@ -238,7 +241,7 @@ class Vk:
         del kwargs['file']
         upload_url = self.docs.getMessagesUploadServer(type='audio_message', peer_id=peer_id, **kwargs)['response']['upload_url']
         file = upl(file, 'file')
-        response = requests.post(upload_url, files=file, verify=False).json()['file']
+        response = upload_files(upload_url, file)['file']
         response = self.method(method='docs.save', file=response, **kwargs)['response']
         return response
 
@@ -250,7 +253,7 @@ class Vk:
         file = get_val(kwargs, 'file', '')
         upload_url = self.video.save(**kwargs)['response']['upload_url']
         file = upl(file, 'file')
-        response = requests.post(upload_url, files=file, verify=False).json()
+        response = upload_files(upload_url, file)
         return response
 
 
@@ -266,8 +269,8 @@ class Vk:
     #     print("post text is", obj.text)
     def on_user_message_new(self, function):
         def listen():
-            for event in self.longpoll.listen():
-                if not self.group_id:
+            if not self.group_id:
+                for event in self.longpoll.listen():
                     if event.update[0] == 4 and not 'source_act' in event.update[6].keys():
                         if self.debug: print(self.translate('Новое сообщение!', self.lang))
                         try: function(New_user_message(event.update))
@@ -279,8 +282,8 @@ class Vk:
 
     def on_user_message_edit(self, function):
         def listen():
-            for event in self.longpoll.listen():
-                if not self.group_id:
+            if not self.group_id:
+                for event in self.longpoll.listen():
                     if event.update[0] == 5:
                         try: function(Edit_user_message(event.update))
                         except Exception as e:
@@ -303,11 +306,15 @@ class Vk:
 
 
     # Handler wrapper
+    # Use it:
+    # def a(func): vk.listen_wrapper('message_new', Obj, func)
+    # @a
+    # def get_mess(obj):
+    #   print(obj.text)
     def listen_wrapper(self, type_value, class_wrapper, function, user=False, e='type'):
         def listen(e=e):
-            for event in self.longpoll.listen():
-                print(event.update)
-                if self.group_id:
+            if self.group_id:
+                for event in self.longpoll.listen():
                     if event.update[e] == type_value:
                         if self.debug: print(type_value)
                         try: function(class_wrapper(event.update))
@@ -386,7 +393,7 @@ class LongPoll:
 
 # Class for use anything vk api method
 # You can use it:
-# response = vk.method(method='messages.send', message='Hello, world!', peer_id=1)
+# response = vk.method(method='wall.post', text='Hello, world!')
 class Method:
     def __init__(self, *args, **kwargs):
         self.access_token = kwargs['access_token']
@@ -452,31 +459,43 @@ class Keyboard:
         return json.dumps(self.keyboard)
 
 class Button:
+
+    """
+    docstring for Button
+
+    Button use for Keyboard.
+    Usage:
+    red_button = Button(label='hello!', color=ButtonColor.NEGATIVE)
+
+    and use red button:
+    keyboard.add_button(red_button) # easy and helpfull!
+    """
+
     def __init__(self, *args, **kwargs):
-        self.type = kwargs['type'] if 'type' in kwargs.keys() else 'text'
+        self.type = get_val(kwargs, 'type', 'text')
 
         actions = {
             'text' : {
                 'type' : 'text',
-                'label' : kwargs['label'] if 'label' in kwargs.keys() else 'бан',
-                'payload' : kwargs['payload'] if 'payload' in kwargs.keys() else ''
+                'label' :get_val(kwargs, 'label','бан'),
+                'payload' : get_val(kwargs, 'payload', '')
             },
             'location' : {
                 'type' : 'location',
-                'payload' : kwargs['payload'] if 'payload' in kwargs.keys() else ''
+                'payload' : get_val(kwargs, 'payload', '')
             },
             'vkpay' : {
                 'type' : 'vkpay',
-                'payload' : kwargs['payload'] if 'payload' in kwargs.keys() else '',
-                'hash' : kwargs['hash'] if 'hash' in kwargs.keys() else 'action=transfer-to-group&group_id=1&aid=10'
+                'payload' : get_val(kwargs, 'payload', ''),
+                'hash' : get_val(kwargs, 'hash', 'action=transfer-to-group&group_id=1&aid=10')
             },
             'vkapps' : {
                 'type' : 'open_app',
-                'payload' : kwargs['payload'] if 'payload' in kwargs.keys() else '',
-                'hash' : kwargs['hash'] if 'hash' in kwargs.keys() else 'ethosa_lib',
-                'label' : kwargs['label'] if 'label' in kwargs.keys() else '',
-                'owner_id' : kwargs['owner_id'] if 'owner_id' in kwargs.keys() else -181108510,
-                'app_id' : kwargs['app_id'] if 'app_id' in kwargs.keys() else 6979558
+                'payload' : get_val(kwargs, 'payload', ''),
+                'hash' : get_val(kwargs, 'hash', 'ethosa_lib'),
+                'label' : get_val(kwargs, 'label', ''),
+                'owner_id' : get_val(kwargs, 'owner_id', -181108510),
+                'app_id' : get_val(kwargs, 'app_id', 6979558)
             }
         }
 
@@ -520,8 +539,6 @@ class Error:
 
     def __str__(self):
         return f'{self.code}:\n{self.message}. Line {self.line}'
-    def __repr__(self):
-        return f'{self.code}:\n{self.message}. Line {self.line}'
 
 class Obj:
     def __init__(self, obj):
@@ -559,63 +576,8 @@ class Edit_user_message(Obj):
 
 class Translator_debug:
     def __init__(self, *args, **kwargs):
-        self.base = { 'Токен установлен. Проверяем его валидность ...' : {
-                'ru' : 'Токен установлен. Проверяем его валидность ...',
-                'en' : 'The token is set. Check its validity ...',
-                'de' : 'Token installiert. Überprüfen Sie seine Validität ...',
-                'fr' : 'Le jeton est défini. Nous vérifions sa validité ...',
-                'ja' : 'トークンが設定されます。 その妥当性を確認します。..'
-            },
-            'Ошибка!' : {
-                'ru' : 'Ошибка!',
-                'en' : 'Error!',
-                'de' : 'Fehler!',
-                'fr' : 'Erreur!',
-                'ja' : '間違いだ！'
-            },
-            'Успешно!' : {
-                'ru' : 'Успешно!',
-                'en' : 'Successfully!',
-                'de' : 'Erfolgreich!',
-                'fr' : 'Avec succès!',
-                'ja' : '成功しました！'
-            },
-            'Новое сообщение!' : {
-                'ru' : 'Новое сообщение!',
-                'en' : 'New message!',
-                'de' : 'Neue Nachricht!',
-                'fr' : 'Nouveau message!',
-                'ja' : '新しいメッセージ！'
-            },
-            'Файлов не должно быть больше 5! Я автоматически урезала количество файлов до нужной длины.' : {
-                'ru' : 'Файлов не должно быть больше 5! Я автоматически урезала количество файлов до нужной длины.',
-                'en' : 'Files should not be more than 5! I automatically cut the number of files to the desired length.',
-                'de' : 'Dateien sollten nicht mehr als 5 sein! Ich habe die Anzahl der Dateien automatisch auf die gewünschte Länge reduziert.',
-                'fr' : "Les fichiers ne doivent pas être plus de 5! J'ai automatiquement réduit le nombre de fichiers à la longueur désirée.",
-                'ja' : 'ファイルは5を超えてはいけません！ 私は自動的にファイルの数を希望の長さにカットします。'
-            },
-            'Файлов не должно быть больше 1! Я автоматически урезала количество файлов до нужной длины.' : {
-                'ru' : 'Файлов не должно быть больше 1! Я автоматически урезала количество файлов до нужной длины.',
-                'en' : 'Files should not be more than 1! I automatically cut the number of files to the desired length.',
-                'de' : 'Dateien sollten nicht mehr als 1 sein! Ich habe die Anzahl der Dateien automatisch auf die gewünschte Länge reduziert.',
-                'fr' : "Les fichiers ne doivent pas être plus de 1! J'ai automatiquement réduit le nombre de fichiers à la longueur désirée.",
-                'ja' : 'ファイルは5を超えてはいけません！ 私は自動的にファイルの数を希望の長さにカットします。'
-            },
-            'Осторожно! Размер картинки должен быть не меньше 1280х720' : {
-                'ru' : "Осторожно! Размер картинки должен быть не меньше 1280х720",
-                'en' : "Careful! The size of the pictures should be at least 1280x720",
-                'de' : "Sei vorsichtig! Die Größe des Bildes sollte nicht kleiner als 1280x720 sein",
-                'fr' : "Attention ! La taille de l'image ne doit pas être inférieure à 1280x720",
-                'ja' : "気をつけろ! 映像のサイズは少なくとも1280x720べきです"
-            },
-            'empty' : {
-                'ru' : "",
-                'en' : "",
-                'de' : "",
-                'fr' : "",
-                'ja' : ""
-            }
-        }
+        with open(f'{os.path.dirname(os.path.abspath(__file__))}\\translate.json', 'r', encoding='utf-8') as f:
+            self.base = json.loads(f.read())
 
     def translate(self, *args):
         text = args[0]
@@ -623,13 +585,46 @@ class Translator_debug:
         if text in self.base.keys():
             if lang in self.base[text].keys():
                 return self.base[text][lang]
-            else:
-                return text
+            else: return text
+        else: return text
+
+
+class Help:
+
+    """
+    docstring for Help
+
+    usage:
+    vk.help() - return list of all methods
+
+    vk.help('messages') - return list of all messages methods
+
+    vk.help('messages.send') - return list of all params method
+    """
+
+    def __init__(self, *args, **kwargs):
+        pass
+    def __new__(self, *args, **kwargs):
+        if not args:
+            resp = requests.get('https://vk.com/dev/methods').text
+            response = resp.split('<div id="dev_mlist_submenu_methods" style="">')[1].split('</div>')[0].split('<a')
+            return [i.split('>')[1].split('</a')[0].lower() for i in response if len(i.split('>')) > 1 and i.split('>')[1].split('</a')[0] != '']
         else:
-            return text
+            return self.__getattr__(self, args[0])
+    def __getattr__(self, method):
+        if '.' not in method:
+            resp = requests.get(f'https://vk.com/dev/{method}').text
+            response = resp.split('<span class="dev_methods_list_span">')
+            response = [i.split('</span>', 1)[0] for i in response if len(i.split('</span>', 1)[0]) <= 35]
+            return response
+        else:
+            response = requests.get('https://vk.com/dev/messages.send').text.split('<table class="dev_params_table">')[1].split('</table>')[0]
 
-def get_val(obj, string, returned=None):
-    return obj[string] if string in obj.keys() else returned
+            params = { i.split('<td')[1].split('>')[1].split('</td')[0] : i.split('<td')[2].split('>', 1)[1].split('</td')[0] for i in response.split('<tr') if len(i) > 2 }
 
-def upl(file, name):
-    return { name : open(file, 'rb') }
+            for i in params.keys():
+                params[i] = params[i].replace('\n', ' ').replace('&lt;', '«').replace('&gt;', '»')
+                while '<' in params[i]:
+                    pos = [params[i].find('<'), params[i].find('>')]
+                    params[i] = f'{params[i][:pos[0]]}{params[i][pos[1]+1:]}'
+            return params
