@@ -404,13 +404,11 @@ class Method:
         self.version_api = get_val(kwargs, 'version_api', '5.101')
         self.method = get_val(kwargs, 'method', '')
 
-    def use(self, *args, **kwargs):
-        url = f'''{self.vk_api_url}{kwargs["method"]}'''
-        data = kwargs
-        data['access_token'] = self.access_token
-        data['v'] = self.version_api
-        del data['method']
-        response = requests.post(url, data=data).json()
+    def use(self, method, *args, **kwargs):
+        url = f'''{self.vk_api_url}{method}'''
+        kwargs['access_token'] = self.access_token
+        kwargs['v'] = self.version_api
+        response = requests.post(url, data=kwargs).json()
         return response
 
     def __getattr__(self, method):
@@ -457,9 +455,9 @@ class Keyboard:
             if len(self.keyboard['buttons']) < 10:
                 self.add_button(button)
 
-
     def compile(self):
         return json.dumps(self.keyboard)
+
 
 class Button:
 
@@ -522,17 +520,21 @@ class Event:
     def __str__(self):
         return f'{self.update}'
 
+
 class Thread_VK(Thread):
     def __init__(self, function):
         Thread.__init__(self)
         self.function = function
     def run(self):
         self.function()
+
+
 class ButtonColor:
     PRIMARY = 'primary'
     SECONDARY = 'secondary'
     NEGATIVE = 'negative'
     POSITIVE = 'positive'
+
 
 class Error:
     def __init__(self, *args, **kwargs):
@@ -542,6 +544,7 @@ class Error:
 
     def __str__(self):
         return f'{self.code}:\n{self.message}. Line {self.line}'
+
 
 class Obj:
     def __init__(self, obj):
@@ -554,6 +557,7 @@ class Obj:
         val = get_val(self.obj, attribute)
         return val if val else get_val(self.obj['object'] if type(self.obj) == dict else self.obj[6] if attribute in self.obj[6].keys() else self.obj[7], attribute)
 
+
 class New_user_message(Obj):
     def __init__(self, obj):
         self.date = obj[4]
@@ -565,6 +569,7 @@ class New_user_message(Obj):
         self.random_id = obj[8]
         self.attachments = obj[7]
         self.obj = obj
+
 
 class Edit_user_message(Obj):
     def __init__(self, obj):

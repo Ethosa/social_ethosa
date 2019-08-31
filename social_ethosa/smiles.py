@@ -1,41 +1,37 @@
+import requests
+
 class Smile:
-    ANGEL = '&#128124;'
-    ALIEN = '&#128125;'
-    ALIEN_MONSTER = '&#128126;'
-    BUST_SILHOUETTE = '&#128100;'
-    BUST_SILHOUETTES = '&#128101;'
-    CLOWN = '&#129313;'
-    COOL = '&#127378;'
-    EAR = '&#128066;'
-    EVIL_IMP = '&#128527;'
-    EYE = '&#128065;'
-    EYES = '&#128064;'
-    GHOST = '&#128123;'
-    GOOD_IMP = '&#128520;'
-    FREE = '&#127379;'
-    ID = '&#127380;'
-    JAPANESE_GOBLIN = '&#128122;'
-    JAPANESE_OGRE = '&#128121;'
-    HUMAN_SILHOUETTE = '&#128483;'
-    NEW = '&#127381;'
-    NG = '&#127382;'
-    NOSE = '&#128067;'
-    LETTER_A = '&#127344;'
-    LETTER_B = '&#127345;'
-    LETTER_O = '&#127358;'
-    LETTER_P = '&#127359;'
-    LETTERS_AB = '&#127374;'
-    LETTERS_ABCD = '&#128288;'
-    LETTERS_ABCD_1 = '&#128289;'
-    LETTERS_1324 = '&#128290;'
-    LETTERS_ABC = '&#128292;'
-    LETTER_I = '&#8505;'
-    LETTERS_CL = '&#127377;'
-    LIPS = '&#128068;'
-    ROBOT = '&#129302;'
-    OK = '&#127383;'
-    SKULL = '&#128128;'
-    SYMBOLS = '&#128291;'
-    VS = '&#127386;'
-    UP = '&#127385;'
-    XD = '&#128518;'
+
+    """
+    docstring for Smile
+
+    usage:
+    Smile('smile name'), example:
+    Smile('Муравей')
+
+    WARNING: there will be a slight delay on the first call
+
+    Also you can see all smiles:
+    Smile().smile # it return dictionary of all smiles.
+    """
+
+    def __init__(self):
+        self.smiles = {}
+        response = requests.get('https://kody-smajlov-vkontakte.ru').text.split('class="smile_table">')
+        response.pop(0)
+        for i in response:
+            current_list = i.split('<tr')
+            current_list.pop(0)
+            for elem in current_list:
+                if '"description">' in elem and '"smile_code">' in elem:
+                    self.smiles[elem.split('"description">', 1)[1].split('</td', 1)[0].lower()] = elem.split('"smile_code">', 1)[1].split('</td', 1)[0].replace('&amp;', '&')
+    def __new__(self, *args):
+        string = args[0] if len(args) > 0 else ''
+        if string:
+            try:
+                return self.smiles[string.lower()]
+            except:
+                self.__init__(self)
+                return self.smiles[string.lower()]
+        else:
+            return self
