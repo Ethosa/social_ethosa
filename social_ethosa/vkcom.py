@@ -40,6 +40,10 @@ class Vk:
 
     use messages methods:
     vk.messages.send(message='message', peer_id=1234567890)
+
+    methods, which working with token Kate Mobile:
+    - audio.getUploadServer
+    - audio.save
     '''
 
     def __init__(self, *args, **kwargs):
@@ -65,192 +69,8 @@ class Vk:
             if self.debug: print(self.translate('Ошибка' if test == 'error' else 'Успешно!', self.lang))
         else:
             if self.debug: print(self.translate('Ошибка', self.lang))
-
-
-    # Also you can use the easy way to upload files in vk!
-    def upload_album_photo(self, album_id, first=True, *args, **kwargs):
-
-        # param files is list of string, example: ['photo.png', 'photo.jpg', 'mushroom.png']
-        # param album_id must be Integer
-        # param formatting must be boolean. return the list of photos if True, example: ['photo123_456', 'photo789_123']
-        # param first can't used
-
-        files = get_val(kwargs, 'files', [])
-        formatting = get_val(kwargs, 'formatting')
-        if first: self.uploaded = []
-        if len(files) > 5:
-            self.uploaded.append(self.upload_album_photo(album_id=album_id, files=files[5:], first=False))
-            files = files[:5]
-            if self.debug: print(self.translate('Файлов не должно быть больше 5! Я автоматически урезала количество файлов до нужной длины.', self.lang))
-        upload_url = self.photos.getUploadServer(album_id=album_id, **kwargs)['response']['upload_url']
-        filess = {f'file{current+1}' : open(files[current], 'rb') for current in range(len(files))}
-        response = upload_files(upload_url, filess)
-        response = self.method(method='photos.save', hash=response['hash'], album_id=album_id,
-                                server=response['server'], photos_list=response['photos_list'], aid=response['aid'])['response']
-        if not first: return response
-        else:
-            self.uploaded.append(response)
-            if formatting:
-                upls = []
-                for photos_list in self.uploaded:
-                    for photo in photos_list:
-                        upls.append(f'photo{photo["owner_id"]}_{photo["id"]}')
-                return upls
-            return self.uploaded
-
-    def upload_wall_photo(self, group_id=None, user_id=None, first=True, *args, **kwargs):
-
-        # param files is list of string, example: ['photo.png', 'photo.jpg', 'mushroom.png']
-        # use one of two variables: group_id or user_id: they must be integer
-        # param formatting must be boolean. return the list of photos if True, example: ['photo123_456', 'photo789_123']
-        # param first can't used
-
-        files = get_val(kwargs, 'files', [])
-        formatting = get_val(kwargs, 'formatting')
-        if first: self.uploaded = []
-        if len(files) > 1:
-            self.uploaded.append(self.upload_wall_photo(files=files[1:], group_id=group_id, user_id=user_id, first=False))
-            files = [files[0]]
-            if self.debug:
-                print(self.translate('Файлов не должно быть больше 1! Я автоматически урезала количество файлов до нужной длины.', self.lang))
-        upload_url = self.photos.getWallUploadServer(**kwargs)['response']['upload_url']
-        filess = {f'file{current+1}' : open(files[current], 'rb') for current in range(len(files))}
-        response = upload_files(upload_url, filess)
-        if group_id:
-            response = self.method(method='photos.saveWallPhoto', hash=response['hash'],
-                                    server=response['server'], photo=response['photo'], group_id=group_id)['response'][0]
-        else:
-            response = self.method(method='photos.saveWallPhoto', hash=response['hash'],
-                                    server=response['server'], photo=response['photo'], user_id=user_id)['response'][0]
-        if not first: return response
-        else:
-            self.uploaded.append(response)
-            if formatting:
-                upls = []
-                for photo in self.uploaded:
-                    upls.append(f'photo{photo["owner_id"]}_{photo["id"]}')
-                return upls
-            return self.uploaded
-
-    def upload_message_photo(self, peer_id, first=True, *args, **kwargs):
-
-        # param files is list of string, example: ['photo.png', 'photo.jpg', 'mushroom.png']
-        # param peer_id must be integer
-        # param formatting must be boolean. return the list of photos if True, example: ['photo123_456', 'photo789_123']
-        # param first can't used
-
-        files = get_val(kwargs, 'files', [])
-        formatting = get_val(kwargs, 'formatting')
-        if first: self.uploaded = []
-        if len(files) > 1:
-            self.uploaded.append(self.upload_message_photo(files=files[1:], peer_id=peer_id, first=False))
-            files = [files[0]]
-            if self.debug:
-                print(self.translate('Файлов не должно быть больше 1! Я автоматически урезала количество файлов до нужной длины.', self.lang))
-        upload_url = self.photos.getMessagesUploadServer(peer_id=peer_id, **kwargs)['response']['upload_url']
-        filess = {f'photo' : open(files[current], 'rb') for current in range(len(files))}
-        response = upload_files(upload_url, filess)
-        response = self.method(method='photos.saveMessagesPhoto', hash=response['hash'],
-                                        server=response['server'], photo=response['photo'])['response'][0]
-        if not first: return response
-        else:
-            self.uploaded.append(response)
-            if formatting:
-                upls = []
-                for photo in self.uploaded:
-                    upls.append(f'photo{photo["owner_id"]}_{photo["id"]}')
-                return upls
-            return self.uploaded
-
-    def upload_user_photo(self, user_id, *args, **kwargs):
-
-        # param user_id must be integer
-        # param file must be string of path, example: 'photo.png'
-
-        file = get_val(kwargs, 'file', '')
-        upload_url = self.photos.getOwnerPhotoUploadServer(user_id)['response']['upload_url']
-        file = upl(file, 'photo')
-        response = upload_files(upload_url, file)
-        response = self.method(method='photos.saveOwnerPhoto', hash=response['hash'],
-                                server=response['server'], photo=response['photo'])['response']
-        return response
-
-    def upload_chat_photo(self, chat_id, *args, **kwargs):
-
-        # param chat_id must be integer
-        # param file must be string of path, example: 'photo.png'
-
-        file = get_val(kwargs, 'file', '')
-        upload_url = self.photos.getChatUploadServer(chat_id)['response']['upload_url']
-        file = upl(file, 'photo')
-        response = upload_files(upload_url, file)
-        response = self.method(method='messages.setChatPhoto', file=response['response'])['response']
-        return response
-
-    def upload_market_photo(self, group_id, *args, **kwargs):
-
-        # param chat_id must be integer
-        # param file must be string of path, example: 'photo.png'
-
-        file = get_val(kwargs, 'file', '')
-        upload_url = self.photos.getMarketUploadServer(group_id=group_id)['response']['upload_url']
-        file = upl(file, 'photo')
-        response = upload_files(upload_url, file)
-        response = self.method(method='photos.saveMarketPhoto', group_id=group_id, photo=response['photo'],
-                                hash=response['hash'], server=response['server'], crop_data=response['crop_data'],
-                                crop_hash=response['crop_hash'])['response']
-        return response
-
-    def upload_market_album_photo(self, group_id, *args, **kwargs):
-
-        # param chat_id must be integer
-        # param file must be string of path, example: 'photo.png'
-
-        if self.debug: print(self.translate('Осторожно! Размер картинки должен быть не меньше 1280х720', self.lang))
-        file = get_val(kwargs, 'file', '')
-        upload_url = self.photos.getMarketAlbumUploadServer(group_id=group_id)['response']['upload_url']
-        file = upl(file, 'file')
-        response = upload_files(upload_url, file)
-        response = self.method(method='photos.saveMarketAlbumPhoto', group_id=group_id, photo=response['photo'],
-                                hash=response['hash'], server=response['server'])['response']
-        return response
-
-    def upload_audio(self, artist='', title='', *args, **kwargs):
-
-        # param chat_id must be integer
-        # param file must be string of path, example: 'mil_tokyo.mp3'
-
-        file = get_val(kwargs, 'file', '')
-        upload_url = self.audio.getUploadServer()['response']['upload_url']
-        file = upl(file, 'file')
-        response = upload_files(upload_url, file)
-        response = self.method(method='audio.save', title=title, artist=artist, audio=response['audio'],
-                                hash=response['hash'], server=response['server'])['response']
-        return response
-
-    def upload_audio_message(self, peer_id, *args, **kwargs):
-
-        # param chat_id must be integer
-        # param file must be string of path, example: 'message.ogg'
-
-        file = get_val(kwargs, 'file', '')
-        del kwargs['file']
-        upload_url = self.docs.getMessagesUploadServer(type='audio_message', peer_id=peer_id, **kwargs)['response']['upload_url']
-        file = upl(file, 'file')
-        response = upload_files(upload_url, file)['file']
-        response = self.method(method='docs.save', file=response, **kwargs)['response']
-        return response
-
-    def upload_video(self, *args, **kwargs):
-
-        # param chat_id must be integer
-        # param file must be string of path, example: 'pron.mp4' :D
-
-        file = get_val(kwargs, 'file', '')
-        upload_url = self.video.save(**kwargs)['response']['upload_url']
-        file = upl(file, 'file')
-        response = upload_files(upload_url, file)
-        return response
+            
+        self.uploader = Uploader(vk=self)
 
 
     # Handlers:
@@ -403,13 +223,14 @@ class Method:
         url = f'''{self.vk_api_url}{method}'''
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
-        response = requests.post(url, data=kwargs).json()
+        headers = { 'User-Agent' : "KateMobileAndroid/45 lite-421 (Android 5.0; SDK 21; armeabi-v7a; LENOVO Lenovo A1000; ru)" }
+        response = requests.post(url, data=kwargs, headers=headers).json()
         return response
 
     def __getattr__(self, method):
         return lambda **kwargs: self.use(method=f'{self.method}.{method}', **kwargs)
 
-
+from .uploader import *
 
 class Keyboard:
 
