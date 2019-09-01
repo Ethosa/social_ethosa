@@ -52,17 +52,34 @@ Example audio message:
 ```python
 from social_ethosa.vkcom import *
 
-token = 'token group'
+token = 'user token here'
 
-vk = Vk(token=token, debug=True, lang='ru', group_id='185684225')
+vk = Vk(token=token, debug=True, lang='ru')
 
-@vk.on_message_new
-def lol(obj):
-    if obj.text == '/lol':
-        response = vk.upload_audio_message(peer_id=obj.peer_id, file='mil_tokyo1.ogg')
-        audio = f'doc{response["audio_message"]["owner_id"]}_{response["audio_message"]["id"]}'
-        print(audio)
-        vk.messages.send(attachment=audio, message='ban :|', random_id=random.randint(0, 100), peer_id=obj.peer_id)
+file = 'mil_tokyo1.ogg'
+vk.uploader.getUploadUrl('audio_message', peer_id=1234567890)
+response = vk.uploader.uploadFile(file=file)
+
+audio_message = f'doc{response["audio_message"]["owner_id"]}_{response["audio_message"]["id"]}'
+
+vk.messages.send(peer_id=1234567890, message='test uploader', attachment=audio_message, random_id=random.randint(0, 1000))
+```
+
+Example photo in message:
+```python
+from social_ethosa.vkcom import *
+
+token = 'user token here'
+
+vk = Vk(token=token, debug=True, lang='ru')
+
+file = 'b.png'
+vk.uploader.getUploadUrl('message_photo')
+response = vk.uploader.uploadFile(file=file)
+
+photo = f'photo{response["owner_id"]}_{response["id"]}'
+
+vk.messages.send(peer_id=1234567890, message='test uploader', attachment=photo, random_id=random.randint(0, 1000))
 ```
 
 working with audio:
