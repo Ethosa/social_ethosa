@@ -64,3 +64,18 @@ def lol(obj):
         print(audio)
         vk.messages.send(attachment=audio, message='ban :|', random_id=random.randint(0, 100), peer_id=obj.peer_id)
 ```
+
+working with audio:
+```python
+from social_ethosa.vkcom import *
+
+login = '71234567890'
+password = 'hi_i_passowrd'
+
+audio = VkAudio(login=login, password=password, debug=True, lang='ru')
+
+print(audio.get()) # return your audios
+print(audio.get(123)) # return audios of user with id 123
+print(audio.getCount()) # return count of your audios
+print(audio.getCount(123)) # return count audios of user with id 123
+```
