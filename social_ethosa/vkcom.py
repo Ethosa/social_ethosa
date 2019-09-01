@@ -1,19 +1,14 @@
-try:
-    import requests
-    requests.packages.urllib3.disable_warnings()
-except:
-    raise ImportError('Please install requests library! "pip install requests".')
-
 from threading import Thread
-from .smiles import *
 from .utils import *
+requests.packages.urllib3.disable_warnings()
+from .vkaudio import *
+from .smiles import *
 import traceback
 import datetime
 import random
 import time
 import json
 import sys
-import os
 
 class Vk:
     '''
@@ -315,7 +310,7 @@ class Vk:
     def listen_wrapper(self, type_value, class_wrapper, function, user=False, e='type'):
         def listen(e=e):
             for event in self.longpoll.listen():
-                if event.update[e if type(type_value) == str else 0] == type_value:
+                if event.update[e if type(event.update) == dict else 0] == type_value:
                     if self.debug: print(type_value)
                     try: function(class_wrapper(event.update))
                     except Exception as error_msg:
@@ -511,6 +506,7 @@ class Button:
         return kb
 
 
+
 # Enums start here:
 class Event:
     '''docstring for Event'''
@@ -581,25 +577,6 @@ class Edit_user_message(Obj):
         self.text = obj[5]
         self.attachments = obj[6]
         self.obj = obj
-
-
-class Translator_debug:
-    def __init__(self, *args, **kwargs):
-        try:
-            with open(f'{os.path.dirname(os.path.abspath(__file__))}\\translate.py', 'r', encoding='utf-8') as f:
-                self.base = json.loads(f.read())
-        except:
-            with open(f'{os.path.dirname(os.path.abspath(__file__))}/translate.py', 'r', encoding='utf-8') as f:
-                self.base = json.loads(f.read())
-
-    def translate(self, *args):
-        text = args[0]
-        lang = args[1]
-        if text in self.base.keys():
-            if lang in self.base[text].keys():
-                return self.base[text][lang]
-            else: return text
-        else: return text
 
 
 class Help:
