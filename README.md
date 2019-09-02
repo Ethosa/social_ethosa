@@ -95,4 +95,6 @@ print(audio.get()) # return your audios
 print(audio.get(123)) # return audios of user with id 123
 print(audio.getCount()) # return count of your audios
 print(audio.getCount(123)) # return count audios of user with id 123
+pprint(audio.getById(owner_id=-148928912, audio_id=456239018)) # return audio-148928912_456239018
+pprint(audio.search('minecraft')) # return dictionary with audios list, playlists list, artists list
 ```
