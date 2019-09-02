@@ -349,14 +349,14 @@ class Obj:
 
 class New_user_message(Obj):
     def __init__(self, obj):
-        self.date = obj[4]
-        self.strdate = datetime.datetime.utcfromtimestamp(self.date).strftime('%d.%m.%Y %H:%M:%S') if self.date else None
-        self.text = obj[5]
-        self.from_id = obj[6]['from'] if 'from' in obj[6].keys() else None
-        self.peer_id = obj[3]
         self.message_id = obj[1]
-        self.random_id = obj[8]
+        self.peer_id = obj[3]
+        self.date = obj[4]
+        self.text = obj[5]
+        self.strdate = datetime.datetime.utcfromtimestamp(self.date).strftime('%d.%m.%Y %H:%M:%S') if self.date else None
+        self.from_id = obj[6]['from'] if 'from' in obj[6].keys() else None
         self.attachments = obj[7]
+        self.random_id = obj[8]
         self.obj = obj
 
 
