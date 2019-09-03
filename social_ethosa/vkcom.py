@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# author: ethosa
 from threading import Thread
 from .utils import *
 requests.packages.urllib3.disable_warnings()
@@ -117,6 +119,9 @@ class Vk:
                         line = traceback.extract_tb(exc_tb)[-1][1]
                         self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
         Thread_VK(listen).start()
+
+    def get_random_id(self):
+        return random.randint(-2**10, 2**10) # random.getrandbits(2**37-1)*random.choice([-1, 1])
 
     def __getattr__(self, method):
         if method.startswith('on_'):

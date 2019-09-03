@@ -64,21 +64,20 @@ class VkAudio:
                         'data-audio' : self.parse(current_data_audio)
                     })
 
-        if not count:
-            return audios[offset:]
-        else:
-            return audios[offset:count]
+        return audios[offset:] if not count else audios[offset:count]
+        
 
     def getCount(self, owner_id=None, *args, **kwargs):
         return len(self.get(owner_id if owner_id else self.user_id))
 
     def getById(self, audio_id, owner_id=None, *args, **kwargs):
-        url = f'https://m.vk.com/audio{owner_id if owner_id else self.user_id}_{audio_id}'
+        owner_id = owner_id if owner_id else self.user_id
+        url = f'https://m.vk.com/audio{owner_id}_{audio_id}'
 
-        response = self.session.get(url, headers=self.headers).text.split(f'<div id="audio{owner_id if owner_id else self.user_id}_{audio_id}')[1].split('<div class="ai_controls">', 1)[0].replace('&quot;', '"')
+        response = self.session.get(url, headers=self.headers).text.split(f'<div id="audio{owner_id_}{audio_id}')[1].split('<div class="ai_controls">', 1)[0].replace('&quot;', '"')
 
-        audio_url = response.split('<input type="hidden" value="', 1)[1].split('">', 1)[0].strip()
-        data_audio = json.loads(response.split('data-ads="', 1)[1].split('"  class="', 1)[0].strip())
+        audio_url = response.split('<input type="hidden" value="', 1)[1].split('">', 1)[0]
+        data_audio = json.loads(response.split('data-ads="', 1)[1].split('"  class="', 1)[0])
         title = response.split('<span class="ai_title">', 1)[1].split('</span>', 1)[0]
         artist = response.split('<span class="ai_artist">', 1)[1].split('</span>', 1)[0]
 
@@ -96,46 +95,39 @@ class VkAudio:
         response = self.session.get(url, headers=self.headers).text
 
         artists = response.split('ColumnSlider__column', 1)[1].split('</div></div></div></div>')[0].split('OwnerRow__content al_artist"')
-        artists.pop(0)
-
-        allArtists = []
-        for artist in artists:
-            allArtists.append({
-                artist.split('OwnerRow__title">')[1].split('<', 1)[0] : artist.split('href="', 1)[1].split('"', 1)[0]
-                })
-
         playlists = response.split('AudioPlaylistSlider ColumnSlider Slider', 1)[1].split('Slider__line">', 1)[1].split('</div></div></div></div>')[0].split('ColumnSlider__column">')
+        artists.pop(0)
         playlists.pop(0)
 
-        allPlaylists = []
-
-        for playlist in playlists:
-            allPlaylists.append({
+        allPlaylists = [{
                     'url' : playlist.split('href="', 1)[1].split('"', 1)[0],
                     'cover' : playlist.split('audioPlaylists__itemCover', 1)[1].split("url('", 1)[1].split("');", 1)[0],
                     'title' : playlist.split('audioPlaylists__itemTitle">', 1)[1].split('</', 1)[0],
                     'subtitle' : playlist.split('audioPlaylists__itemSubtitle">', 1)[1].split('<', 1)[0],
                     'year' : playlist.split('audioPlaylists__itemSubtitle">', 2)[2].split('<', 1)[0]
-                })
+                } for playlist in playlists]
+        allArtists = [{ artist.split('OwnerRow__title">')[1].split('<', 1)[0] : artist.split('href="', 1)[1].split('"', 1)[0] }
+                        for artist in artists]
 
-        audios = response.split('AudioSlider ColumnSlider Slider', 1)[1].split('Slider__line">', 1)[1].split('</div></div></div></div>')[0].split('ColumnSlider__column">')
+        url = f'''https://m.vk.com{response.split('AudioBlock AudioBlock_audios Pad', 1)[1].split("Pad__corner al_empty", 1)[1].split('href="', 1)[1].split('"', 1)[0]}'''
+        response = self.session.get(url, headers=self.headers).text
+
+        audios = response.split('artist_page_search_items">', 1)[1].split('</div></div></div></div>')[0].split('<div id="audio')
         audios.pop(0)
 
         allAudios = []
-
-        for a in audios:
-            for audio in a.split('<div id="audio'):
-                if '<input type="hidden" value="' in audio:
-                    data_audio = json.loads(audio.split('data-ads="', 1)[1].split('" ', 1)[0].replace('&quot;', '"'))
-                    allAudios.append({
-                            'url' : audio.split('<input type="hidden" value="', 1)[1].split('"', 1)[0],
-                            'image' : audio.split('ai_info')[1].split(':url(', 1)[1].split(')', 1)[0],
-                            'duration' : data_audio['duration'],
-                            'content_id' : data_audio['content_id'],
-                            'genre_id' : data_audio['puid22'],
-                            'title' : audio.split('<span class="ai_title">', 1)[1].split('</span>', 1)[0],
-                            'artist' : audio.split('<span class="ai_artist">', 1)[1].split('</span>', 1)[0]
-                        })
+        for audio in audios:
+            if '<input type="hidden" value="' in audio:
+                data_audio = json.loads(audio.split('data-ads="', 1)[1].split('" ', 1)[0].replace('&quot;', '"'))
+                allAudios.append({
+                        'url' : audio.split('<input type="hidden" value="', 1)[1].split('"', 1)[0],
+                        'image' : audio.split('ai_info')[1].split(':url(', 1)[1].split(')', 1)[0] if 'ai_info' in audio and ':url(' in audio else None,
+                        'duration' : data_audio['duration'],
+                        'content_id' : data_audio['content_id'],
+                        'genre_id' : data_audio['puid22'],
+                        'title' : audio.split('<span class="ai_title">', 1)[1].split('</span>', 1)[0],
+                        'artist' : audio.split('<span class="ai_artist">', 1)[1].split('</span>', 1)[0]
+                    })
 
         return {
             'playlists' : allPlaylists,
