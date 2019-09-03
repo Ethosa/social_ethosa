@@ -1,5 +1,6 @@
 from .utils import *
-import lxml.html
+try: import lxml.html
+except: print('Error in lxml module. Audio methods not working.')
 
 class VkAudio:
 
@@ -136,8 +137,7 @@ class VkAudio:
         }
 
     def parse(self, data_audio):
-        return {
-            'id' : data_audio[0],
+        return { 'id' : data_audio[0],
             'owner_id' : data_audio[1],
             'artist' : data_audio[4],
             'title' : data_audio[3],
@@ -145,5 +145,4 @@ class VkAudio:
             'cover' : data_audio[14].split(','),
             'is_hq' : data_audio[-2],
             'no_search' : data_audio[-3],
-            'genre_id' : data_audio[-10]['puid22']
-        }
+            'genre_id' : data_audio[-10]['puid22']}

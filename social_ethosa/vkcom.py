@@ -53,7 +53,7 @@ class Vk:
         self.version_api = get_val(kwargs, 'version_api', '5.101') # Can be float / integer / string
         self.group_id = get_val(kwargs, 'group_id') # can be string or integer
         self.lang = get_val(kwargs, 'lang', 'en') # must be string
-        self.verison = '0.0.8'
+        self.verison = '0.1.32'
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -121,7 +121,7 @@ class Vk:
         Thread_VK(listen).start()
 
     def get_random_id(self):
-        return random.randint(-2**10, 2**10) # random.getrandbits(2**37-1)*random.choice([-1, 1])
+        return random.getrandbits(64)*random.choice([-1, 1]) # random.randint(-2**10, 2**10)
 
     def __getattr__(self, method):
         if method.startswith('on_'):
@@ -351,7 +351,6 @@ class Obj:
         val = get_val(self.obj, attribute)
         return val if val else get_val(self.obj['object'] if type(self.obj) == dict else self.obj[6] if attribute in self.obj[6].keys() else self.obj[7], attribute)
 
-
 class New_user_message(Obj):
     def __init__(self, obj):
         self.message_id = obj[1]
@@ -375,7 +374,6 @@ class Edit_user_message(Obj):
         self.text = obj[5]
         self.attachments = obj[6]
         self.obj = obj
-
 
 class Help:
 
