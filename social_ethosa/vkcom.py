@@ -53,7 +53,7 @@ class Vk:
         self.version_api = get_val(kwargs, 'version_api', '5.101') # Can be float / integer / string
         self.group_id = get_val(kwargs, 'group_id') # can be string or integer
         self.lang = get_val(kwargs, 'lang', 'en') # must be string
-        self.verison = '0.1.32'
+        self.verison = '0.1.34'
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -169,8 +169,8 @@ class LongPoll:
 
             while True:
                 response = requests.get(f'{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait=25').json()
-                self.ts = response['ts']
-                updates = response['updates']
+                self.ts = get_val(response, 'ts', self.ts)
+                updates = get_val(response, 'updates')
 
                 if updates:
                     for update in updates: yield Event(update=update)
@@ -182,8 +182,8 @@ class LongPoll:
 
             while True:
                 response = requests.get(f'https://{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait=25&mode=202&version=3').json()
-                self.ts = response['ts']
-                updates = response['updates']
+                self.ts = get_val(response, 'ts', self.ts)
+                updates = get_val(response, 'updates')
 
                 if updates:
                     for update in updates: yield Event(update=update)
