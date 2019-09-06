@@ -27,7 +27,7 @@ users_event = {
 class Translator_debug:
     def __init__(self, *args, **kwargs):
         path = os.path.dirname(os.path.abspath(__file__))
-        if "/" not in path:
+        if "/" in path:
             with open("%s/translate.py" % (os.path.dirname(os.path.abspath(__file__))), 'r', encoding='utf-8') as f:
                 self.base = json.loads(f.read())
         else:

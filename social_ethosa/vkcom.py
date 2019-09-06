@@ -54,7 +54,7 @@ class Vk:
         self.version_api = get_val(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = get_val(kwargs, "group_id") # can be string or integer
         self.lang = get_val(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.4"
+        self.verison = "0.1.55"
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -118,7 +118,8 @@ class Vk:
                     except Exception as error_msg:
                         exc_type, exc_obj, exc_tb = sys.exc_info()
                         line = traceback.extract_tb(exc_tb)[-1][1]
-                        self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
+                        self.longpoll.errors.append(Error(line=line, message=str(error_msg),
+                                                            code=type(error_msg).__name__), file_error="%s" % (__file__))
         Thread_VK(listen).start()
 
     def get_random_id(self):
@@ -338,8 +339,9 @@ class Error:
         self.code = kwargs["code"]
         self.message = kwargs["message"]
         self.line = kwargs["line"]
+        self.file = get_val(kwargs, "file_error", "")
     def __str__(self):
-        return "%s, Line %s:\n%s" % (self.code, self.message, self.line)
+        return "%s, Line %s:\n%s\nFile: %s" % (self.code, self.message, self.line, self.file)
 
 
 class Obj:
