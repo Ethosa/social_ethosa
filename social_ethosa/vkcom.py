@@ -48,12 +48,13 @@ class Vk:
     '''
 
     def __init__(self, *args, **kwargs):
-        self.token_vk = get_val(kwargs, 'token') # Must be string
-        self.debug = get_val(kwargs, 'debug') # Must be boolean
-        self.version_api = get_val(kwargs, 'version_api', '5.101') # Can be float / integer / string
-        self.group_id = get_val(kwargs, 'group_id') # can be string or integer
-        self.lang = get_val(kwargs, 'lang', 'en') # must be string
-        self.verison = '0.1.34'
+        self.token_vk = get_val(kwargs, "token") # Must be string
+        self.debug = get_val(kwargs, "debug") # Must be boolean
+        if self.debug: self.debug = 1.0
+        self.version_api = get_val(kwargs, "version_api", "5.101") # Can be float / integer / string
+        self.group_id = get_val(kwargs, "group_id") # can be string or integer
+        self.lang = get_val(kwargs, "lang", "en") # must be string
+        self.verison = "0.1.4"
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -62,14 +63,14 @@ class Vk:
 
         # Other variables:
         self.translate = Translator_debug().translate
-        self.vk_api_url = 'https://api.vk.com/method/'
+        self.vk_api_url = "https://api.vk.com/method/"
 
         if self.token_vk:
-            if self.debug: print(self.translate('Токен установлен. Проверяем его валидность ...', self.lang))
-            test = ''.join(requests.get(f'{self.vk_api_url}messages.getLongPollServer?access_token={self.token_vk}&v={self.version_api}{f"&group_id={self.group_id}" if self.group_id else ""}').json().keys())
-            if self.debug: print(self.translate('Ошибка' if test == 'error' else 'Успешно!', self.lang))
+            if self.debug: sys.stdout.write(self.translate('Токен установлен. Проверяем его валидность ...', self.lang))
+            test = ''.join(requests.get('%smessages.getLongPollServer?access_token=%s&v=%s%s' % (self.vk_api_url, self.token_vk, self.version_api, "&group_id=%s" % (self.group_id) if self.group_id else "")).json().keys())
+            if self.debug: sys.stdout.write(self.translate("Ошибка" if test == "error" else 'Успешно!', self.lang))
         else:
-            if self.debug: print(self.translate('Ошибка', self.lang))
+            if self.debug: sys.stdout.write(self.translate("Ошибка", self.lang))
 
         self.uploader = Uploader(vk=self)
 
@@ -91,15 +92,14 @@ class Vk:
     def on_error(self, function):
         def parse_error():
             while True:
-                if self.longpoll.errors:
-                    for error in self.longpoll.errors:
-                        function(error)
-                        self.longpoll.errors.remove(error)
+                for error in self.longpoll.errors:
+                    function(error)
+                    self.longpoll.errors.remove(error)
         Thread_VK(parse_error).start()
 
     def getUserHandlers(self):
         # return ALL user handlers
-        return [f'on_{i}' for i in users_event]
+        return ["on_%s" % i for i in users_event]
 
 
     # Handler wrapper
@@ -108,11 +108,12 @@ class Vk:
     # @a
     # def get_mess(obj):
     #   print(obj.text)
-    def listen_wrapper(self, type_value, class_wrapper, function, user=False, e='type'):
+    def listen_wrapper(self, type_value, class_wrapper, function, user=False, e="type"):
         def listen(e=e):
+            if type(type_value) == int:
+                e = 0
             for event in self.longpoll.listen():
-                if event.update[e if type(event.update) == dict else 0] == type_value:
-                    if self.debug: print(type_value)
+                if event.update[e] == type_value:
                     try: function(class_wrapper(event.update))
                     except Exception as error_msg:
                         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -121,10 +122,10 @@ class Vk:
         Thread_VK(listen).start()
 
     def get_random_id(self):
-        return random.getrandbits(64)*random.choice([-1, 1]) # random.randint(-2**10, 2**10)
+        return random.randint(-2**37-1, 2**37-1) # random.randint(-2**10, 2**10)
 
     def __getattr__(self, method):
-        if method.startswith('on_'):
+        if method.startswith("on_"):
             if method[3:] not in users_event.keys():
                 return lambda function: self.listen_wrapper(method[3:], Obj, function)
             else:
@@ -132,13 +133,13 @@ class Vk:
         else: return Method(access_token=self.token_vk, version_api=self.version_api, method=method)
 
     def __str__(self):
-        return f'''{"-"*10}
+        return '''**********
 The Vk object with params:
-token = {f"{self.token_vk[:5]}{'*'*10}{self.token_vk[-5:]}"}
-debug = {self.debug}
-version_api = {self.version_api}
-group_id = {self.group_id}
-{"-"*10}'''
+token = %s
+debug = %s
+version_api = %s
+group_id = %s
+**********''' % ("%s**********%s" % (self.token_vk[:5], self.token_vk[-5:]), self.debug, self.version_api, self.group_id)
 
 
 class LongPoll:
@@ -153,45 +154,47 @@ class LongPoll:
         print(event)
     '''
     def __init__(self, *args, **kwargs):
-        self.group_id = get_val(kwargs, 'group_id')
-        self.access_token = kwargs['access_token']
+        self.group_id = get_val(kwargs, "group_id")
+        self.access_token = kwargs["access_token"]
         self.vk_api_url = 'https://api.vk.com/method/'
-        self.version_api = get_val(kwargs, 'version_api', '5.101')
-        self.ts = '0'
+        self.version_api = get_val(kwargs, "version_api", "5.101")
+        self.ts = "0"
         self.errors = []
 
     def listen(self):
         if self.group_id:
-            response = requests.get(f'{self.vk_api_url}groups.getLongPollServer?access_token={self.access_token}&v={self.version_api}&group_id={self.group_id}').json()['response']
+            response = requests.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
+                                    (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()['response']
             self.ts = response['ts']
             self.key = response['key']
             self.server = response['server']
 
-            while True:
-                response = requests.get(f'{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait=25').json()
+            while 1.0:
+                response = requests.get('%s?act=a_check&key=%s&ts=%s&wait=25' % (self.server, self.key, self.ts)).json()
                 self.ts = get_val(response, 'ts', self.ts)
                 updates = get_val(response, 'updates')
 
                 if updates:
-                    for update in updates: yield Event(update=update)
+                    for update in updates: yield Event(update)
         else:
-            response = requests.get(f'{self.vk_api_url}messages.getLongPollServer?access_token={self.access_token}&v={self.version_api}').json()['response']
-            self.ts = response['ts']
-            self.key = response['key']
-            self.server = response['server']
+            response = requests.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
+                                    (self.vk_api_url, self.access_token, self.version_api)).json()['response']
+            self.ts = response["ts"]
+            self.key = response["key"]
+            self.server = response["server"]
 
-            while True:
-                response = requests.get(f'https://{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait=25&mode=202&version=3').json()
+            while 1.0:
+                response = requests.get('https://%s?act=a_check&key=%s&ts=%s&wait=25&mode=202&version=3' % (self.server, self.key, self.ts)).json()
                 self.ts = get_val(response, 'ts', self.ts)
                 updates = get_val(response, 'updates')
 
                 if updates:
-                    for update in updates: yield Event(update=update)
+                    for update in updates: yield Event(update)
 
 
 # Class for use anything vk api method
 # You can use it:
-# response = vk.method(method='wall.post', text='Hello, world!')
+# response = vk.method(method='wall.post', message='Hello, world!')
 class Method:
     def __init__(self, *args, **kwargs):
         self.access_token = kwargs['access_token']
@@ -200,15 +203,14 @@ class Method:
         self.method = get_val(kwargs, 'method', '')
 
     def use(self, method, *args, **kwargs):
-        url = f'''{self.vk_api_url}{method}'''
+        url = '%s%s' % (self.vk_api_url, method)
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
-        headers = { 'User-Agent' : "KateMobileAndroid/45 lite-421 (Android 5.0; SDK 21; armeabi-v7a; LENOVO Lenovo A1000; ru)" }
-        response = requests.post(url, data=kwargs, headers=headers).json()
+        response = requests.post(url, data=kwargs).json()
         return response
 
     def __getattr__(self, method):
-        return lambda **kwargs: self.use(method=f'{self.method}.{method}', **kwargs)
+        return lambda **kwargs: self.use(method="%s.%s" % (self.method, method), **kwargs)
 
 from .uploader import *
 
@@ -232,8 +234,8 @@ class Keyboard:
 
     def __init__(self, *args, **kwargs):
         self.keyboard = {
-            'one_time' : get_val(kwargs, 'one_time', True),
-            'buttons' : get_val(kwargs, 'buttons', [[]])
+            "one_time" : get_val(kwargs, "one_time", 1.0),
+            "buttons" : get_val(kwargs, "buttons", [[]])
         }
 
     def add_line(self):
@@ -269,30 +271,30 @@ class Button:
     """
 
     def __init__(self, *args, **kwargs):
-        self.type = get_val(kwargs, 'type', 'text')
+        self.type = get_val(kwargs, "type", "text")
 
         actions = {
-            'text' : {
-                'type' : 'text',
-                'label' :get_val(kwargs, 'label','бан'),
-                'payload' : get_val(kwargs, 'payload', '')
+            "text" : {
+                "type" : "text",
+                "label" :get_val(kwargs, "label","бан"),
+                "payload" : get_val(kwargs, "payload", '')
             },
-            'location' : {
-                'type' : 'location',
-                'payload' : get_val(kwargs, 'payload', '')
+            "location" : {
+                "type" : "location",
+                "payload" : get_val(kwargs, "payload", '')
             },
-            'vkpay' : {
-                'type' : 'vkpay',
-                'payload' : get_val(kwargs, 'payload', ''),
-                'hash' : get_val(kwargs, 'hash', 'action=transfer-to-group&group_id=1&aid=10')
+            "vkpay" : {
+                "type" : "vkpay",
+                "payload" : get_val(kwargs, "payload", ''),
+                "hash" : get_val(kwargs, "hash", 'action=transfer-to-group&group_id=1&aid=10')
             },
-            'vkapps' : {
-                'type' : 'open_app',
-                'payload' : get_val(kwargs, 'payload', ''),
-                'hash' : get_val(kwargs, 'hash', 'ethosa_lib'),
-                'label' : get_val(kwargs, 'label', ''),
-                'owner_id' : get_val(kwargs, 'owner_id', -181108510),
-                'app_id' : get_val(kwargs, 'app_id', 6979558)
+            "vkapps" : {
+                "type" : "open_app",
+                "payload" : get_val(kwargs, "payload", ''),
+                "hash" : get_val(kwargs, "hash", "ethosa_lib"),
+                "label" : get_val(kwargs, "label", ''),
+                "owner_id" : get_val(kwargs, "owner_id", "-181108510"),
+                "app_id" : get_val(kwargs, "app_id", "6979558")
             }
         }
 
@@ -310,10 +312,10 @@ class Button:
 # Enums start here:
 class Event:
     '''docstring for Event'''
-    def __init__(self, *args, **kwargs):
-        self.update = kwargs['update']
+    def __init__(self, update, *args, **kwargs):
+        self.update = update
     def __str__(self):
-        return f'{self.update}'
+        return "%s" % self.update
 
 
 class Thread_VK(Thread):
@@ -325,55 +327,31 @@ class Thread_VK(Thread):
 
 
 class ButtonColor:
-    PRIMARY = 'primary'
-    SECONDARY = 'secondary'
-    NEGATIVE = 'negative'
-    POSITIVE = 'positive'
+    PRIMARY = "primary"
+    SECONDARY = "secondary"
+    NEGATIVE = "negative"
+    POSITIVE = "positive"
 
 
 class Error:
     def __init__(self, *args, **kwargs):
-        self.code = kwargs['code']
-        self.message = kwargs['message']
-        self.line = kwargs['line']
+        self.code = kwargs["code"]
+        self.message = kwargs["message"]
+        self.line = kwargs["line"]
     def __str__(self):
-        return f'{self.code}:\n{self.message}. Line {self.line}'
+        return "%s, Line %s:\n%s" % (self.code, self.message, self.line)
 
 
 class Obj:
     def __init__(self, obj):
         self.obj = obj
         if type(self.obj) == dict:
-            self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj.keys() else None
+            self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
     def has(self, key):
         return key in self.obj
     def __getattr__(self, attribute):
         val = get_val(self.obj, attribute)
-        return val if val else get_val(self.obj['object'] if type(self.obj) == dict else self.obj[6] if attribute in self.obj[6].keys() else self.obj[7], attribute)
-
-class New_user_message(Obj):
-    def __init__(self, obj):
-        self.message_id = obj[1]
-        self.peer_id = obj[3]
-        self.date = obj[4]
-        self.text = obj[5]
-        self.strdate = datetime.datetime.utcfromtimestamp(self.date).strftime('%d.%m.%Y %H:%M:%S') if self.date else None
-        self.from_id = obj[6]['from'] if 'from' in obj[6].keys() else None
-        self.attachments = obj[7]
-        self.random_id = obj[8]
-        self.obj = obj
-
-
-class Edit_user_message(Obj):
-    def __init__(self, obj):
-        self.message_id = obj[1]
-        self.mask = obj[2]
-        self.peer_id = obj[3]
-        self.date = obj[4]
-        self.strdate = datetime.datetime.utcfromtimestamp(self.date).strftime('%d.%m.%Y %H:%M:%S') if self.date else None
-        self.text = obj[5]
-        self.attachments = obj[6]
-        self.obj = obj
+        return val if val else get_val(self.obj['object'] if type(self.obj) == dict else self.obj[6] if attribute in self.obj[6] else self.obj[7], attribute)
 
 class Help:
 
