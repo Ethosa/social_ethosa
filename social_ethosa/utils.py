@@ -1,6 +1,14 @@
 import requests
+import inspect
+import timeit
 import json
 import os
+
+def timeIt(function, count=1):
+    def timer(count=count):
+        setup = "def" + inspect.getsource(function).split('def', 1)[1]
+        return min(timeit.Timer("%s()" % function.__name__, setup=setup).repeat(1, count))
+    return timer
 
 def get_val(obj, string, returned=False):
     return obj[string] if string in obj else returned

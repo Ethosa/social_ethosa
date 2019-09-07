@@ -54,7 +54,7 @@ class Vk:
         self.version_api = get_val(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = get_val(kwargs, "group_id") # can be string or integer
         self.lang = get_val(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.55"
+        self.verison = "0.1.6"
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -118,8 +118,7 @@ class Vk:
                     except Exception as error_msg:
                         exc_type, exc_obj, exc_tb = sys.exc_info()
                         line = traceback.extract_tb(exc_tb)[-1][1]
-                        self.longpoll.errors.append(Error(line=line, message=str(error_msg),
-                                                            code=type(error_msg).__name__), file_error="%s" % (__file__))
+                        self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
         Thread_VK(listen).start()
 
     def get_random_id(self):
@@ -198,13 +197,12 @@ class LongPoll:
 # response = vk.method(method='wall.post', message='Hello, world!')
 class Method:
     def __init__(self, *args, **kwargs):
-        self.access_token = kwargs['access_token']
-        self.vk_api_url = 'https://api.vk.com/method/'
-        self.version_api = get_val(kwargs, 'version_api', '5.101')
-        self.method = get_val(kwargs, 'method', '')
+        self.access_token = kwargs["access_token"]
+        self.version_api = get_val(kwargs, "version_api", '5.101')
+        self.method = get_val(kwargs, "method", '')
 
     def use(self, method, *args, **kwargs):
-        url = '%s%s' % (self.vk_api_url, method)
+        url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
         response = requests.post(url, data=kwargs).json()
@@ -345,6 +343,7 @@ class Error:
 
 
 class Obj:
+
     def __init__(self, obj):
         self.obj = obj
         if type(self.obj) == dict:
@@ -353,7 +352,7 @@ class Obj:
         return key in self.obj
     def __getattr__(self, attribute):
         val = get_val(self.obj, attribute)
-        return val if val else get_val(self.obj['object'] if type(self.obj) == dict else self.obj[6] if attribute in self.obj[6] else self.obj[7], attribute)
+        return val if val else get_val(self.obj['object'], attribute)
 
 class Help:
 
