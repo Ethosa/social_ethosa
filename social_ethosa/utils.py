@@ -10,7 +10,15 @@ def timeIt(function, count=1):
         return min(timeit.Timer("%s()" % function.__name__, setup=setup).repeat(1, count))
     return timer
 
-def get_val(obj, string, returned=False):
+def downloadFileFromUrl(url, path):
+    response = requests.get(url)
+    if response.ok:
+        with open(path, 'wb') as f:
+            f.write(response.content)
+        return True
+    else: return False
+
+def getValue(obj, string, returned=False):
     return obj[string] if string in obj else returned
 
 def upl(file, name): return { name : open(file, "rb") }
@@ -35,12 +43,8 @@ users_event = {
 class Translator_debug:
     def __init__(self, *args, **kwargs):
         path = os.path.dirname(os.path.abspath(__file__))
-        if "/" in path:
-            with open("%s/translate.py" % (os.path.dirname(os.path.abspath(__file__))), 'r', encoding='utf-8') as f:
-                self.base = json.loads(f.read())
-        else:
-            with open("%s\\translate.py" % (os.path.dirname(os.path.abspath(__file__))), 'r', encoding='utf-8') as f:
-                self.base = json.loads(f.read())
+        with open("%s/translate.py" % (os.path.dirname(os.path.abspath(__file__))), 'r', encoding='utf-8') as f:
+            self.base = json.loads(f.read())
 
     def translate(self, *args):
         text = args[0]

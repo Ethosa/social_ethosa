@@ -18,7 +18,7 @@ class Uploader:
     """
 
     def __init__(self, *args, **kwargs):
-        self.vk = get_val(kwargs, "vk")
+        self.vk = getValue(kwargs, "vk")
         self.errorMsg = lambda: sys.stdout.write("param \"vk\" undefined\n")
         self.working = False
 
@@ -66,7 +66,7 @@ class Uploader:
 
     def getUploadUrl(self, type_obj, *args, **kwargs):
         if self.working:
-            self.url = get_val(self.types, type_obj)[1](**kwargs)
+            self.url = getValue(self.types, type_obj)[1](**kwargs)
             self.current = type_obj
             if self.debug: sys.stdout.write(self.translate('Ошибка' if not self.url else 'Успешно!', self.lang))
         else: self.errorMsg()

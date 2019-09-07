@@ -1,4 +1,4 @@
-from .utils import get_val
+from .utils import getValue
 import requests
 import datetime
 import random
@@ -121,7 +121,7 @@ class User:
         self.obj['money'] += amount
 
     def __getattr__(self, attribute):
-        return get_val(self.obj, attribute)
+        return getValue(self.obj, attribute)
         
 
 class BotBase:

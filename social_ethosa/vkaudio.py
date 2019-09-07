@@ -13,10 +13,10 @@ class VkAudio:
     """
 
     def __init__(self, *args, **kwargs):
-        self.login = get_val(kwargs, 'login', '')
-        self.password = get_val(kwargs, 'password', '')
-        self.debug = get_val(kwargs, 'debug')
-        self.lang = get_val(kwargs, 'lang', 'en')
+        self.login = getValue(kwargs, 'login', '')
+        self.password = getValue(kwargs, 'password', '')
+        self.debug = getValue(kwargs, 'debug')
+        self.lang = getValue(kwargs, 'lang', 'en')
         url = 'https://vk.com'
 
         self.translate = Translator_debug().translate

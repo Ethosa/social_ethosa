@@ -48,13 +48,13 @@ class Vk:
     '''
 
     def __init__(self, *args, **kwargs):
-        self.token_vk = get_val(kwargs, "token") # Must be string
-        self.debug = get_val(kwargs, "debug") # Must be boolean
+        self.token_vk = getValue(kwargs, "token") # Must be string
+        self.debug = getValue(kwargs, "debug") # Must be boolean
         if self.debug: self.debug = 1.0
-        self.version_api = get_val(kwargs, "version_api", "5.101") # Can be float / integer / string
-        self.group_id = get_val(kwargs, "group_id") # can be string or integer
-        self.lang = get_val(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.6"
+        self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
+        self.group_id = getValue(kwargs, "group_id") # can be string or integer
+        self.lang = getValue(kwargs, "lang", "en") # must be string
+        self.verison = "0.1.62"
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -121,8 +121,8 @@ class Vk:
                         self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
         Thread_VK(listen).start()
 
-    def get_random_id(self):
-        return random.randint(-2**37-1, 2**37-1) # random.randint(-2**10, 2**10)
+    def getRandomId(self):
+        return random.randint(-2**37-1, 2**37-1)
 
     def __getattr__(self, method):
         if method.startswith("on_"):
@@ -154,10 +154,10 @@ class LongPoll:
         print(event)
     '''
     def __init__(self, *args, **kwargs):
-        self.group_id = get_val(kwargs, "group_id")
+        self.group_id = getValue(kwargs, "group_id")
         self.access_token = kwargs["access_token"]
         self.vk_api_url = 'https://api.vk.com/method/'
-        self.version_api = get_val(kwargs, "version_api", "5.101")
+        self.version_api = getValue(kwargs, "version_api", "5.101")
         self.ts = "0"
         self.errors = []
 
@@ -171,8 +171,8 @@ class LongPoll:
 
             while 1.0:
                 response = requests.get('%s?act=a_check&key=%s&ts=%s&wait=25' % (self.server, self.key, self.ts)).json()
-                self.ts = get_val(response, 'ts', self.ts)
-                updates = get_val(response, 'updates')
+                self.ts = getValue(response, 'ts', self.ts)
+                updates = getValue(response, 'updates')
 
                 if updates:
                     for update in updates: yield Event(update)
@@ -185,8 +185,8 @@ class LongPoll:
 
             while 1.0:
                 response = requests.get('https://%s?act=a_check&key=%s&ts=%s&wait=25&mode=202&version=3' % (self.server, self.key, self.ts)).json()
-                self.ts = get_val(response, 'ts', self.ts)
-                updates = get_val(response, 'updates')
+                self.ts = getValue(response, 'ts', self.ts)
+                updates = getValue(response, 'updates')
 
                 if updates:
                     for update in updates: yield Event(update)
@@ -198,8 +198,8 @@ class LongPoll:
 class Method:
     def __init__(self, *args, **kwargs):
         self.access_token = kwargs["access_token"]
-        self.version_api = get_val(kwargs, "version_api", '5.101')
-        self.method = get_val(kwargs, "method", '')
+        self.version_api = getValue(kwargs, "version_api", '5.101')
+        self.method = getValue(kwargs, "method", '')
 
     def use(self, method, *args, **kwargs):
         url = "https://api.vk.com/method/%s" % method
@@ -233,15 +233,15 @@ class Keyboard:
 
     def __init__(self, *args, **kwargs):
         self.keyboard = {
-            "one_time" : get_val(kwargs, "one_time", 1.0),
-            "buttons" : get_val(kwargs, "buttons", [[]])
+            "one_time" : getValue(kwargs, "one_time", 1.0),
+            "buttons" : getValue(kwargs, "buttons", [[]])
         }
 
-    def add_line(self):
+    def addLine(self):
         if len(self.keyboard['buttons']) < 10:
             self.keyboard['buttons'].append([])
 
-    def add_button(self, button):
+    def addButton(self, button):
         if len(self.keyboard['buttons'][::-1][0]) <= 4:
             if button['action']['type'] != 'text' and len(self.keyboard['buttons'][-1]) >= 1:
                 self.add_line()
@@ -270,35 +270,35 @@ class Button:
     """
 
     def __init__(self, *args, **kwargs):
-        self.type = get_val(kwargs, "type", "text")
+        self.type = getValue(kwargs, "type", "text")
 
         actions = {
             "text" : {
                 "type" : "text",
-                "label" :get_val(kwargs, "label","бан"),
-                "payload" : get_val(kwargs, "payload", '')
+                "label" :getValue(kwargs, "label","бан"),
+                "payload" : getValue(kwargs, "payload", '')
             },
             "location" : {
                 "type" : "location",
-                "payload" : get_val(kwargs, "payload", '')
+                "payload" : getValue(kwargs, "payload", '')
             },
             "vkpay" : {
                 "type" : "vkpay",
-                "payload" : get_val(kwargs, "payload", ''),
-                "hash" : get_val(kwargs, "hash", 'action=transfer-to-group&group_id=1&aid=10')
+                "payload" : getValue(kwargs, "payload", ''),
+                "hash" : getValue(kwargs, "hash", 'action=transfer-to-group&group_id=1&aid=10')
             },
             "vkapps" : {
                 "type" : "open_app",
-                "payload" : get_val(kwargs, "payload", ''),
-                "hash" : get_val(kwargs, "hash", "ethosa_lib"),
-                "label" : get_val(kwargs, "label", ''),
-                "owner_id" : get_val(kwargs, "owner_id", "-181108510"),
-                "app_id" : get_val(kwargs, "app_id", "6979558")
+                "payload" : getValue(kwargs, "payload", ''),
+                "hash" : getValue(kwargs, "hash", "ethosa_lib"),
+                "label" : getValue(kwargs, "label", ''),
+                "owner_id" : getValue(kwargs, "owner_id", "-181108510"),
+                "app_id" : getValue(kwargs, "app_id", "6979558")
             }
         }
 
-        self.action = get_val(actions, kwargs['type'], actions['text'])
-        self.color = get_val(kwargs, 'color', ButtonColor.PRIMARY)
+        self.action = getValue(actions, kwargs['type'], actions['text'])
+        self.color = getValue(kwargs, 'color', ButtonColor.PRIMARY)
 
     def __new__(self, *args, **kwargs):
         self.__init__(self, *args, **kwargs)
@@ -337,9 +337,9 @@ class Error:
         self.code = kwargs["code"]
         self.message = kwargs["message"]
         self.line = kwargs["line"]
-        self.file = get_val(kwargs, "file_error", "")
+        self.file = getValue(kwargs, "file_error", "")
     def __str__(self):
-        return "%s, Line %s:\n%s\nFile: %s" % (self.code, self.message, self.line, self.file)
+        return "%s, Line %s:\n%s\nFile: %s" % (self.code, self.line, self.message, self.file)
 
 
 class Obj:
@@ -351,8 +351,8 @@ class Obj:
     def has(self, key):
         return key in self.obj
     def __getattr__(self, attribute):
-        val = get_val(self.obj, attribute)
-        return val if val else get_val(self.obj['object'], attribute)
+        val = getValue(self.obj, attribute)
+        return val if val else getValue(self.obj['object'], attribute)
 
 class Help:
 
