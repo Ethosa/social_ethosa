@@ -54,7 +54,7 @@ class Vk:
         self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = getValue(kwargs, "group_id") # can be string or integer
         self.lang = getValue(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.62"
+        self.verison = "0.1.63"
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -242,18 +242,24 @@ class Keyboard:
             self.keyboard['buttons'].append([])
 
     def addButton(self, button):
-        if len(self.keyboard['buttons'][::-1][0]) <= 4:
+        if len(self.keyboard['buttons'][::-1][0]) < 4:
             if button['action']['type'] != 'text' and len(self.keyboard['buttons'][-1]) >= 1:
-                self.add_line()
+                self.addLine()
             if len(self.keyboard['buttons']) < 10:
                 self.keyboard['buttons'][::-1][0].append(button)
         else:
-            self.add_line()
+            self.addLine()
             if len(self.keyboard['buttons']) < 10:
-                self.add_button(button)
+                self.addButton(button)
 
     def compile(self):
         return json.dumps(self.keyboard)
+
+    def visualize(self):
+        for line in self.keyboard["buttons"]:
+            sys.stdout.write("%s\n" % " ".join(["[%s]" % button["action"]["label"]
+                                                if "label" in button["action"] else "[%s button]" % button["action"]["type"]
+                                                for button in line]))
 
 
 class Button:
@@ -337,9 +343,8 @@ class Error:
         self.code = kwargs["code"]
         self.message = kwargs["message"]
         self.line = kwargs["line"]
-        self.file = getValue(kwargs, "file_error", "")
     def __str__(self):
-        return "%s, Line %s:\n%s\nFile: %s" % (self.code, self.line, self.message, self.file)
+        return "%s, Line %s:\n%s" % (self.code, self.line, self.message)
 
 
 class Obj:

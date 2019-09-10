@@ -1,6 +1,7 @@
 from .utils import getValue
 import requests
 import datetime
+import shutil
 import random
 import time
 import json
@@ -24,6 +25,9 @@ class BotWrapper(object):
     from social_ethosa.botwrapper import BotWrapper
 
     botWrapper = BotWrapper()
+
+    print(botWrapper.randomDate())
+    print("chance is %s" % botWrapper.randomChance())
     """
 
     def __init__(self):
@@ -53,20 +57,28 @@ class BotWrapper(object):
         return random.choice(["Да", "Нет"])
 
     def textReverse(self, text):
+        # привет -> тевирп
+        self.count_use += 1
         return text[::-1]
 
     def space(self, text):
+        # привет -> п р и в е т
+        self.count_use += 1
         return ' '.join(list(text))
 
     def translit(self, text):
+        # ghbdtn -> привет
+        self.count_use += 1
         return ''.join([self.rus_eng[i] if i in self.rus_eng else self.eng_rus[i] if i in self.eng_rus else i for i in text])
 
-    def delirium(self):
-        resp = requests.get("https://fish-text.ru/get?type=sentence&number=1&format=json")
+    def delirium(self, number=1):
+        self.count_use += 1
+        resp = requests.get("https://fish-text.ru/get?type=sentence&number=%s&format=json" % number)
         resp.encoding = resp.apparent_encoding
         return json.loads(resp.text)['text']
 
     def calc(self, text):
+        self.count_use += 1
         text = text.replace("^", "**") # ''.join(i for i in text if i in self.validate_for_calc)
         glb = {
             "pi" : math.pi,
@@ -92,10 +104,13 @@ class BotWrapper(object):
             "arccosh" : math.acosh,
             "arcsinh" : math.asinh,
             "arctanh" : math.atanh,
+            'print' : lambda *args: " ".join(args),
+            'exit' : lambda *args: " ".join(args)
         }
         return eval(text, glb, {})
 
     def casino(self):
+        self.count_use += 1
         one = random.choice(self.smiles)
         two = random.choice(self.smiles)
         three = random.choice(self.smiles)
@@ -109,7 +124,20 @@ class BotWrapper(object):
 
 class User:
     def __init__(self, *args, **kwargs):
-        self.obj = kwargs
+        self._obj = kwargs
+
+    @property
+    def obj(self):
+        return self._obj
+
+    @obj.getter
+    def obj(self):
+        lst = dir(self)
+        for i in lst:
+            if i in self._obj:
+                self._obj[i] = eval("self.%s" % i)
+        return self._obj
+    
 
     def isMoneyMoreThenZero(self):
         return self.obj['money'] > 0
@@ -121,25 +149,29 @@ class User:
         self.obj['money'] += amount
 
     def __getattr__(self, attribute):
-        return getValue(self.obj, attribute)
+        value = getValue(self.obj, attribute)
+        exec("self.%s = %s" % (attribute, value))
+        return eval("self.%s" % attribute)
         
 
 class BotBase:
     def __init__(self, *args):
-        self.path = args[0] if args else None
+        self.path = args[0] if args else "users"
         self.users = []
+        self.pattern = lambda **kwargs: {
+            "uid" : getValue(kwargs, "uid", 1),
+            "name" : getValue(kwargs, "name", "Пользователь"),
+            "money" : getValue(kwargs, "money", 0),
+            "role" : getValue(kwargs, "role", "user"),
+            "status" : getValue(kwargs, "status", "")
+        }
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 
-    def addNewUser(self, user_id, name='Пользователь', role='user', status=""):
-        user = {
-            "id" : user_id,
-            "name" : name,
-            "money" : 0,
-            "role" : role,
-            "status" : status
-        }
-        with open("%s/%s.json" % (self.path, user_id), 'w', encoding='utf-8') as f:
+    def addNewUser(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
+        user = self.pattern(uid=uid, name=name, role=role, status=status, money=money, **kwargs)
+
+        with open("%s/%s.json" % (self.path, uid), 'w', encoding='utf-8') as f:
             f.write(json.dumps(user))
 
         self.users.append(User(**user))
@@ -159,22 +191,52 @@ class BotBase:
             self.users[i].obj[key] = defult_value
 
     def saveUser(self, user):
-        with open("%s/%s.json" % (self.path, user.obj["id"]), 'w', encoding='utf-8') as f:
+        with open("%s/%s.json" % (self.path, user.obj["uid"]), 'w', encoding='utf-8') as f:
             f.write(json.dumps(user.obj))
 
     def loadUser(self, user_id):
         with open("%s/%s.json" % (self.path, user_id), 'r', encoding='utf-8') as f:
             user =  json.loads(f.read())
+
+        self.users.append(User(**user))
+
         return User(**user)
 
     def notInBD(self, user_id):
         return not os.path.exists("%s/%s.json" % (self.path, user_id))
 
-    def autoInstallUser(self, user_id, vk):
-        if user_id > 0:
-            if self.notInBD(user_id):
-                name = vk.users.get(user_ids=user_id)['response'][0]["first_name"]
-                return self.addNewUser(user_id, name=name)
+    def autoInstallUser(self, uid, vk, **kwargs):
+        if uid > 0:
+            if self.notInBD(uid):
+                name = vk.users.get(user_ids=uid)['response'][0]["first_name"]
+                return self.addNewUser(uid=uid, name=name, **kwargs)
             else:
-                return self.loadUser(user_id)
+                return self.loadUser(uid)
                 
+    def clearPattern(self):
+        self.pattern = lambda **kwargs: {
+            "uid" : getValue(kwargs, "uid", 0)
+        }
+
+    def setPattern(self, pattern):
+        self.pattern = lambda **kwargs: {
+            i : getValue(kwargs, i, pattern[i]) for i in pattern
+        }
+
+    def addPattern(self, key, defult_value):
+        current_pattern = self.pattern()
+        current_pattern[key] = defult_value
+        self.pattern = lambda **kwargs: {
+            i : getValue(kwargs, i, current_pattern[i]) for i in current_pattern
+        }
+
+    def makeBackupCopy(self, directory):
+        if not os.path.exists(directory):
+            os.mkdir(directory)
+
+        old_path = self.path
+        new_path = directory
+
+        for user in os.listdir(old_path):
+            current_path = "%s/%s" % (old_path, user)
+            shutil.copy(current_path, "%s/%s" % (new_path, user), follow_symlinks=True)
