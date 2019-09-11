@@ -1,6 +1,7 @@
 from .utils import getValue
 import requests
 import datetime
+import pickle
 import shutil
 import random
 import time
@@ -37,12 +38,7 @@ class BotWrapper(object):
         self.rus = list('''ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,йцукенгшщзхъфывапролджэячсмитьбю.?''')
         self.eng_rus = {self.eng[i] : self.rus[i] for i in range(len(self.rus))}
         self.rus_eng = {self.rus[i] : self.eng[i] for i in range(len(self.rus))}
-        self.smiles = [
-            "&#127815;",
-            "&#127821;",
-            "&#127826;",
-            "&#127827;"
-        ]
+        self.smiles = ["&#127815;", "&#127821;", "&#127826;", "&#127827;"]
 
     def randomDate(self):
         self.count_use += 1
@@ -81,30 +77,18 @@ class BotWrapper(object):
         self.count_use += 1
         text = text.replace("^", "**") # ''.join(i for i in text if i in self.validate_for_calc)
         glb = {
-            "pi" : math.pi,
-            "e" : math.e,
-            "sin" : math.sin,
-            "cos" : math.cos,
-            "factorial" : math.factorial,
-            "ceil" : math.ceil,
-            "floor" : math.floor,
-            "floor" : math.floor,
-            "pow" : math.pow,
-            "log" : math.log,
-            "sqrt" : math.sqrt,
-            "tan" : math.tan,
-            "arccos" : math.acos,
-            "arcsin" : math.asin,
-            "arctan" : math.atan,
-            "degrees" : math.degrees,
-            "radians" : math.radians,
-            "sinh" : math.sinh,
-            "cosh" : math.cosh,
-            "tanh" : math.tanh,
-            "arccosh" : math.acosh,
-            "arcsinh" : math.asinh,
-            "arctanh" : math.atanh,
-            'print' : lambda *args: " ".join(args),
+            "pi" : math.pi, "e" : math.e,
+            "sin" : math.sin, "cos" : math.cos,
+            "factorial" : math.factorial, "ceil" : math.ceil,
+            "floor" : math.floor, "floor" : math.floor,
+            "pow" : math.pow, "log" : math.log,
+            "sqrt" : math.sqrt, "tan" : math.tan,
+            "arccos" : math.acos, "arcsin" : math.asin,
+            "arctan" : math.atan, "degrees" : math.degrees,
+            "radians" : math.radians, "sinh" : math.sinh,
+            "cosh" : math.cosh, "tanh" : math.tanh,
+            "arccosh" : math.acosh, "arcsinh" : math.asinh,
+            "arctanh" : math.atanh, 'print' : lambda *args: " ".join(args),
             'exit' : lambda *args: " ".join(args)
         }
         return eval(text, glb, {})
@@ -150,7 +134,7 @@ class User:
 
     def __getattr__(self, attribute):
         value = getValue(self.obj, attribute)
-        exec("self.%s = %s" % (attribute, value))
+        exec("self.%s = %s%s%s" % (attribute, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
         return eval("self.%s" % attribute)
         
 
@@ -165,13 +149,14 @@ class BotBase:
             "role" : getValue(kwargs, "role", "user"),
             "status" : getValue(kwargs, "status", "")
         }
+        self.postfix = args[1] if len(args) > 1 else "json"
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 
     def addNewUser(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
         user = self.pattern(uid=uid, name=name, role=role, status=status, money=money, **kwargs)
 
-        with open("%s/%s.json" % (self.path, uid), 'w', encoding='utf-8') as f:
+        with open("%s/%s.%s" % (self.path, uid, self.postfix), 'w', encoding='utf-8') as f:
             f.write(json.dumps(user))
 
         self.users.append(User(**user))
@@ -191,19 +176,19 @@ class BotBase:
             self.users[i].obj[key] = defult_value
 
     def saveUser(self, user):
-        with open("%s/%s.json" % (self.path, user.obj["uid"]), 'w', encoding='utf-8') as f:
+        with open("%s/%s.%s" % (self.path, user.obj["uid"], self.postfix), 'w', encoding='utf-8') as f:
             f.write(json.dumps(user.obj))
 
     def loadUser(self, user_id):
-        with open("%s/%s.json" % (self.path, user_id), 'r', encoding='utf-8') as f:
+        with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'r', encoding='utf-8') as f:
             user =  json.loads(f.read())
 
         self.users.append(User(**user))
 
-        return User(**user)
+        return self.users[len(self.users)-1]
 
     def notInBD(self, user_id):
-        return not os.path.exists("%s/%s.json" % (self.path, user_id))
+        return not os.path.exists("%s/%s.%s" % (self.path, user_id, self.postfix))
 
     def autoInstallUser(self, uid, vk, **kwargs):
         if uid > 0:
@@ -240,3 +225,78 @@ class BotBase:
         for user in os.listdir(old_path):
             current_path = "%s/%s" % (old_path, user)
             shutil.copy(current_path, "%s/%s" % (new_path, user), follow_symlinks=True)
+
+    def getUsersByKeys(self, *args):
+        allUsers = [self.loadUser(i[:-len(self.postfix)]).obj for i in os.listdir(self.path)]
+
+        args = [i for i in args]
+        args.append("uid")
+
+        return [{
+            key : user[key] for key in args
+        } for user in allUsers]
+
+
+class BetterUser:
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+        for key in kwargs:
+            value = kwargs[key]
+            exec("self.%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
+
+    def __str__(self):
+        return "%s" % {key : eval("self.%s" % key, {}, {"self" : self}) for key in self.kwargs}
+
+
+class BetterBotBase(BotBase):
+    """
+    docstring for BetterBotBase
+    """
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.postfix = args[1] if len(args) > 1 else "dat"
+
+    def addNewUser(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
+        user = self.pattern(uid=uid, name=name, role=role, status=status, money=money, **kwargs)
+
+        with open("%s/%s.%s" % (self.path, uid, self.postfix), 'wb') as f:
+            pickle.dump(BetterUser(**user), f)
+
+        self.users.append(BetterUser(**user))
+
+        return self.users[len(self.users)-1]
+
+    def addNewValue(self, key, defult_value=0):
+        for user in os.listdir(self.path):
+            current = self.loadUser(user[:-len(self.postfix)-1])
+            value = defult_value
+            exec("current.%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
+            current.kwargs[key] = defult_value
+            self.saveUser(current)
+
+        for i in range(len(self.users)):
+            value = defult_value
+            exec("self.users[i].%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
+            self.users[i].kwargs[key] = defult_value
+
+    def saveUser(self, user):
+        with open("%s/%s.%s" % (self.path, user.uid, self.postfix), 'wb') as f:
+            pickle.dump(user, f)
+
+    def loadUser(self, user_id):
+        with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'rb') as f:
+            user =  pickle.load(f)
+
+        self.users.append(user)
+
+        return self.users[len(self.users)-1]
+
+    def getUsersByKeys(self, *args):
+        allUsers = [self.loadUser(i[:-len(self.postfix)-1]) for i in os.listdir(self.path)]
+
+        args = [i for i in args]
+        args.append("uid")
+
+        return [{
+            key : eval("user.%s" % key) for key in args
+        } for user in allUsers]

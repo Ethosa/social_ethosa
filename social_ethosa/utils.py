@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import requests
 import inspect
 import timeit
@@ -10,6 +11,9 @@ def timeIt(function, count=1):
         setup = "def" + inspect.getsource(function).split('def', 1)[1]
         return min(timeit.Timer("%s()" % function.__name__, setup=setup).repeat(1, count))
     return timer
+
+def autoRun(callObject, *args, **kwargs):
+    callObject(*args, **kwargs)
 
 def printf(a, b=""):
     sys.stdout.write("%s\n" % (a % b if b else a))

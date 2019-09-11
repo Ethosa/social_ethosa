@@ -54,7 +54,7 @@ class Vk:
         self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = getValue(kwargs, "group_id") # can be string or integer
         self.lang = getValue(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.63"
+        self.verison = "0.1.65"
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
