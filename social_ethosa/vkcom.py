@@ -4,7 +4,6 @@ from threading import Thread
 from .utils import *
 requests.packages.urllib3.disable_warnings()
 from .vkaudio import *
-from .smiles import *
 import traceback
 import datetime
 import random

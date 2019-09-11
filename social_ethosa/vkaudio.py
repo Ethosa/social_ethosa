@@ -1,8 +1,8 @@
 from .utils import *
 try: import lxml.html
-except: print('Error in lxml module. Audio methods not working.')
+except: sys.stdout.write('It just wraning:\nError in lxml module. Audio methods not working.\n')
 
-class VkAudio:
+class Audio:
 
     """
     docstring for VkAudio
