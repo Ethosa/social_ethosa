@@ -65,7 +65,7 @@ class Audio:
                         'data-audio' : self.parse(current_data_audio)
                     })
 
-        return audios[offset:] if not count else audios[offset:count]
+        return audios[offset:] if not count else audios[offset:count+offset]
         
 
     def getCount(self, owner_id=None, *args, **kwargs):

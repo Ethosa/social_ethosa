@@ -1,4 +1,5 @@
 from .utils import getValue
+from operator import itemgetter, attrgetter
 import requests
 import datetime
 import pickle
@@ -8,6 +9,7 @@ import time
 import json
 import math
 import os
+import re
 
 def strTimeProp(start, end, format, prop):
     stime = time.mktime(time.strptime(start, format))
@@ -94,6 +96,8 @@ class BotWrapper(object):
         return eval(text, glb, {})
 
     def casino(self):
+        # It method return tuple, example:
+        # ("smiles here", 1.5)
         self.count_use += 1
         one = random.choice(self.smiles)
         two = random.choice(self.smiles)
@@ -104,6 +108,27 @@ class BotWrapper(object):
         elif one == two or two == three or one == three:
             koef = 1.5
         return ("%s%s%s" % (one, two, three), koef)
+
+    def checkAttribute(self, text, attribute, user):
+        return text.replace("<%s>" % attribute, "%s" % eval("user.%s" % attribute))
+
+    def answerPattern(self, text, user):
+        # param text must be string, example: Hello, <name>
+        # param user must be User or BetterUser
+        # answerPattern return string, example:
+        # input: Hello, <name>, your money is <money>
+        # output: Hello, Username, your money is 1000
+        for attr in user.obj:
+            text = self.checkAttribute(text, attr, user)
+
+        setter = re.split(r"[\[\]]", text, maxsplit=1)
+        while setter and ("[" in text or "]" in text):
+            exec(setter[len(setter)-1][:-1].strip(), globals(), locals())
+            text = text.replace("[%s" % setter[len(setter)-1], "").strip()
+            setter = re.split(r"[\[\]]", text, maxsplit=1)
+
+        return text
+
 
 
 class User:
@@ -139,6 +164,17 @@ class User:
         
 
 class BotBase:
+    """
+    doctsring for BotBase
+    You can use it how BD:
+    bs = BotBase("Users folder", "json")
+    bs.addPattern("key", "value") # Here you add a new pattern to all new users
+
+    user = bs.addNewUser(1, name="Ethosa", role="Admin", status="Hello kitti")
+    print(user) # {"name" : "Ethosa", "key" : "value", "role" : "Admin",
+                    "status" : "Hello kitti", "money" : 0, "uid" : 1}
+
+    """
     def __init__(self, *args):
         self.path = args[0] if args else "users"
         self.users = []
@@ -178,6 +214,10 @@ class BotBase:
     def saveUser(self, user):
         with open("%s/%s.%s" % (self.path, user.obj["uid"], self.postfix), 'w', encoding='utf-8') as f:
             f.write(json.dumps(user.obj))
+
+    def saveUsers(self, *users):
+        for user in users:
+            self.saveUser(user)
 
     def loadUser(self, user_id):
         with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'r', encoding='utf-8') as f:
@@ -227,7 +267,7 @@ class BotBase:
             shutil.copy(current_path, "%s/%s" % (new_path, user), follow_symlinks=True)
 
     def getUsersByKeys(self, *args):
-        allUsers = [self.loadUser(i[:-len(self.postfix)]).obj for i in os.listdir(self.path)]
+        allUsers = [self.loadUser(i[:-len(self.postfix)-1]).obj for i in os.listdir(self.path)]
 
         args = [i for i in args]
         args.append("uid")
@@ -236,16 +276,26 @@ class BotBase:
             key : user[key] for key in args
         } for user in allUsers]
 
+    def getSortedUsersByKey(self, key, count=None, offset=0, sortType="1-9", formatting=False, otherKeys=[]):
+        sortedUsers = sorted(self.getUsersByKeys(key, "name", *otherKeys), key=itemgetter(key), reverse=True if sortType == "1-9" else False if sortType == "9-1" else True)
+        if formatting:
+            for user in sortedUsers:
+                user["formatted"] = "[id%s|%s]" % (user["uid"], user["name"])
+        if count:
+            return sortedUsers[offset:count+offset]
+        else:
+            return sortedUsers[offset:]
+
 
 class BetterUser:
     def __init__(self, **kwargs):
-        self.kwargs = kwargs
+        self.obj = kwargs
         for key in kwargs:
             value = kwargs[key]
             exec("self.%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
 
     def __str__(self):
-        return "%s" % {key : eval("self.%s" % key, {}, {"self" : self}) for key in self.kwargs}
+        return "%s" % {key : eval("self.%s" % key, {}, {"self" : self}) for key in self.obj}
 
 
 class BetterBotBase(BotBase):
@@ -298,5 +348,5 @@ class BetterBotBase(BotBase):
         args.append("uid")
 
         return [{
-            key : eval("user.%s" % key) for key in args
+            key : eval("user.%s" % key, {"user" : user}) for key in args
         } for user in allUsers]

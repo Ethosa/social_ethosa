@@ -28,7 +28,7 @@ class Vk:
     for handling new messages:
     In the official VK API documentation, the event of a new message is called "message_new", so use:
 
-    @on_message_new
+    @vk.on_message_new
     def get_new_message(obj):
         print(obj)
         print('text message:', obj.text) # see https://vk.com/dev/objects/message for more info
@@ -53,7 +53,8 @@ class Vk:
         self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = getValue(kwargs, "group_id") # can be string or integer
         self.lang = getValue(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.65"
+        self.verison = "0.1.67"
+        self.errors_parsed = 0.0
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
@@ -89,6 +90,7 @@ class Vk:
     # return object with variables:
     # object.message, object.line, object.code
     def on_error(self, function):
+        self.errors_parsed = 1.0
         def parse_error():
             while True:
                 for error in self.longpoll.errors:
@@ -113,11 +115,14 @@ class Vk:
                 e = 0
             for event in self.longpoll.listen():
                 if event.update[e] == type_value:
-                    try: function(class_wrapper(event.update))
-                    except Exception as error_msg:
-                        exc_type, exc_obj, exc_tb = sys.exc_info()
-                        line = traceback.extract_tb(exc_tb)[-1][1]
-                        self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
+                    if self.errors_parsed:
+                        try: function(class_wrapper(event.update))
+                        except Exception as error_msg:
+                            exc_type, exc_obj, exc_tb = sys.exc_info()
+                            line = traceback.extract_tb(exc_tb)[-1][1]
+                            self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
+                    else:
+                        function(class_wrapper(event.update))
         Thread_VK(listen).start()
 
     def getRandomId(self):
@@ -145,9 +150,7 @@ class LongPoll:
     '''
     docstring for LongPoll
 
-    use it for longpolling
-
-    example use:
+    usage:
     longpoll = LongPoll(access_token='your_access_token123')
     for event in longpoll.listen():
         print(event)
