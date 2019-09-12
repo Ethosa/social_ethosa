@@ -25,7 +25,7 @@ def get_message(obj):
 
 @vk.on_error # errors handler
 def get_error(error):
-  print(error.msg) # Example: No module named 'aa'
+  print(error.message) # Example: No module named 'aa'
   print(error.line) # Example: 1
   print(error.code) # Example: ModuleNotFoundError
   
@@ -39,14 +39,6 @@ print(vk.help('messages'))
 print()
 print(vk.help('messages.send'))
 ```
-
-You can also use Smile to get smiley codes!
-```python
-print(Smile('Улыбка'))
-print(Smile('Красная книга'))
-print(Smile().smiles) # it return ALL SMILEY CODES!
-```
-
 
 Example audio message:
 ```python
@@ -89,7 +81,7 @@ from social_ethosa.vkcom import *
 login = '71234567890'
 password = 'hi_i_passowrd'
 
-audio = VkAudio(login=login, password=password, debug=True, lang='ru')
+audio = Audio(login=login, password=password, debug=True, lang='ru')
 
 print(audio.get()) # return your audios
 print(audio.get(123)) # return audios of user with id 123
