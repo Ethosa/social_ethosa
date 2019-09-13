@@ -286,6 +286,18 @@ class BotBase:
         else:
             return sortedUsers[offset:]
 
+    def calcMiddleValueByKey(self, key, otherKeys=[], roundInt=0, returnUsers=False):
+        users = self.getUsersByKeys(key, "name", *otherKeys)
+        a = sum([user[key] if type(user[key]) == int else len(user[key]) for user in users])/len(users)
+        if not returnUsers:
+            users = None
+        if not roundInt:
+            return {"amount" : a, "users" : users}
+        elif roundInt > 0:
+            return {"amount" : math.ceil(a), "users" : users}
+        elif roundInt < 0:
+            return {"amount" : math.floor(a), "users" : users}
+
 
 class BetterUser:
     def __init__(self, **kwargs):
