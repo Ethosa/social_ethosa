@@ -53,7 +53,7 @@ class Vk:
         self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = getValue(kwargs, "group_id") # can be string or integer
         self.lang = getValue(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.68"
+        self.verison = "0.1.7"
         self.errors_parsed = 0.0
 
         # Initialize methods
