@@ -42,9 +42,9 @@ class BotWrapper(object):
         self.rus_eng = {self.rus[i] : self.eng[i] for i in range(len(self.rus))}
         self.smiles = ["&#127815;", "&#127821;", "&#127826;", "&#127827;"]
 
-    def randomDate(self):
+    def randomDate(self, fromYear="2001", toYear="3001"):
         self.count_use += 1
-        return randomDate("01.01.2001 00:00:00", "01.01.3001 00:00:00", random.random())
+        return randomDate("01.01.%s 00:00:00", "01.01.%s 00:00:00" % (fromYear, toYear), random.random())
 
     def randomChance(self):
         self.count_use += 1

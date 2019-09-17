@@ -40,7 +40,7 @@ class Audio:
         response = self.session.post(form.action, data=form.form_values())
         if self.debug: print(self.translate('Успешно!' if 'onLoginDone' in response.text else 'Ошибка', self.lang))
         if 'onLoginDone' in response.text:
-            url = f'''https://vk.com{response.text.split('onLoginDone(', 1)[1].split("'")[1]}'''
+            url = 'https://vk.com%s' % response.text.split('onLoginDone(', 1)[1].split("'")[1]
 
             self.user_id = self.session.get(url, headers=self.headers).text.split('<a id="profile_photo_link"', 1)[1].split('/photo', 1)[1].split('_', 1)[0]
 
@@ -50,7 +50,7 @@ class Audio:
         # get() method return list of dictionaries with audios
 
         owner_id = owner_id if owner_id else self.user_id
-        url = f'https://vk.com/audios{owner_id}'
+        url = 'https://vk.com/audios%s' % owner_id
 
         response = self.session.get(url, headers=self.headers).text.split('<div class="audio_page__audio_rows_list _audio_page__audio_rows_list _audio_pl audio_w_covers "', 1)[1].split('</div></div><div class="audio_', 1)[0].replace('&amp;', '&').replace('&quot;', '"').split('<div')
         response.pop(0)
@@ -73,9 +73,9 @@ class Audio:
 
     def getById(self, audio_id, owner_id=None, *args, **kwargs):
         owner_id = owner_id if owner_id else self.user_id
-        url = f'https://m.vk.com/audio{owner_id}_{audio_id}'
+        url = 'https://m.vk.com/audio%s_%s' % (owner_id, audio_id)
 
-        response = self.session.get(url, headers=self.headers).text.split(f'<div id="audio{owner_id_}{audio_id}')[1].split('<div class="ai_controls">', 1)[0].replace('&quot;', '"')
+        response = self.session.get(url, headers=self.headers).text.split('<div id="audio%s_%s' % (owner_id, audio_id))[1].split('<div class="ai_controls">', 1)[0].replace('&quot;', '"')
 
         audio_url = response.split('<input type="hidden" value="', 1)[1].split('">', 1)[0]
         data_audio = json.loads(response.split('data-ads="', 1)[1].split('"  class="', 1)[0])
@@ -110,7 +110,7 @@ class Audio:
         allArtists = [{ artist.split('OwnerRow__title">')[1].split('<', 1)[0] : artist.split('href="', 1)[1].split('"', 1)[0] }
                         for artist in artists]
 
-        url = f'''https://m.vk.com{response.split('AudioBlock AudioBlock_audios Pad', 1)[1].split("Pad__corner al_empty", 1)[1].split('href="', 1)[1].split('"', 1)[0]}'''
+        url = "https://m.vk.com%s" % response.split('AudioBlock AudioBlock_audios Pad', 1)[1].split("Pad__corner al_empty", 1)[1].split('href="', 1)[1].split('"', 1)[0]
         response = self.session.get(url, headers=self.headers).text
 
         audios = response.split('artist_page_search_items">', 1)[1].split('</div></div></div></div>')[0].split('<div id="audio')

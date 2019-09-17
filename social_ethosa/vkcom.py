@@ -53,12 +53,13 @@ class Vk:
         self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = getValue(kwargs, "group_id") # can be string or integer
         self.lang = getValue(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.7"
+        self.verison = "0.1.71"
         self.errors_parsed = 0.0
 
         # Initialize methods
         self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
         self.method = Method(access_token=self.token_vk, version_api=self.version_api).use
+        self.fastMethod = Method(access_token=self.token_vk, version_api=self.version_api).fuse
         self.help = Help
 
         # Other variables:
@@ -203,7 +204,14 @@ class Method:
         self.version_api = getValue(kwargs, "version_api", '5.101')
         self.method = getValue(kwargs, "method", '')
 
-    def use(self, method, *args, **kwargs):
+    def use(self, method, **kwargs):
+        url = "https://api.vk.com/method/%s" % method
+        kwargs['access_token'] = self.access_token
+        kwargs['v'] = self.version_api
+        response = requests.post(url, data=kwargs).json()
+        return response
+
+    def fuse(self, method, **kwargs):
         url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
@@ -326,11 +334,13 @@ class Event:
 
 
 class Thread_VK(Thread):
-    def __init__(self, function):
+    def __init__(self, function, *args, **kwargs):
         Thread.__init__(self)
         self.function = function
+        self.args = args
+        self.kwargs = kwargs
     def run(self):
-        self.function()
+        self.function(*self.args, **self.kwargs)
 
 
 class ButtonColor:
@@ -355,8 +365,8 @@ class Obj:
         self.obj = obj
         if type(self.obj) == dict:
             self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
-    def has(self, key):
-        return key in self.obj
+    def __str__(self, key):
+        return "%s" % self.obj
     def __getattr__(self, attribute):
         val = getValue(self.obj, attribute)
         return val if val else getValue(self.obj['object'], attribute)
@@ -383,12 +393,12 @@ class Help:
             return self.__getattr__(self, args[0])
     def __getattr__(self, method):
         if '.' not in method:
-            resp = requests.get(f'https://vk.com/dev/{method}').text
+            resp = requests.get('https://vk.com/dev/%s' % method).text
             response = resp.split('<span class="dev_methods_list_span">')
             response = [i.split('</span>', 1)[0] for i in response if len(i.split('</span>', 1)[0]) <= 35]
             return response
         else:
-            response = requests.get(f'https://vk.com/dev/{method}').text.split('<table class="dev_params_table">')[1].split('</table>')[0]
+            response = requests.get('https://vk.com/dev/%s' % method).text.split('<table class="dev_params_table">')[1].split('</table>')[0]
 
             params = { i.split('<td')[1].split('>')[1].split('</td')[0] : i.split('<td')[2].split('>', 1)[1].split('</td')[0] for i in response.split('<tr') if len(i) > 2 }
 
@@ -396,5 +406,5 @@ class Help:
                 params[i] = params[i].replace('\n', ' ').replace('&lt;', '{').replace('&gt;', '}')
                 while '<' in params[i]:
                     pos = [params[i].find('<'), params[i].find('>')]
-                    params[i] = f'{params[i][:pos[0]]}{params[i][pos[1]+1:]}'
+                    params[i] = "%s%s" % (params[i][:pos[0]], params[i][pos[1]+1:])
             return params
