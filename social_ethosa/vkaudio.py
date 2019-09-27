@@ -1,6 +1,10 @@
 from .utils import *
-try: import lxml.html
-except: sys.stdout.write('It just wraning:\nError in lxml module. Audio methods not working.\n')
+try:
+    import lxml.html
+except:
+    sys.stdout.write(
+        TranslatorDebug().translate('Это просто предупреждение. Аудио методы не будут поддерживаться на вашей платформе.', "en")
+    )
 
 class Audio:
 
@@ -8,7 +12,9 @@ class Audio:
     docstring for VkAudio
 
     usage:
-    audio = VkAudio(login='Your login', password='Your password')
+    audio = Audio(login='Your login', password='Your password')
+
+    printf(audio.get())
 
     """
 
@@ -38,7 +44,7 @@ class Audio:
         form.fields['pass'] = self.password
 
         response = self.session.post(form.action, data=form.form_values())
-        if self.debug: print(self.translate('Успешно!' if 'onLoginDone' in response.text else 'Ошибка', self.lang))
+        if self.debug: print(self.translate(u'Успешно!' if 'onLoginDone' in response.text else u'Ошибка', self.lang))
         if 'onLoginDone' in response.text:
             url = 'https://vk.com%s' % response.text.split('onLoginDone(', 1)[1].split("'")[1]
 

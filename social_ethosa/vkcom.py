@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from threading import Thread
 from .utils import *
 requests.packages.urllib3.disable_warnings()
 from .vkaudio import *
@@ -29,7 +28,7 @@ class Vk:
     In the official VK API documentation, the event of a new message is called "message_new", so use:
 
     @vk.on_message_new
-    def get_new_message(obj):
+    def getMessage(obj):
         print(obj)
         print('text message:', obj.text) # see https://vk.com/dev/objects/message for more info
         print(obj.obj)
@@ -53,7 +52,7 @@ class Vk:
         self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = getValue(kwargs, "group_id") # can be string or integer
         self.lang = getValue(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.71"
+        self.verison = "0.1.8"
         self.errors_parsed = 0.0
 
         # Initialize methods
@@ -63,7 +62,7 @@ class Vk:
         self.help = Help
 
         # Other variables:
-        self.translate = Translator_debug().translate
+        self.translate = TranslatorDebug().translate
         self.vk_api_url = "https://api.vk.com/method/"
 
         if self.token_vk:
@@ -90,14 +89,14 @@ class Vk:
     # Hander longpolls errors:
     # return object with variables:
     # object.message, object.line, object.code
-    def on_error(self, function):
+    def onError(self, function):
         self.errors_parsed = 1.0
-        def parse_error():
+        def parseError():
             while True:
                 for error in self.longpoll.errors:
                     function(error)
                     self.longpoll.errors.remove(error)
-        Thread_VK(parse_error).start()
+        Thread_VK(parseError).start()
 
     def getUserHandlers(self):
         # return ALL user handlers
@@ -110,31 +109,45 @@ class Vk:
     # @a
     # def get_mess(obj):
     #   print(obj.text)
-    def listen_wrapper(self, type_value, class_wrapper, function, user=False, e="type"):
+    def listenWrapper(self, type_value, classWrapper, function, user=False, e="type"):
         def listen(e=e):
-            if type(type_value) == int:
-                e = 0
+            if type(type_value) == int: e = 0
             for event in self.longpoll.listen():
                 if event.update[e] == type_value:
                     if self.errors_parsed:
-                        try: function(class_wrapper(event.update))
+                        try: function(classWrapper(event.update))
                         except Exception as error_msg:
                             exc_type, exc_obj, exc_tb = sys.exc_info()
                             line = traceback.extract_tb(exc_tb)[-1][1]
                             self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
                     else:
-                        function(class_wrapper(event.update))
+                        function(classWrapper(event.update))
         Thread_VK(listen).start()
 
-    def getRandomId(self):
-        return random.randint(-2**37-1, 2**37-1)
+    def getRandomId(self): return random.randint(-2**37-1, 2**37-1)
+
+    def createExampleScript(self, name="testScript"):
+        with open("%s.py" % name, "w") as f:
+            f.write("""from social_ethosa import * # import library ..
+TOKEN = "your token here"
+GROUP_ID = "id of your group"
+
+vk = Vk(token=TOKEN, group_id=GROUP_ID, debug=1, lang="en") # auth in
+
+@vk.on_message_new # get all new messages
+def newMessage(obj):
+    print(obj.peer_id)
+    vk.messages.send(message="Hello world", peer_id=peer_id,
+                    random_id=vk.getRandomId())
+""")
+        sys.stdout.write(self.translate("В директории с текущим скриптом создан скрипт-пример использования библиотеки", self.lang))
 
     def __getattr__(self, method):
         if method.startswith("on_"):
             if method[3:] not in users_event.keys():
-                return lambda function: self.listen_wrapper(method[3:], Obj, function)
+                return lambda function: self.listenWrapper(method[3:], Obj, function)
             else:
-                return lambda function: self.listen_wrapper(users_event[method[3:]], Obj, function)
+                return lambda function: self.listenWrapper(users_event[method[3:]], Obj, function)
         else: return Method(access_token=self.token_vk, version_api=self.version_api, method=method)
 
     def __str__(self):
@@ -167,7 +180,8 @@ class LongPoll:
     def listen(self):
         if self.group_id:
             response = requests.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
-                                    (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()['response']
+                                    (self.vk_api_url, self.access_token, self.version_api,
+                                        self.group_id)).json()['response']
             self.ts = response['ts']
             self.key = response['key']
             self.server = response['server']
@@ -179,6 +193,13 @@ class LongPoll:
 
                 if updates:
                     for update in updates: yield Event(update)
+                if "updates" not in response:
+                    time.sleep(random.randint(5, 15))
+                    response = requests.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
+                                            (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()['response']
+                    self.ts = response['ts']
+                    self.key = response['key']
+                    self.server = response['server']
         else:
             response = requests.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
                                     (self.vk_api_url, self.access_token, self.version_api)).json()['response']
@@ -187,16 +208,24 @@ class LongPoll:
             self.server = response["server"]
 
             while 1.0:
-                response = requests.get('https://%s?act=a_check&key=%s&ts=%s&wait=25&mode=202&version=3' % (self.server, self.key, self.ts)).json()
+                response = requests.get('https://%s?act=a_check&key=%s&ts=%s&wait=25&mode=202&version=3' % (self.server,
+                                        self.key, self.ts)).json()
                 self.ts = getValue(response, 'ts', self.ts)
                 updates = getValue(response, 'updates')
 
                 if updates:
                     for update in updates: yield Event(update)
+                if "updates" not in response:
+                    time.sleep(random.randint(5, 15))
+                    response = requests.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
+                                            (self.vk_api_url, self.access_token, self.version_api)).json()['response']
+                    self.ts = response["ts"]
+                    self.key = response["key"]
+                    self.server = response["server"]
 
 
 # Class for use anything vk api method
-# You can use it:
+# Usage:
 # response = vk.method(method='wall.post', message='Hello, world!')
 class Method:
     def __init__(self, *args, **kwargs):
@@ -211,7 +240,7 @@ class Method:
         response = requests.post(url, data=kwargs).json()
         return response
 
-    def fuse(self, method, **kwargs):
+    def fuse(self, method, kwargs):
         url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
@@ -219,7 +248,7 @@ class Method:
         return response
 
     def __getattr__(self, method):
-        return lambda **kwargs: self.use(method="%s.%s" % (self.method, method), **kwargs)
+        return lambda **kwargs: self.fuse("%s.%s" % (self.method, method), kwargs)
 
 from .uploader import *
 
@@ -231,14 +260,14 @@ class Keyboard:
     use it for add keyboard in message
 
     keyboard = Keyboard()
-    keyboard.add_button(Button(type='text', label='lol'))
-    keyboard.add_line()
-    keyboard.add_button(Button(type='text', label='hello', color=ButtonColor.POSITIVE))
-    keyboard.add_button(Button(type='text', label='world', color=ButtonColor.NEGATIVE))
+    keyboard.addButton(Button(type='text', label='lol'))
+    keyboard.addLine()
+    keyboard.addButton(Button(type='text', label='hello', color=ButtonColor.POSITIVE))
+    keyboard.addButton(Button(type='text', label='world', color=ButtonColor.NEGATIVE))
     # types "location", "vkpay", "vkapps" can't got colors. also this types places on all width line.
-    keyboard.add_button(Button(type='location''))
-    keyboard.add_button(Button(type='vkapps'', label='hello, world!'))
-    keyboard.add_button(Button(type='vkpay''))
+    keyboard.addButton(Button(type='location''))
+    keyboard.addButton(Button(type='vkapps'', label='hello, world!'))
+    keyboard.addButton(Button(type='vkpay''))
     """
 
     def __init__(self, *args, **kwargs):
@@ -262,8 +291,10 @@ class Keyboard:
             if len(self.keyboard['buttons']) < 10:
                 self.addButton(button)
 
-    def compile(self):
-        return json.dumps(self.keyboard)
+    def compile(self): return json.dumps(self.keyboard)
+
+    def createAndPlaceButton(self, *args, **kwargs):
+        self.addButton(Button(*args, **kwargs))
 
     def visualize(self):
         for line in self.keyboard["buttons"]:
@@ -316,31 +347,31 @@ class Button:
         self.action = getValue(actions, kwargs['type'], actions['text'])
         self.color = getValue(kwargs, 'color', ButtonColor.PRIMARY)
 
-    def __new__(self, *args, **kwargs):
-        self.__init__(self, *args, **kwargs)
+    def setText(self, text):
+        if getValue(self.action, "label"):
+            self.action["label"] = text
+
+    def setColor(self, color): self.color = color
+
+    def getButton(self):
         kb = { 'action' : self.action, 'color' : self.color }
         if kb['action']['type'] != 'text':
             del kb['color']
         return kb
 
+    def __new__(self, *args, **kwargs):
+        self.__init__(self, *args, **kwargs)
+        return self.getButton()
+
 
 # Enums start here:
 class Event:
-    '''docstring for Event'''
     def __init__(self, update, *args, **kwargs):
         self.update = update
     def __str__(self):
         return "%s" % self.update
-
-
-class Thread_VK(Thread):
-    def __init__(self, function, *args, **kwargs):
-        Thread.__init__(self)
-        self.function = function
-        self.args = args
-        self.kwargs = kwargs
-    def run(self):
-        self.function(*self.args, **self.kwargs)
+    def __getattr__(self, attr):
+        return self.update[attr]
 
 
 class ButtonColor:
@@ -360,7 +391,6 @@ class Error:
 
 
 class Obj:
-
     def __init__(self, obj):
         self.obj = obj
         if type(self.obj) == dict:
@@ -372,7 +402,6 @@ class Obj:
         return val if val else getValue(self.obj['object'], attribute)
 
 class Help:
-
     """
     docstring for Help
 
@@ -383,7 +412,6 @@ class Help:
 
     vk.help('messages.send') - return list of all params method
     """
-
     def __new__(self, *args, **kwargs):
         if not args:
             resp = requests.get('https://vk.com/dev/methods').text
