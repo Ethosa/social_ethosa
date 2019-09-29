@@ -1,20 +1,16 @@
 # social_ethosa
 The social ethosa library using Python.
 
-Get vk access token here:
-https://vkhost.github.io/ (choose the Kate mobile.)
+You can get a token from the user [here](https://vkhost.github.io/) (Choose Kate Mobile.)
 
-install:
-`
-pip install social-ethosa --upgrade`
+Installation: `pip install social-ethosa --upgrade`
 
-usage:
+Use:
 ```python
-from social_ethosa.vkcom import *
+from social_ethosa import *
 
 token = 'Your token here'
 
-vk = Vk(token=token) # if you want auth to user
 vk = Vk(token=Group_Access_Token, group_id='id your group') # if you want auth to group
 
 @vk.on_message_new # handler new messages
@@ -28,10 +24,9 @@ def get_error(error):
   print(error.message) # Example: No module named 'aa'
   print(error.line) # Example: 1
   print(error.code) # Example: ModuleNotFoundError
-  
 ```
 
-need help? no problem!
+Need help? No problem!
 ```python
 print(vk.help())
 print()
@@ -40,7 +35,7 @@ print()
 print(vk.help('messages.send'))
 ```
 
-Example audio message:
+Example of loading audio messages:
 ```python
 from social_ethosa.vkcom import *
 
@@ -57,7 +52,7 @@ audio_message = f'doc{response["audio_message"]["owner_id"]}_{response["audio_me
 vk.messages.send(peer_id=1234567890, message='test uploader', attachment=audio_message, random_id=random.randint(0, 1000))
 ```
 
-Example photo in message:
+Example of uploading photos to messages:
 ```python
 from social_ethosa.vkcom import *
 
@@ -74,7 +69,7 @@ photo = f'photo{response["owner_id"]}_{response["id"]}'
 vk.messages.send(peer_id=1234567890, message='test uploader', attachment=photo, random_id=random.randint(0, 1000))
 ```
 
-working with audio:
+Working with audio methods:
 ```python
 from social_ethosa.vkcom import *
 
