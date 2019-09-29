@@ -1,17 +1,21 @@
 from threading import Thread
 import requests
 import inspect
+import base64
 import timeit
+import random
 import time
 import json
 import sys
 import os
 
 def autoRun(callObject, *args, **kwargs):
+    # Decorator for auto-call object
     callObject(*args, **kwargs)
 
-def printf(a, b=""):
-    sys.stdout.write("%s\n" % (a % b if b else a))
+def printf(a, *args):
+    # faster than print
+    sys.stdout.write("%s\n" % (a % args))
 
 def downloadFileFromUrl(url, path):
     response = requests.get(url)
@@ -20,6 +24,21 @@ def downloadFileFromUrl(url, path):
             f.write(response.content)
         return True
     else: return False
+
+def getMaxPhoto(attachments):
+    files = []
+    for attachment in attachments:
+        if attachment["type"] == "photo":
+            sizes = attachment["photo"]["sizes"]
+            width = height = 0
+            url = ""
+            for size in sizes:
+                if size["width"] > width and size["height"] > height:
+                    height = size["height"]
+                    width = size["width"]
+                    url = size["url"]
+            files.append("%s.png" % from_id)
+    return files
 
 def getValue(obj, string, returned=False):
     return obj[string] if string in obj else returned
@@ -31,16 +50,29 @@ def upload_files(upload_url, file):
 
 
 users_event = {
-    "chat_name_changed" : 4,
-    "chat_photo_changed" : 4,
-    "user_message_new" : 4,
-    "chat_admin_new" : 3,
-    "chat_message_pinned" : 5,
-    "chat_message_edit" : 5,
-    "chat_user_new" : 6,
-    "chat_user_kick" : 7,
-    "chat_user_ban" : 8,
-    "chat_admin_deleted" : 9
+    "user_message_flags_replace" : [1, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
+    "user_message_flags_add" : [2, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
+    "user_message_flags_delete" : [3, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
+    "user_message_new" : [4, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
+    "user_message_edit" : [5, "message_id", "mask", "peer_id", "timestamp", "new_text", "attachments"],
+    "user_read_input_messages" : [6, "peer_id", "local_id"],
+    "user_read_out_messages" : [7, "peer_id", "local_id"],
+    "friend_online" : [8, "user_id", "extra", "timestamp"],
+    "friend_offline" : [9, "user_id", "flags", "timestamp"],
+    "user_dialog_flags_delete" : [10, "peer_id", "mask"],
+    "user_dialog_flags_replace" : [11, "peer_id", "flags"],
+    "user_dialog_flags_add" : [12, "peer_id", "mask"],
+    "delete_messages" : [13, "peer_id", "local_id"],
+    "restore_messages" : [14, "peer_id", "local_id"],
+    "chat_edt" : [51, "chat_edit", "self"],
+    "chat_info_edit" : [52, "type_id", "peer_id", "info"],
+    "user_typing_dialog" : [61, "user_id", "flags"],
+    "user_typing_chat" : [62, "user_id", "chat_id"],
+    "users_typing_chat" : [63, "user_ids", "peer_id", "total_count", "ts"],
+    "users_record_audio" : [64, "user_ids", "peer_id", "total_count", "ts"],
+    "user_was_call" : [70, "user_id", "call_id"],
+    "count_left" : [80, "count"],
+    "notification_settings_edit" : [114, "peer_id", "sound", "disable_until"]
 }
 
 class TranslatorDebug:
@@ -59,6 +91,9 @@ class TranslatorDebug:
         else: return "%s\n" % text
 
 class Thread_VK(Thread):
+    # This class is used to run callables on another thread.
+    # Use:
+    # Thread_VK(function, *args, **kwargs).start()
     def __init__(self, function, *args, **kwargs):
         Thread.__init__(self)
         self.function = function
@@ -68,6 +103,10 @@ class Thread_VK(Thread):
         return self.function(*self.args, **self.kwargs)
 
 def timeIt(count=1, libs=[], launch="thread"):
+    # Use this as a decorator to measure the execution time of a function.
+    # libs-list of libraries to be imported before speed measurement
+    # count-number of repetitions, default is 1
+    # launch option to run. default "thread"
     def timer(function):
         global Thread_VK
         a = None
@@ -82,6 +121,32 @@ def timeIt(count=1, libs=[], launch="thread"):
         elif launch == "variable":
             return "%s() - %s time" % (function.__name__, asd())
     return timer
+
+def updateLibrary(version=None):
+    if version:
+        os.system("pip install social-ethosa==%s" % version)
+    else:
+        os.system("pip install social-ethosa --upgrade")
+    
+def splitList(lst, number):
+    # This function is intended for equal division of the list, for example:
+    # splitList([1, 2, 3, 4, 5], 2) return [[1, 2], [2, 3], [5]]
+    number -= 1
+    splitted = [[]]
+    current = 0
+    count = 0
+    for i in lst:
+        if count < number:
+            splitted[current].append(i)
+            count += 1
+        else:
+            splitted[current].append(i)
+            count = 0
+            current += 1
+            splitted.append([])
+    if not splitted[len(splitted)-1]:
+        splitted.pop()
+    return splitted
 
 class Timer:
     """

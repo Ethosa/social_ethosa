@@ -29,10 +29,10 @@ class Vk:
 
     @vk.on_message_new
     def getMessage(obj):
-        print(obj)
-        print('text message:', obj.text) # see https://vk.com/dev/objects/message for more info
-        print(obj.obj)
-        print(obj.peer_id)
+        printf(obj)
+        printf('text message:', obj.text) # see https://vk.com/dev/objects/message for more info
+        printf(obj.obj)
+        printf(obj.peer_id)
 
     use any vk api method:
     vk.method(method='messages.send', message='message', peer_id=1234567890, random_id=0)
@@ -52,7 +52,6 @@ class Vk:
         self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
         self.group_id = getValue(kwargs, "group_id") # can be string or integer
         self.lang = getValue(kwargs, "lang", "en") # must be string
-        self.verison = "0.1.8"
         self.errors_parsed = 0.0
 
         # Initialize methods
@@ -105,7 +104,7 @@ class Vk:
 
     # Handler wrapper
     # Use it:
-    # def a(func): vk.listen_wrapper('message_new', Obj, func)
+    # def a(func): vk.listenWrapper('message_new', Obj, func)
     # @a
     # def get_mess(obj):
     #   print(obj.text)
@@ -144,10 +143,11 @@ def newMessage(obj):
 
     def __getattr__(self, method):
         if method.startswith("on_"):
-            if method[3:] not in users_event.keys():
-                return lambda function: self.listenWrapper(method[3:], Obj, function)
+            method = method[3:]
+            if method not in users_event.keys():
+                return lambda function: self.listenWrapper(method, Obj, function)
             else:
-                return lambda function: self.listenWrapper(users_event[method[3:]], Obj, function)
+                return lambda function: self.listenWrapper(users_event[method][0], UserObj, function)
         else: return Method(access_token=self.token_vk, version_api=self.version_api, method=method)
 
     def __str__(self):
@@ -400,6 +400,24 @@ class Obj:
     def __getattr__(self, attribute):
         val = getValue(self.obj, attribute)
         return val if val else getValue(self.obj['object'], attribute)
+
+class UserObj:
+    def __init__(self, obj):
+        self.objs = obj
+        self.obj = {}
+        self.type = obj[0]
+        for tp in users_event:
+            if self.type == users_event[tp][0]:
+                current = 0
+                for i in users_event[tp]:
+                    if current > 0 and current < len(obj):
+                        self.obj[i] = obj[current]
+                        exec("self.%s = obj[current]" % i, locals(), globals())
+                    current += 1
+                break
+    def __str__(self):
+        return "%s" % self.obj
+
 
 class Help:
     """
