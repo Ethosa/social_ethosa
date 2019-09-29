@@ -37,7 +37,7 @@ print(vk.help('messages.send'))
 
 Example of loading audio messages:
 ```python
-from social_ethosa.vkcom import *
+from social_ethosa import *
 
 token = 'user token here'
 
@@ -54,7 +54,7 @@ vk.messages.send(peer_id=1234567890, message='test uploader', attachment=audio_m
 
 Example of uploading photos to messages:
 ```python
-from social_ethosa.vkcom import *
+from social_ethosa import *
 
 token = 'user token here'
 
@@ -71,7 +71,7 @@ vk.messages.send(peer_id=1234567890, message='test uploader', attachment=photo, 
 
 Working with audio methods:
 ```python
-from social_ethosa.vkcom import *
+from social_ethosa import *
 
 login = '71234567890'
 password = 'hi_i_passowrd'
