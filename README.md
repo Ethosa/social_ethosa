@@ -85,3 +85,13 @@ print(audio.getCount(123)) # return count audios of user with id 123
 pprint(audio.getById(owner_id=-148928912, audio_id=456239018)) # return audio-148928912_456239018
 pprint(audio.search('minecraft')) # return dictionary with audios list, playlists list, artists list
 ```
+
+Help using utils:
+```python
+@autoRun # this decorator automatically starts the next callee
+def hello():
+  print("Hello world!")
+
+listObject = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print(splitList(listObject, 2)) # the splitList function attempts to split the list into equal parts
+```
