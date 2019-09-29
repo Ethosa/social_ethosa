@@ -42,21 +42,29 @@ class TraceMoe:
         response = self.session.post(url).json()
         return response
 
-    def getVideo(self, anilist_id=None, tokenthumb=None,
-                        filename=None, at=None, mute=0):
-        if anilist_id and tokenthumb and tokenthumb and at:
-            url = "%s%s/%s/%s?t=%s&token=%s%s" % (self.media, "video", anilist_id,
-                        filename, at, tokenthumb, "&mute" if mute else "")
-            response = self.session.get(url).content
-            return response
+    def getVideo(self, response, mute=0):
+        if "docs" in response:
+            response = response["docs"][0]
+        anilist_id = response["anilist_id"]
+        filename = response["filename"]
+        at = response["at"]
+        tokenthumb = response["tokenthumb"]
+        url = "%s%s/%s/%s?t=%s&token=%s%s" % (self.media, "video", anilist_id,
+                    filename, at, tokenthumb, "&mute" if mute else "")
+        response = self.session.get(url).content
+        return response
 
-    def getImagePreview(self, anilist_id=None, tokenthumb=None,
-                        filename=None, at=None):
-        if anilist_id and tokenthumb and tokenthumb and at:
-            url = "%s%s?anilist_id=%s&file=%s&t=%s&token=%s" % (self.trace, "thumbnail.php",
-                                anilist_id, filename, at, tokenthumb)
-            response = self.session.get(url).content
-            return response
+    def getImagePreview(self, response):
+        if "docs" in response:
+            response = response["docs"][0]
+        anilist_id = response["anilist_id"]
+        filename = response["filename"]
+        at = response["at"]
+        tokenthumb = response["tokenthumb"]
+        url = "%s%s?anilist_id=%s&file=%s&t=%s&token=%s" % (self.trace, "thumbnail.php",
+                            anilist_id, filename, at, tokenthumb)
+        response = self.session.get(url).content
+        return response
 
     def writeFile(self, path, content):
         with open(path, "wb") as f:

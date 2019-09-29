@@ -15,7 +15,7 @@ def autoRun(callObject, *args, **kwargs):
 
 def printf(a, *args):
     # faster than print
-    sys.stdout.write("%s\n" % (a % args))
+    sys.stdout.write("%s\n" % ("%s" % a % args))
 
 def downloadFileFromUrl(url, path):
     response = requests.get(url)
@@ -37,7 +37,7 @@ def getMaxPhoto(attachments):
                     height = size["height"]
                     width = size["width"]
                     url = size["url"]
-            files.append("%s.png" % from_id)
+            files.append(url)
     return files
 
 def getValue(obj, string, returned=False):
