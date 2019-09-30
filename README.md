@@ -19,7 +19,7 @@ def get_message(obj):
   message = obj.text
   vk.messages.send(message='hello vkcom!', peer_id=peer_id, random_id=0)
 
-@vk.on_error # errors handler
+@vk.onError # errors handler
 def get_error(error):
   print(error.message) # Example: No module named 'aa'
   print(error.line) # Example: 1
