@@ -2,7 +2,7 @@
 A Python library that uses requests
 
 ## Get started
-Installation: `pip install --upgrade social-ethosa`
+Installation: `pip install --upgrade social-ethosa`  
 Import:
 ```python
 from social_ethosa import *
