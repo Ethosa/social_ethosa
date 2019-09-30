@@ -43,5 +43,6 @@ login = "89007003535"
 password = "qwertyuiop"
 
 audio = Audio(login=login, password=password, debug=1)
-audios = audio.get() # Since the audio methods are not available in the official API, I had to make a parser of the site
+audios = audio.get()
+# Since the audio methods are not available in the official API, I had to make a parser of the site
 ```
