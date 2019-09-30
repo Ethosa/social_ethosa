@@ -38,7 +38,7 @@ class Uploader:
                 "message_photo" : ["photo", lambda **kwargs: self.vk.photos.getMessagesUploadServer(**kwargs),
                                    lambda response: self.method('photos.saveMessagesPhoto', hash=response['hash'],
                                                                 server=response['server'], photo=response['photo'])['response'][0]],
-                "user_photo" : ["photo", lambda user_id, **kwargs: self.vk.photos.getOwnerPhotoUploadServer(user_id),
+                "user_photo" : ["photo", lambda **kwargs: self.vk.photos.getOwnerPhotoUploadServer(**kwargs),
                                 lambda response: self.method('photos.saveOwnerPhoto', hash=response['hash'],
                                                              server=response['server'], photo=response['photo'])['response']],
                 "chat_photo" : ["photo", lambda chat_id, **kwargs: self.vk.photos.getChatUploadServer(chat_id),

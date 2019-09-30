@@ -21,14 +21,7 @@ class TraceMoe:
     def search(self, path, url1=0, filterSearch=1):
         url = "%s%s" % (self.api, "search")
         if url1:
-            gen = list("1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm_")
-            string = "%s.png" % "".join(random.choice(gen) for i in range(50))
-            downloadFileFromUrl(path, string)
-            with open(string, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read())
-            data = {"filter" : filterSearch,
-                    "image" : encoded_string}
-            os.remove(string)
+            return self.session.get(f'{self.api}search', params={'url': path}).json()
         else:
             with open(path, "rb") as image_file:
                 encoded_string = base64.b64encode(image_file.read())

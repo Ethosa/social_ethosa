@@ -146,7 +146,6 @@ class User:
             if i in self._obj:
                 self._obj[i] = eval("self.%s" % i)
         return self._obj
-    
 
     def isMoneyMoreThenZero(self):
         return self.obj['money'] > 0
