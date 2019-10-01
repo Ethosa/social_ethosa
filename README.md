@@ -66,3 +66,11 @@ response = tracemoe.search("a.png", False, 1)
 # param 3 - filter search
 ```
 ![Image did not load](https://i.pinimg.com/originals/33/55/37/335537e3904b0a3b204364907b22622f.jpg)
+
+If the anime is found, you should get a video preview of the found moment:
+```python
+video = tracemoe.getVideo(response, mute=0) # The mute parameter must be 1 if you want to get video without sound
+tracemoe.writeFile("file.mp4", video)
+# param 1 is a path to write file
+# param 2 is a video received by the get Video method
+```
