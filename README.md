@@ -46,7 +46,7 @@ audio = Audio(login=login, password=password, debug=1)
 audios = audio.get()
 # Since the audio methods are not available in the official API, I had to make a parser of the site
 ```
-
+### Yandex api
 Using Yandex api:
 ```python
 TOKEN = "translate token"
@@ -55,7 +55,7 @@ text = "Пайтон - хороший язык программирования"
 response = yt.translate(text=text, lang="en") # Text translation
 print(response)
 ```
-
+### Trace moe
 Using the [TraceMoe api](https://trace):
 ```python
 tracemoe = TraceMoe() # initialization for future use
@@ -73,4 +73,27 @@ video = tracemoe.getVideo(response, mute=0) # The mute parameter must be 1 if yo
 tracemoe.writeFile("file.mp4", video)
 # param 1 is a path to write file
 # param 2 is a video received by the get Video method
+```
+
+### BotWrapper
+In the library there is a wrapper for bots!  
+Initialization:
+```python
+bw = BotWrapper()
+```
+Getting a random date
+```python
+date = bw.randomDate(fromYear="2001", toYear="3001")
+# Returned: string
+# The fromYear and toYear parameters are optional
+```
+
+### BetterBotBase
+This class uses pickle to maintain the database.  
+Let's initialize this class.
+```python
+bbs = BetterBotBase("users folder", "dat")
+# The first argument is the name of the folder where users will be stored
+# the second argument is the Postfix of the files, in our case the files will look like this:
+# 123123123.dat
 ```
