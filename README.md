@@ -46,3 +46,12 @@ audio = Audio(login=login, password=password, debug=1)
 audios = audio.get()
 # Since the audio methods are not available in the official API, I had to make a parser of the site
 ```
+
+Using Yandex api:
+```python
+TOKEN = "translate token"
+yt = YTranslator(token=TOKEN)
+text = "Пайтон - хороший язык программирования"
+response = yt.translate(text=text, lang="en") # Text translation
+print(response)
+```
