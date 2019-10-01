@@ -55,3 +55,14 @@ text = "Пайтон - хороший язык программирования"
 response = yt.translate(text=text, lang="en") # Text translation
 print(response)
 ```
+
+Using the [TraceMoe api](https://trace):
+```python
+tracemoe = TraceMoe() # initialization for future use
+# In directory with script there is screenshot from anime " a. png"
+response = tracemoe.search("a.png", False, 1)
+# param 1 - path to image or image url
+# param 2 - True, if param 1 is link
+# param 3 - filter search
+```
+![Image did not load](https://i.pinimg.com/originals/33/55/37/335537e3904b0a3b204364907b22622f.jpg)
