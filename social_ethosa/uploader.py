@@ -41,7 +41,7 @@ class Uploader:
                 "user_photo" : ["photo", lambda **kwargs: self.vk.photos.getOwnerPhotoUploadServer(**kwargs),
                                 lambda response: self.method('photos.saveOwnerPhoto', hash=response['hash'],
                                                              server=response['server'], photo=response['photo'])['response']],
-                "chat_photo" : ["photo", lambda chat_id, **kwargs: self.vk.photos.getChatUploadServer(chat_id),
+                "chat_photo" : ["photo", lambda chat_id, **kwargs: self.vk.photos.getChatUploadServer(chat_id=chat_id, **kwargs),
                                 lambda response: self.method('messages.setChatPhoto', file=response['response'])['response']],
                 "market_photo" : ["photo", lambda group_id, **kwargs: self.vk.photos.getMarketUploadServer(group_id=group_id),
                                   lambda response: self.method('photos.saveMarketPhoto', group_id=group_id, photo=response['photo'],

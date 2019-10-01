@@ -331,14 +331,15 @@ class BetterBotBase(BotBase):
         for user in os.listdir(self.path):
             current = self.loadUser(user[:-len(self.postfix)-1])
             value = defult_value
-            exec("current.%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
-            current.kwargs[key] = defult_value
+            if key not in current.obj:
+                exec("current.%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
+                current.obj[key] = defult_value
             self.saveUser(current)
 
         for i in range(len(self.users)):
             value = defult_value
             exec("self.users[i].%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
-            self.users[i].kwargs[key] = defult_value
+            self.users[i].obj[key] = defult_value
 
     def saveUser(self, user):
         with open("%s/%s.%s" % (self.path, user.uid, self.postfix), 'wb') as f:
