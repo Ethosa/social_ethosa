@@ -8,7 +8,7 @@ Import:
 from social_ethosa import *
 ```
 
-### Vkcom
+## Vkcom
 ```python
 vk = Vk(token="Your token is here", group_id=12345, debug=True, lang="en")
 # the group_id parameter should be used if you are going to log in through a group.
@@ -46,7 +46,7 @@ audio = Audio(login=login, password=password, debug=1)
 audios = audio.get()
 # Since the audio methods are not available in the official API, I had to make a parser of the site
 ```
-### Yandex api
+## Yandex api
 Using Yandex api:
 ```python
 TOKEN = "translate token"
@@ -55,7 +55,7 @@ text = "Пайтон - хороший язык программирования"
 response = yt.translate(text=text, lang="en") # Text translation
 print(response)
 ```
-### Trace moe
+## Trace moe
 Using the [TraceMoe api](https://trace):
 ```python
 tracemoe = TraceMoe() # initialization for future use
@@ -75,7 +75,7 @@ tracemoe.writeFile("file.mp4", video)
 # param 2 is a video received by the get Video method
 ```
 
-### BotWrapper
+## BotWrapper
 In the library there is a wrapper for bots!  
 Initialization:
 ```python
@@ -88,7 +88,7 @@ date = bw.randomDate(fromYear="2001", toYear="3001")
 # The fromYear and toYear parameters are optional
 ```
 
-### BetterBotBase
+## BetterBotBase
 This class uses pickle to maintain the database.  
 Let's initialize this class.
 ```python
