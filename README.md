@@ -105,7 +105,7 @@ def getNewMessage(message):
   from_id = message.from_id
   if from_id > 0:
     user = bbs.autoInstallUser(from_id, vk)
-# autoInstallUser automatically creates or downloads users and returns the user for further action with it.
+# autoInstallUser automatically creates or loads users and returns the user for further action with it.
 ```
 
 BotWrapper can also be used to interact with BetterBotBase!
