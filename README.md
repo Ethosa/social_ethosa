@@ -97,3 +97,34 @@ bbs = BetterBotBase("users folder", "dat")
 # the second argument is the Postfix of the files, in our case the files will look like this:
 # 123123123.dat
 ```
+
+BetterBotBase can also be used with Vkcom:
+```python
+@vk.on_message_new
+def getNewMessage(message):
+  from_id = message.from_id
+  if from_id > 0:
+    user = bbs.autoInstallUser(from_id, vk)
+# autoInstallUser automatically creates or downloads users and returns the user for further action with it.
+```
+
+BotWrapper can also be used to interact with BetterBotBase!
+```python
+text = bw.answerPattern("Hello, <name>, your money is <money>!", user)
+# the answer Pattern method automatically substitutes variables from user,
+# thus making it a little easier to format the string
+```
+
+You can define your own templates to the database!
+```python
+# right after BetterBotBase announcement
+bbs.addPattern("countMessages", 0)
+# the first argument is the variable name
+# the second argument is the default value of the variable (when creating a user)
+```
+
+You created a template, but it was not added to the old users? not a problem!
+```python
+bbs.addNewVariable("countMessages", 0)
+# this method works the same as addPattern, but with older users
+```
