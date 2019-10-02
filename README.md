@@ -128,3 +128,24 @@ You created a template, but it was not added to the old users? not a problem!
 bbs.addNewVariable("countMessages", 0)
 # this method works the same as addPattern, but with older users
 ```
+
+
+## ThisPerson api
+Initialization is quite simple
+```python
+person = ThisPerson()
+```
+
+In the class now only 3 methods to retrieve non-existent people/cats/waifu
+```python
+rperson = person.getRandomPerson()
+rcat = person.getRandomCat()
+rwaifu = person.getRandomWaifu()
+```
+
+after receiving the generated photo, it should be written to a file.
+```python
+person.writeFile("person.png", rperson)
+person.writeFile("cat.png", rcat)
+person.writeFile("waifu.png", rwaifu)
+```
