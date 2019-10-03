@@ -20,6 +20,11 @@ class Matrix:
             for y in range(self.height):
                 self.obj[x][y] = 0
 
+    def fill(self, value=0):
+        for x in range(self.width):
+            for y in range(self.height):
+                self.obj[x][y] = value
+
     def setAt(self, x, y, value):
         self.obj[x][y] = value
 
