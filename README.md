@@ -176,7 +176,7 @@ matrix1 = Matrix([[1, 2, 3],
 ```
 You can transpose the matrix
 ```python
-matrix1.reverse()
+matrix1.transpose()
 # 1 4 7
 # 2 5 8
 # 3 6 9
