@@ -201,3 +201,24 @@ print(matrix1)
 # 10 20 30
 # 16 26 36
 ```
+Matrix multiplication? No problem!
+```python
+matrix = Matrix([[1, 2, 3],
+                [4, 5, 6]])
+matrix1 = Matrix([[1, 2],
+                [3, 4],
+                [5, 6]])
+matrix *= matrix1
+print(matrix.obj)
+# 22, 28 
+# 49, 64
+
+matrix = Matrix([[1, 2],
+                [3, 4]])
+matrix1 = Matrix([[1, 2],
+                [3, 4]])
+matrix *= matrix1
+print(matrix.obj)
+# 7, 10
+# 15, 22
+```
