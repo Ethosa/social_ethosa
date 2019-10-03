@@ -149,3 +149,44 @@ person.writeFile("person.png", rperson)
 person.writeFile("cat.png", rcat)
 person.writeFile("waifu.png", rwaifu)
 ```
+
+## eMath
+I decided that very few people will need this module, so importing it separately from the main one:
+```python
+from social_ethosa.eMath import *
+```
+### Point
+You can create an N-dimensional point:
+```python
+point = Point(0, 0, 0)
+point1 = Point(4, 2, 3)
+```
+And also you can find the Euclidean distance between them:
+```python
+distance = point.euclideanDistance(point1)
+print(distance)
+```
+### Matrix
+Also this module has a Matrix class
+```python
+matrix = Matrix(3, 3) # Creating a 3x3 matrix
+matrix1 = Matrix([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9]]) # Creating a 3x3 matrix
+```
+You can transpose the matrix
+```python
+matrix1.reverse()
+print(matrix1)
+# 1 4 7
+# 2 5 8
+# 3 6 9
+```
+And multiply the matrix by the number
+```python
+matrix1 *= 3
+print(matrix1)
+# 3 12 21
+# 6 15 24
+# 9 18 27
+```
