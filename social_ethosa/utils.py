@@ -77,8 +77,8 @@ users_event = {
 
 class TranslatorDebug:
     def __init__(self, *args, **kwargs):
-        path = os.path.dirname(os.path.abspath(__file__))
-        with open("%s/translate.py" % (os.path.dirname(os.path.abspath(__file__))), 'r', encoding='utf-8') as f:
+        self.path = os.path.dirname(os.path.abspath(__file__))
+        with open("%s/translate.py" % self.path, 'r', encoding='utf-8') as f:
             self.base = json.loads(f.read())
 
     def translate(self, *args):
@@ -89,6 +89,7 @@ class TranslatorDebug:
                 return '%s\n' % self.base[text][lang]
             else: return "%s\n" % text
         else: return "%s\n" % text
+
 
 class Thread_VK(Thread):
     # This class is used to run callables on another thread.

@@ -123,7 +123,7 @@ class Vk:
                         function(classWrapper(event.update))
         Thread_VK(listen).start()
 
-    def getRandomId(self): return random.randint(-2**37-1, 2**37-1)
+    def getRandomId(self): return random.randint(-2000000, 2000000)
 
     def createExampleScript(self, name="testScript"):
         with open("%s.py" % name, "w") as f:

@@ -32,6 +32,7 @@ class YTranslator(YandexRoot):
         kwargs["key"] = self.token
         kwargs["lang"] = lang
         kwargs["text"] = text
+        print(kwargs)
         response = self.session.post(self.translateUrl, data=kwargs).json()
         return response
 
@@ -63,8 +64,8 @@ class YPredictor(YandexRoot):
         self.getLangsUrl = "https://predictor.yandex.net/api/v1/predict.json/getLangs"
         self.completeUrl = "https://predictor.yandex.net/api/v1/predict.json/complete"
 
-    def getLangs(self):
-        data = {"key" : self.token}
+    def getLangs(self, **kwargs):
+        kwargs["key"] = self.token
         return self.session.post(self.getLangsUrl, data=data).json()
 
     def complete(self, lang, q, **kwargs):

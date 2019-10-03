@@ -25,15 +25,12 @@ class TraceMoe:
         else:
             with open(path, "rb") as image_file:
                 encoded_string = base64.b64encode(image_file.read())
-            data = {"filter" : filterSearch,
-                    "image" : encoded_string}
-        response = self.session.post(url, json=data).json()
-        return response
+            data = {"filter" : filterSearch, "image" : encoded_string}
+        return self.session.post(url, json=data).json()
 
     def getMe(self):
         url = "%s%s" % (self.api, "me")
-        response = self.session.post(url).json()
-        return response
+        return self.session.post(url).json()
 
     def getVideo(self, response, mute=0):
         if "docs" in response:
@@ -44,8 +41,7 @@ class TraceMoe:
         tokenthumb = response["tokenthumb"]
         url = "%s%s/%s/%s?t=%s&token=%s%s" % (self.media, "video", anilist_id,
                     filename, at, tokenthumb, "&mute" if mute else "")
-        response = self.session.get(url).content
-        return response
+        return self.session.get(url).content
 
     def getImagePreview(self, response):
         if "docs" in response:
@@ -56,8 +52,7 @@ class TraceMoe:
         tokenthumb = response["tokenthumb"]
         url = "%s%s?anilist_id=%s&file=%s&t=%s&token=%s" % (self.trace, "thumbnail.php",
                             anilist_id, filename, at, tokenthumb)
-        response = self.session.get(url).content
-        return response
+        return self.session.get(url).content
 
     def writeFile(self, path, content):
         with open(path, "wb") as f:

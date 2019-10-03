@@ -67,7 +67,6 @@ class JDoodle:
     RACKET = "racket"
     KOTLIN = "kotlin"
     WHITESPACE = "whatespace"
-
     """
     Usage:
 
@@ -84,7 +83,6 @@ class JDoodle:
     print(compiled.memory)
     print(compiled.cpuTime)
     """
-
     def __init__(self, *args, **kwargs):
         self.lang = getValue(kwargs, "lang", "")
         self.clientId = getValue(kwargs, "clientId", "")
