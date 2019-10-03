@@ -177,7 +177,6 @@ matrix1 = Matrix([[1, 2, 3],
 You can transpose the matrix
 ```python
 matrix1.reverse()
-print(matrix1)
 # 1 4 7
 # 2 5 8
 # 3 6 9
@@ -185,7 +184,6 @@ print(matrix1)
 And multiply the matrix by the number
 ```python
 matrix1 *= 3
-print(matrix1)
 # 3 12 21
 # 6 15 24
 # 9 18 27
@@ -196,7 +194,6 @@ matrix2 = Matrix([[1, 2, 3],
                   [4, 5, 6],
                   [7, 8, 9]])
 matrix1 += matrix2
-print(matrix1)
 # 4 14 24
 # 10 20 30
 # 16 26 36
@@ -209,7 +206,6 @@ matrix1 = Matrix([[1, 2],
                 [3, 4],
                 [5, 6]])
 matrix *= matrix1
-print(matrix.obj)
 # 22, 28 
 # 49, 64
 
@@ -218,7 +214,25 @@ matrix = Matrix([[1, 2],
 matrix1 = Matrix([[1, 2],
                 [3, 4]])
 matrix *= matrix1
-print(matrix.obj)
 # 7, 10
 # 15, 22
+```
+You can also clear or fill the matrix with any numbers!
+```python
+matrix = Matrix([[1, 2],
+                [3, 4]])
+# 1 2
+# 3 4
+
+matrix.clear()
+# 0 0
+# 0 0
+
+matrix.fill()
+# 0 0
+# 0 0
+
+matrix.fill(7)
+# 7 7
+# 7 7
 ```
