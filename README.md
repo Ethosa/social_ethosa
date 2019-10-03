@@ -190,3 +190,14 @@ print(matrix1)
 # 6 15 24
 # 9 18 27
 ```
+The addition of two matrices is also possible
+```python
+matrix2 = Matrix([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9]])
+matrix1 += matrix2
+print(matrix1)
+# 4 14 24
+# 10 20 30
+# 16 26 36
+```
