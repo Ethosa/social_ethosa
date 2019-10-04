@@ -45,7 +45,7 @@ class Matrix:
         self.width = width
         self.height = height
 
-    def flip(self):
+    def flipSave(self):
         obj = []
         for x in range(self.width):
             obj.append(self.obj[x][:])
@@ -56,6 +56,12 @@ class Matrix:
                 a, b = obj[x][y], self.obj[x][y]
                 if a < 0 and b > 0 or a > 0 and b < 0:
                     self.obj[x][y] *= -1
+
+    def flip(self):
+        for x in range(self.width):
+            obj.append(self.obj[x][:])
+            self.obj[x] = [i for i in reversed(self.obj[x])]
+        self.obj = [i for i in reversed(self.obj)]
 
     def __neg__(self):
         obj = copy(self.obj)
@@ -154,6 +160,12 @@ class Point:
         distance = math.sqrt(sum_sqr)
         return distance
 
+    def offset(self, points):
+        for i in range(len(points)):
+            self.points[i] += points[i]
+
+    def __eq__(self, other): return self.points == other.points
+
     def __str__(self):
         return "<Point %s>" % self.points
 
@@ -194,6 +206,17 @@ class ArithmeticSequence:
             s += self.d
             lst.append(copy(s))
         return sum(lst)
+
+    def setIter(self, value):
+        self.value = value
+
+    def __iter__(self):
+        for i in range(self.value):
+            yield self.getElem(i)
+
+    def __str__(self):
+        return "<ArithmeticSequence (%s, %s, %s, %s, ...)>" % (self.getElem(0), self.getElem(1), self.getElem(2), self.getElem(3))
+
 
 class GeometricSequence:
     def __init__(self, *args):
@@ -236,6 +259,16 @@ class GeometricSequence:
             s *= self.d
             lst.append(copy(s))
         return sum(lst)
+
+    def setIter(self, value):
+        self.value = value
+
+    def __iter__(self):
+        for i in range(self.value):
+            yield self.getElem(i)
+
+    def __str__(self):
+        return "<GeometricSequence (%s, %s, %s, %s, ...)>" % (self.getElem(0), self.getElem(1), self.getElem(2), self.getElem(3))
 
 
 class Vector2:
@@ -307,6 +340,36 @@ class Vector2:
                                                 self.b.points[0], self.b.points[1])
 
 
-vector = Vector2([0, 0], [-1, 5])
-print(vector.getDirection())
-print(vector)
+class Rectangle:
+    def __init__(self, *args):
+        if len(args) == 4:
+            self.left, self.top, self.right, self.bottom = args
+        elif len(args) == 1:
+            if type(args[0]) == Rectangle:
+                self.left, self.top, self.right, self.bottom = copy(args[0].left), copy(args[0].top), copy(args[0].right), copy(args[0].bottom)
+
+    def containsPoint(self, point):
+        x = point.points[0]
+        y = point.points[1]
+        return self.left < x < self.right and self.top < y < self.bottom
+
+    def containsXY(self, x, y):
+        return self.left < x < self.right and self.top < y < self.bottom
+
+    def equalsPoint(self, point):
+        x = point.points[0]
+        y = point.points[1]
+        return self.left <= x <= self.right and self.top <= y <= self.bottom
+
+    def equalsXY(self, x, y):
+        return self.left <= x <= self.right and self.top <= y <= self.bottom
+
+    def width(self): return self.right - self.left
+    def height(self): return self.bottom - self.top
+
+    def __str__(self):
+        return "<Rectangle (%s, %s, %s, %s)>" % (self.left, self.top, self.right, self.bottom)
+
+rect = Rectangle(2, 2, 5, 5)
+point = Point(3, 3)
+print(rect.containsPoint(point))
