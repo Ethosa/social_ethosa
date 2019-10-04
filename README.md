@@ -236,3 +236,51 @@ matrix.fill(7)
 # 7 7
 # 7 7
 ```
+you can also edit individual parts of the matrix
+```python
+matrix.setAt(0, 0, 8)
+# 8 7
+# 7 7
+
+a = matrix.getAt(0, 1)
+# 7
+```
+And also you can mirror the matrix:
+```python
+matrix.flip()
+# 7 7
+# 7 8
+```
+
+## ArithmeticSequence
+There are many ways to initialize an arithmetic sequence.
+```python
+ars = ArithmeticSequence(0, 2)
+ars = ArithmeticSequence([0, 2])
+ars.getElem(1) # 2
+ars.getElem(0) # 0
+ars.getElem(4) # 8
+```
+You can also get the sum of the elements
+```python
+ars = ArithmeticSequence(5, 5)
+ars.getSum(0) # 5
+ars.getSum(2) # 15
+```
+
+## GeometricSequence
+There are many ways to initialize an arithmetic sequence.
+```python
+ars = GeometricSequence(1, 2)
+ars = GeometricSequence([1, 2])
+ars.getElem(1) # 2
+ars.getElem(0) # 1
+ars.getElem(4) # 16
+```
+You can also get the sum of the elements
+```python
+ars = ArithmeticSequence(1, 2)
+ars.getSum(0) # 1
+ars.getSum(2) # 7
+ars.getSum(1) # 3
+```
