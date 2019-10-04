@@ -284,3 +284,48 @@ ars.getSum(0) # 1
 ars.getSum(2) # 7
 ars.getSum(1) # 3
 ```
+
+## utils
+This module can make your life much easier.
+```python
+def smthDef(arg1, arg2, **kwargs):
+    print(getValue(kwargs, "argument", None))
+# getValue - abbreviation of kwargs["argument"] if "argument" in kwargs else None
+
+@autoRun
+# the decorator simply automatically invokes the object as soon as it is initialized
+def hello():
+    print("hi")
+
+downloadFileFromUrl("url", "path to file")
+# this method downloads the file from the link and places it in the specified path.
+
+updateLibrary("0.2.42")
+# this method automatically updates the library to the specified version.
+# if no version is specified, the library is updated to the latest version.
+
+lst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+print(splitList(lst, 2))
+# [[1, 2], [3, 4], [5, 6], [7, 8], [9, 0]]
+
+lst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+print(splitList(lst, 3))
+# [[1, 2, 3], [4, 5, 6], [7, 8, 9], [0]]
+# the splitList method tries to divide the passed list into equal parts
+
+timer = Timer()
+# Timer-class for calling certain functions after a certain time.
+
+@timer.after(1000)
+# after method run this function after 1000 milliseconds
+def hi():
+  print("hello world")
+
+@timer.afterEvery(100, 1000)
+# the after Every method starts this function after 100 milliseconds and will call it every subsequent 1000 milliseconds
+def hello(): print("hello")
+
+timer.cancel()
+# when the timer method is called.cancel will automatically close all running timers of this timer
+
+```
