@@ -252,7 +252,7 @@ matrix.flip()
 # 7 8
 ```
 
-## ArithmeticSequence
+### ArithmeticSequence
 There are many ways to initialize an arithmetic sequence.
 ```python
 ars = ArithmeticSequence(0, 2)
@@ -268,7 +268,7 @@ ars.getSum(0) # 5
 ars.getSum(2) # 15
 ```
 
-## GeometricSequence
+### GeometricSequence
 There are many ways to initialize an arithmetic sequence.
 ```python
 ars = GeometricSequence(1, 2)
