@@ -1,7 +1,7 @@
 # social ethosa
 A Python library that uses requests  
 
-(Russian documentation)[https://github.com/Ethos a/social_ethosa/README_RU. md]
+(Russian documentation)[https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md]
 
 ## Get started
 Installation: `pip install --upgrade social-ethosa`  
