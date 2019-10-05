@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# author: ethosa
 from .utils import *
 try:
     import lxml.html
@@ -22,7 +24,7 @@ class Audio:
         self.lang = getValue(kwargs, 'lang', 'en')
         url = 'https://vk.com'
 
-        self.translate = Translator_debug().translate
+        self.translate = TranslatorDebug().translate
 
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',

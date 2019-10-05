@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# author: ethosa
 from .utils import *
 from .vkcom import Thread_VK
 import time

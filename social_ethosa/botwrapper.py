@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# author: ethosa
 from .utils import getValue
 from operator import itemgetter, attrgetter
 import requests

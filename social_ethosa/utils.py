@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# author: ethosa
 from threading import Thread
 import requests
 import inspect

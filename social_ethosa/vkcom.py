@@ -38,11 +38,7 @@ class Vk:
     vk.method(method='messages.send', message='message', peer_id=1234567890, random_id=0)
 
     use messages methods:
-    vk.messages.send(message='message', peer_id=1234567890)
-
-    methods, which working with token Kate Mobile:
-    - audio.getUploadServer
-    - audio.save
+    vk.messages.send(message='message', peer_id=1234567890, random_id=vk.getRandomId())
     '''
 
     def __init__(self, *args, **kwargs):
@@ -147,7 +143,7 @@ def newMessage(obj):
             if method not in users_event.keys():
                 return lambda function: self.listenWrapper(method, Obj, function)
             else:
-                return lambda function: self.listenWrapper(users_event[method][0], UserObj, function)
+                return lambda function: self.listenWrapper(users_event[method][0], Obj, function)
         else: return Method(access_token=self.token_vk, version_api=self.version_api, method=method)
 
     def __str__(self):
@@ -194,12 +190,15 @@ class LongPoll:
                 if updates:
                     for update in updates: yield Event(update)
                 if "updates" not in response:
-                    time.sleep(random.randint(5, 15))
-                    response = requests.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
-                                            (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()['response']
-                    self.ts = response['ts']
-                    self.key = response['key']
-                    self.server = response['server']
+                    try:
+                        time.sleep(random.randint(5, 15))
+                        response = requests.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
+                                                (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()['response']
+                        self.ts = response['ts']
+                        self.key = response['key']
+                        self.server = response['server']
+                    except:
+                        pass
         else:
             response = requests.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
                                     (self.vk_api_url, self.access_token, self.version_api)).json()['response']
@@ -216,12 +215,15 @@ class LongPoll:
                 if updates:
                     for update in updates: yield Event(update)
                 if "updates" not in response:
-                    time.sleep(random.randint(5, 15))
-                    response = requests.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
-                                            (self.vk_api_url, self.access_token, self.version_api)).json()['response']
-                    self.ts = response["ts"]
-                    self.key = response["key"]
-                    self.server = response["server"]
+                    try:
+                        time.sleep(random.randint(5, 15))
+                        response = requests.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
+                                                (self.vk_api_url, self.access_token, self.version_api)).json()['response']
+                        self.ts = response["ts"]
+                        self.key = response["key"]
+                        self.server = response["server"]
+                    except:
+                        pass
 
 
 # Class for use anything vk api method
@@ -368,6 +370,9 @@ class Button:
 class Event:
     def __init__(self, update, *args, **kwargs):
         self.update = update
+        if type(update) == list:
+            self.update = UserObj(update).obj
+            self.update[0] = self.update["type"]
     def __str__(self):
         return "%s" % self.update
     def __getattr__(self, attr):
@@ -395,7 +400,7 @@ class Obj:
         self.obj = obj
         if type(self.obj) == dict:
             self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
-    def __str__(self, key):
+    def __str__(self):
         return "%s" % self.obj
     def __getattr__(self, attribute):
         val = getValue(self.obj, attribute)
@@ -404,7 +409,7 @@ class Obj:
 class UserObj:
     def __init__(self, obj):
         self.objs = obj
-        self.obj = {}
+        self.obj = {"type" : obj[0]}
         self.type = obj[0]
         for tp in users_event:
             if self.type == users_event[tp][0]:

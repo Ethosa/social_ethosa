@@ -1,7 +1,30 @@
+# -*- coding: utf-8 -*-
+# author: ethosa
 from copy import copy, deepcopy
 import math
 
 class Matrix:
+    def createUnitMatrix(width, height):
+        matrix = []
+        currentX = 0
+        for x in range(width):
+            timed = [0 if currentX != i else 1 for i in range(height)]
+            currentX += 1
+            matrix.append(timed)
+        return Matrix(matrix)
+
+    def createTriangularMatrix(width, height):
+        matrix = []
+        currentX = 0
+        for x in range(width):
+            timed = [0 if currentX > i else 1 for i in range(height)]
+            currentX += 1
+            matrix.append(timed)
+        return Matrix(matrix)
+
+    def createNullMatrix(width, height):
+        return Matrix(width, height)
+
     def __init__(self, *args):
         if len(args) == 2:
             self.width, self.height = args
@@ -31,12 +54,12 @@ class Matrix:
         self.widthFill = len("%s" % value)
 
     def setAt(self, x, y, value):
-        self.obj[x][y] = value
+        self.obj[x+1][y+1] = value
         if len("%s" % value) > self.widthFill:
             self.widthFill = len("%s" % value)
 
     def getAt(self, x, y):
-        return self.obj[x][y]
+        return self.obj[x+1][y+1]
 
     def transpose(self):
         width = self.height
@@ -63,6 +86,31 @@ class Matrix:
             self.obj[x] = [i for i in reversed(self.obj[x])]
         self.obj = [i for i in reversed(self.obj)]
 
+    def getSum(self):
+        s = 0
+        for x in range(self.width):
+            s += sum(self.obj[x][y] for y in range(self.height))
+        return s
+
+    def minor(self, xm, ym):
+        matrix = []
+        for x in range(self.width):
+            t = []
+            for y in range(self.height):
+                if x != xm and y != ym:
+                    t.append(self.obj[x][y])
+            if t:
+                matrix.append(t)
+        if len(matrix) == 2:
+            if len(matrix[0]) == 2 and len(matrix[1]) == 2:
+                return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0]
+        return Matrix(matrix)
+
+    def elemCofactor(self, xc, yc):
+        koef = (-1)**(xc+yc)
+        minor = self.minor(xc, yc)
+        return minor*koef
+
     def __neg__(self):
         obj = copy(self.obj)
         for x in range(self.width):
@@ -71,16 +119,19 @@ class Matrix:
         return Matrix(obj)
 
     def __add__(self, other):
-        for x in range(self.width):
-            for y in range(self.height):
-                self.obj[x][y] += other.obj[x][y]
+        obj = copy(self.obj)
+        if type(other) == Matrix:
+            for x in range(self.width):
+                for y in range(self.height):
+                    obj[x][y] += other.obj[x][y]
+        else:
+            for x in range(self.width):
+                for y in range(self.height):
+                    obj[x][y] += other
+        return Matrix(obj)
 
     def __iadd__(self, other):
-        obj = copy(self.obj)
-        for x in range(self.width):
-            for y in range(self.height):
-                obj[x][y] += other.obj[x][y]
-        return Matrix(obj)
+        return self.__add__(other)
 
     def __sub__(self, other):
         obj = copy(self.obj)
@@ -126,10 +177,7 @@ class Matrix:
 
     def __eq__(self, other):
         if type(other) == Matrix:
-            if len(other) == len(self):
-                if len(self.obj[0]) == len(other.obj[0]):
-                    return 1
-                else: return 0
+            if other.obj == self.obj: return 1
             else: return 0
         else: return 0
 
@@ -369,7 +417,3 @@ class Rectangle:
 
     def __str__(self):
         return "<Rectangle (%s, %s, %s, %s)>" % (self.left, self.top, self.right, self.bottom)
-
-rect = Rectangle(2, 2, 5, 5)
-point = Point(3, 3)
-print(rect.containsPoint(point))
