@@ -25,7 +25,7 @@ def getMessage(message):
   attachments = message.attachments
 ```
 
-using the file Uploader:
+Использование загрузчика файлов:
 ```python
 vk.uploader.getUploadUrl("message_photo") # getting a link to upload files
 # Вы также можете использовать другие аргументы (argument=value)
@@ -199,7 +199,7 @@ print(distance)
 matrix = Matrix(3, 3) # Создание нулевой матриц 3х3
 matrix1 = Matrix([[1, 2, 3],
                   [4, 5, 6],
-                  [7, 8, 9]]) # Создание матрицы из двухуровневого масива
+                  [7, 8, 9]]) # Создание матрицы из двухуровневого массива
 ```
 Вы можете транспонировать матрицу
 ```python
