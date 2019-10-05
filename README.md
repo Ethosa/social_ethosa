@@ -150,6 +150,32 @@ person.writeFile("cat.png", rcat)
 person.writeFile("waifu.png", rwaifu)
 ```
 
+## Yummyanime club
+There are few methods here, as I have not found an official API. Let's get started.
+```python
+ym = YummyAnime()
+ym = YummyAnime(login="yourmail@gmail.com", password="iampassword")
+# You can log in to your account if you need to
+```
+Getting random anime
+```python
+randomAnime = ym.getRandomAnime()
+print(dir(randomAnime))
+print(randomAnime())
+```
+You can also get a list of anime updates
+```python
+updates = ym.getUpdates()
+anime = updates[0].open() # You will get the same object that the getRandomAnime() method returns
+print(updates)
+print(anime)
+```
+And also you can view your profile
+```python
+profile = ym.getProfile()
+print(profile)
+```
+
 ## eMath
 I decided that very few people will need this module, so importing it separately from the main one:
 ```python
