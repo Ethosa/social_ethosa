@@ -1,5 +1,7 @@
 # social ethosa
-A Python library that uses requests
+A Python library that uses requests  
+
+(Russian documentation)[https://github.com/Ethos a/social_ethosa/README_RU. md]
 
 ## Get started
 Installation: `pip install --upgrade social-ethosa`  
@@ -264,11 +266,11 @@ matrix.fill(7)
 ```
 you can also edit individual parts of the matrix
 ```python
-matrix.setAt(0, 0, 8)
+matrix.setAt(1, 1, 8)
 # 8 7
 # 7 7
 
-a = matrix.getAt(0, 1)
+a = matrix.getAt(1, 1)
 # 7
 ```
 And also you can mirror the matrix:
@@ -295,7 +297,7 @@ ars.getSum(2) # 15
 ```
 
 ### GeometricSequence
-There are many ways to initialize an arithmetic sequence.
+There are many ways to initialize an geometric sequence.
 ```python
 ars = GeometricSequence(1, 2)
 ars = GeometricSequence([1, 2])
