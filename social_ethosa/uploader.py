@@ -78,15 +78,17 @@ class Uploader:
         else: self.errorMsg()
 
     def uploadFile(self, file, *args, **kwargs):
-
         # usage:
         # param file must be path to file
-        file = upl(file, self.types[self.current][0])
+        if self.url:
+            file = upl(file, self.types[self.current][0])
 
-        if len(self.types[self.current]) > 2:
-            return self.types[self.current][2](upload_files(self.url, file), **kwargs)
+            if len(self.types[self.current]) > 2:
+                return self.types[self.current][2](upload_files(self.url, file), **kwargs)
+            else:
+                return upload_files(self.url, file)
         else:
-            return upload_files(self.url, file)
+            raise ValueError("You should get a link to upload to the server")
 
     def getAllTypes(self):
         return { key : self.types[key][1].__code__.co_varnames for key in self.types.keys() }

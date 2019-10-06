@@ -205,7 +205,8 @@ class BotBase:
             with open("%s/%s" % (self.path, user), 'r', encoding='utf-8') as f:
                 current =  json.loads(f.read())
 
-            current[key] = defult_value
+            if key not in current:
+                current[key] = defult_value
 
             with open("%s/%s" % (self.path, user), 'w', encoding='utf-8') as f:
                 f.write(json.dumps(current))

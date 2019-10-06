@@ -51,7 +51,7 @@ class Vk:
         self.errors_parsed = 0.0
 
         # Initialize methods
-        self.longpoll = LongPoll(access_token=self.token_vk, group_id=self.group_id, version_api=self.version_api)
+        self.longpoll = LongPoll(vk=self)
         self.method = Method(access_token=self.token_vk, version_api=self.version_api).use
         self.fastMethod = Method(access_token=self.token_vk, version_api=self.version_api).fuse
         self.help = Help
@@ -166,64 +166,64 @@ class LongPoll:
         print(event)
     '''
     def __init__(self, *args, **kwargs):
-        self.group_id = getValue(kwargs, "group_id")
-        self.access_token = kwargs["access_token"]
+        self.vk = getValue(kwargs, "vk")
+        if self.vk:
+            self.group_id = self.vk.group_id
+            self.access_token = self.vk.token_vk
+            self.version_api = self.vk.version_api
         self.vk_api_url = 'https://api.vk.com/method/'
-        self.version_api = getValue(kwargs, "version_api", "5.101")
         self.ts = "0"
         self.errors = []
+        self.session = requests.Session()
+        self.session.headers = {
+            "Content-Type" : "application/json"
+        }
 
     def listen(self):
         if self.group_id:
-            response = requests.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
+            response = self.session.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
                                     (self.vk_api_url, self.access_token, self.version_api,
                                         self.group_id)).json()['response']
             self.ts = response['ts']
             self.key = response['key']
             self.server = response['server']
+            emptyUpdates = []
 
             while 1.0:
-                response = requests.get('%s?act=a_check&key=%s&ts=%s&wait=25' % (self.server, self.key, self.ts)).json()
+                response = self.session.get('%s?act=a_check&key=%s&ts=%s&wait=25' % (self.server, self.key, self.ts)).json()
                 self.ts = getValue(response, 'ts', self.ts)
                 updates = getValue(response, 'updates')
 
                 if updates:
                     for update in updates: yield Event(update)
-                if "updates" not in response:
-                    try:
-                        time.sleep(random.randint(5, 15))
-                        response = requests.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
-                                                (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()['response']
-                        self.ts = response['ts']
-                        self.key = response['key']
-                        self.server = response['server']
-                    except:
-                        pass
+                else:
+                    emptyUpdates.append(0)
+                if len(emptyUpdates) > 100:
+                    break
+            for e in self.listen():
+                yield e
         else:
-            response = requests.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
+            response = self.session.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
                                     (self.vk_api_url, self.access_token, self.version_api)).json()['response']
             self.ts = response["ts"]
             self.key = response["key"]
             self.server = response["server"]
+            emptyUpdates = []
 
             while 1.0:
-                response = requests.get('https://%s?act=a_check&key=%s&ts=%s&wait=25&mode=202&version=3' % (self.server,
-                                        self.key, self.ts)).json()
+                response = self.session.get('https://%s?act=a_check&key=%s&ts=%s&wait=25&mode=202&version=3' % (self.server,
+                                            self.key, self.ts)).json()
                 self.ts = getValue(response, 'ts', self.ts)
                 updates = getValue(response, 'updates')
 
                 if updates:
                     for update in updates: yield Event(update)
-                if "updates" not in response:
-                    try:
-                        time.sleep(random.randint(5, 15))
-                        response = requests.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
-                                                (self.vk_api_url, self.access_token, self.version_api)).json()['response']
-                        self.ts = response["ts"]
-                        self.key = response["key"]
-                        self.server = response["server"]
-                    except:
-                        pass
+                else:
+                    emptyUpdates.append(0)
+                if len(emptyUpdates) > 100:
+                    break
+            for e in self.listen():
+                yield e
 
 
 # Class for use anything vk api method
@@ -255,7 +255,6 @@ class Method:
 from .uploader import *
 
 class Keyboard:
-
     """
     docstring for Keyboard
 
@@ -271,7 +270,6 @@ class Keyboard:
     keyboard.addButton(Button(type='vkapps'', label='hello, world!'))
     keyboard.addButton(Button(type='vkpay''))
     """
-
     def __init__(self, *args, **kwargs):
         self.keyboard = {
             "one_time" : getValue(kwargs, "one_time", 1.0),
@@ -306,7 +304,6 @@ class Keyboard:
 
 
 class Button:
-
     """
     docstring for Button
 
@@ -317,7 +314,6 @@ class Button:
     and use red button:
     keyboard.add_button(red_button) # easy and helpfull!
     """
-
     def __init__(self, *args, **kwargs):
         self.type = getValue(kwargs, "type", "text")
 

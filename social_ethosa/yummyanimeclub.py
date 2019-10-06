@@ -55,6 +55,19 @@ class YummyAnime:
         if self.isLogin():
             return YummyProfile(self.session.get(self.profilePageUrl), self.session, self.userName)
 
+    def onNewUpdate(self, timer=60):
+        def asd1(func):
+            self.lastUpdate = self.getUpdates()[0]
+            def asd():
+                while 1.0:
+                    lastUpdate = self.getUpdates()[0]
+                    if self.lastUpdate != lastUpdate:
+                        self.lastUpdate = lastUpdate
+                        func(self.lastUpdate)
+                    time.sleep(timer)
+            Thread_VK(asd).start()
+        return func
+
 
 class YummyPage:
     # Class for easy interaction with anime pages
@@ -150,7 +163,7 @@ class YummyPage:
         except:
             self.description = ""
         try:
-            self.posterImageUrl = self.content.split('<div class="poster-block">', 1).split('src="', 1)[1].split('"', 1)[0].strip()
+            self.posterImageUrl = self.content.split('<div class="poster-block">', 1)[1].split('src="', 1)[1].split('"', 1)[0].strip()
             self.posterImageUrl = "https://yummyanime.club%s" % self.posterImageUrl
         except:
             self.posterImageUrl = ""

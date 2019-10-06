@@ -31,11 +31,11 @@ class Matrix:
             self.obj = [[0 for x in range(self.width)] for y in range(self.height)]
             self.widthFill = 1
         elif len(args) == 1:
-            if type(args[0]) == Matrix:
+            if isinstance(args[0], Matrix):
                 self.width, self.height = copy(args[0].width), copy(args[0].height)
                 self.obj = args[0].obj[:]
                 self.widthFill = copy(args[0].widthFill)
-            if type(args[0]) == list or type(args[0]) == tuple:
+            if isinstance(args[0], list) or isinstance(args[0], tuple):
                 self.width = len(args[0])
                 self.height = len(args[0][0])
                 self.obj = args[0]
@@ -120,7 +120,7 @@ class Matrix:
 
     def __add__(self, other):
         obj = copy(self.obj)
-        if type(other) == Matrix:
+        if isinstance(other, Matrix):
             for x in range(self.width):
                 for y in range(self.height):
                     obj[x][y] += other.obj[x][y]
@@ -145,12 +145,12 @@ class Matrix:
             return 0
         elif other == 1:
             return self
-        elif type(other) == int:
+        elif isinstance(other, int):
             for x in range(self.width):
                 for y in range(self.height):
                     self.obj[x][y] *= other
             return self
-        elif type(other) == Matrix:
+        elif isinstance(other, Matrix):
             if self.width == other.height:
                 s = 0
                 width = self.width
@@ -176,7 +176,7 @@ class Matrix:
     def __pos__(self): return -self
 
     def __eq__(self, other):
-        if type(other) == Matrix:
+        if isinstance(other, Matrix):
             if other.obj == self.obj: return 1
             else: return 0
         else: return 0
@@ -191,9 +191,9 @@ class Matrix:
 class Point:
     def __init__(self, *args):
         if len(args) == 1:
-            if type(args[0]) == Point:
+            if isinstance(args[0], Point):
                 self.points = args[0].points
-            elif type(args[0]) == list or type(args[0]) == tuple:
+            elif isinstance(args[0], list) or isinstance(args[0], tuple):
                 self.points = args[0]
             else:
                 self.points = [0, 0]
@@ -224,10 +224,10 @@ class ArithmeticSequence:
             self.d = 1
         elif len(args) == 1:
             obj = args[0]
-            if type(obj) == ArithmeticSequence:
+            if isinstance(obj, ArithmeticSequence):
                 self.start = copy(obj.start)
                 self.d = copy(obj.d)
-            elif type(obj) == list or type(obj) == tuple:
+            elif isinstance(obj, list) or isinstance(obj, tuple):
                 if len(obj) == 0:
                     self.start = 0
                     self.d = 1
@@ -273,10 +273,10 @@ class GeometricSequence:
             self.d = 2
         elif len(args) == 1:
             obj = args[0]
-            if type(obj) == GeometricSequence:
+            if isinstance(obj, GeometricSequence):
                 self.start = copy(obj.start)
                 self.d = copy(obj.start)
-            elif type(obj) == list or type(obj) == tuple:
+            elif isinstance(obj, list) or isinstance(obj, tuple):
                 if obj[0] == 0:
                     self.start = obj[0] + 1
                     self.d = (obj[1]+1) / self.start
@@ -325,10 +325,10 @@ class Vector2:
             self.a = self.b = Point(0, 0)
         elif len(args) == 1:
             obj = args[0]
-            if type(obj) == Vector2:
+            if isinstance(obj, Vector2):
                 self.a = copy(obj.a)
                 self.b = copy(obj.b)
-            elif type(obj) == list or type(obj) == tuple:
+            elif isinstance(obj, list) or isinstance(obj, tuple):
                 if len(obj) == 0:
                     self.a = self.b = Point(0, 0)
                 elif len(obj) == 1:
@@ -369,13 +369,13 @@ class Vector2:
         return float(direction) if not dr.endswith("j") else float(dr[:-1])
 
     def __mul__(self, other):
-        if type(other) == int or type(other) == float:
+        if isinstance(obj, int) or isinstance(obj, float):
             self.b.points[0] *= other
             self.b.points[1] *= other
-        elif type(other) == Vector2:
+        elif isinstance(obj, Vector2):
             self.b.points[0] *= other.b.points[0]
             self.b.points[1] *= other.b.points[1]
-        elif type(other) == Point:
+        elif isinstance(obj, Point):
             self.b.points[0] *= other.points[0]
             self.b.points[1] *= other.points[1]
         return self
@@ -393,7 +393,7 @@ class Rectangle:
         if len(args) == 4:
             self.left, self.top, self.right, self.bottom = args
         elif len(args) == 1:
-            if type(args[0]) == Rectangle:
+            if isinstance(args[0], Rectangle):
                 self.left, self.top, self.right, self.bottom = copy(args[0].left), copy(args[0].top), copy(args[0].right), copy(args[0].bottom)
 
     def containsPoint(self, point):
