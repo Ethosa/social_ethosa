@@ -177,6 +177,33 @@ profile = ym.getProfile()
 print(profile)
 ```
 
+## bloggercom api
+Модуль для работы с [blogger.com](https://blogger.com)  
+Инициализация:
+```python
+blogger = Blogger(apiKey="Ваш апи ключ")
+```
+
+Получение блога по его айди:
+```python
+blog = blogger.blogs.get(123123)
+printf(blog["name"]) # Вы можете использовать blog как словарь
+printf(blog.name) # или как объект
+printf(blog)
+```
+Получение блога по его URL:
+```python
+blog = blogger.blogs.getByUrl("https://meethosa.blogspot.com")
+```
+Получение постов блога
+```python
+posts = blogger.posts.get(123123)
+```
+Получение страниц блога
+```python
+posts = blogger.pages.get(123123)
+```
+
 ## eMath
 Я решил, что этот модуль мало кому понадобится, поэтому его импорт отделен от основного:
 ```python
