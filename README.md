@@ -2,7 +2,7 @@
 
 A Python library that uses requests  
 Documentation in other languages
-<pre style="background-color: #212121; color: red; border-radius: 35px"><a href="https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md">Russian</a></pre>
+- [Russian](https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md)
 
 ## Get started
 Installation: `pip install --upgrade social-ethosa`  
