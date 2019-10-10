@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Social-ethosa docs</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Raleway:100.600">
+    <link rel="stylesheet" type="text/css" href="css/main.css"></link>
+    <link rel="stylesheet" type="text/css" href="css/highlight.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="js/rainbow-custom.min.js"></script>
+</head>
+<body link="#ededed" vlink="#ababab" alink="ed7777">
+    <div class="imageViewerBack" onclick="hideImage()">
+        <div class="imageViewer" align="center">
+            <img height="100%" width="auto" id="imageViewerId" src="">
+        </div>
+    </div>
+    <div class="shadowed menu">
+        <h3 id="contentMenu">Menu</h3>
+        <hr>
+        <nav>
+            <a href="#head" class="menuItem" id="headMenu">Head</a><br>
+            <a href="#vkcom" class="menuItem" id="vkcomMenu">Vkcom</a><br>
+            <a href="#yandexApi" class="menuItem" id="yandexApiMenu">Yandex API</a><br>
+            <a href="#tracemoe" class="menuItem" id="traceMoeMenu">Tracemoe API</a><br>
+            <a href="#botwrapper" class="menuItem" id="botWrapperMenu">Bot Wrapper</a><br>
+            <a href="#bbb" class="menuItem" id="betterBotBaseMenu">Better Bot Base</a><br>
+            <a href="#tpdne" class="menuItem" id="thisPersonMenu">ThisPerson</a><br>
+            <a href="#yummyanime" class="menuItem" id="yummyanimeMenu">Yummyanime</a><br>
+            <a href="#emath" class="menuItem" id="eMathMenu">eMath</a><br>
+            <a href="#utils" class="menuItem" id="utilsMenu">Utils</a>
+        </nav>
+        <div align="center" style="bottom: 0;">
+            <button class="shadowed" onclick="changeLanguage()" id="changeButton">Change Language</button>
+        </div>
+    </div>
+    <table width="100%">
+        <tr>
+            <td class="shadowed">
+                <div id="MainMenu">
+                    <button id="toggler" class="shadowed toggler" onclick="toggle()">|||</button>
+                    <h1 align="center"><a name="head" id="head">Hello, social-ethosa!</a></h1>
+                    <hr/>
+                    <p id="start">A Python library that uses requests</p>
+                    <h2 id="getstart">Get started</h2>
+                    <hr/>
+                    <p id="installing">Installation:</p> <div class="code">pip install --upgrade social-ethosa</div><br>
+                    <p id="import">Import:</p>
+                    <pre><code data-language="python">from social_ethosa import *</code></pre>
+                    <h3><a name="vkcom">Vkcom</a></h3>
+                    <hr>
+                    <pre><code data-language="python" id="vkcom1">vk = Vk(token="Your token is here", group_id=12345, debug=True, lang="en")
+# the group_id parameter should be used if you are going to log in through a group.
+# In this example, we will use group authorization.
+
+@vk.on_message_new
+# This decorator is an event handler that executes the function passed to it on a new message
+# https://vk.com/dev/groups_events
+def getMessage(message):
+    text = message.text
+    peer_id = message.peer_id
+    from_id = message.from_id
+    attachments = message.attachments</code></pre><br>
+
+                    <p id="fileUploader">using the file Uploader:</p>
+                    <pre><code data-language="python">vk.uploader.getUploadUrl("message_photo")
+# getting a link to upload files
+# you can also pass other arguments (argument=value)
+# to get the rest of the UploadUrl names, use the function
+# uploader.getAllTypes</code></pre><br>
+
+                    Some audio methods are also available in my library:<br>
+                    <pre><code data-language="python">login = "89007003535"
+password = "qwertyuiop"
+
+audio = Audio(login=login, password=password, debug=1)
+audios = audio.get()
+# Since the audio methods are not available in the official API, I had to make a parser of the site
+                    </code></pre><br>
+
+                    <h2><a name="yandexApi">Yandex api</a></h2>
+                    <hr>
+                    Using Yandex api:
+                    <pre><code data-language="python">TOKEN = "translate token"
+yt = YTranslator(token=TOKEN)
+text = "Пайтон - хороший язык программирования"
+response = yt.translate(text=text, lang="en") # Text translation
+print(response)</code></pre><br>
+                
+                    <h2><a name="tracemoe">Trace Moe</a></h2>
+                    <hr>
+                    Using the TraceMoe api:
+                    <pre><code data-language="python">tracemoe = TraceMoe() # initialization for future use
+# In directory with script there is screenshot from anime "a. png"
+response = tracemoe.search("a.png", False, 1)
+# param 1 - path to image or image url
+# param 2 - True, if param 1 is link
+# param 3 - filter search</code></pre><br>
+
+                    <img src="img/a.png" width="100%" align="center" onclick="showImage('#imageViewerId', 'img/a.png')">
+                    If the anime is found, you should get a video preview of the found moment:
+
+                    <pre><code data-language="python">video = tracemoe.getVideo(response, mute=0) # The mute parameter must be 1 if you want to get video without sound
+tracemoe.writeFile("file.mp4", video)
+# param 1 is a path to write file
+# param 2 is a video received by the get Video method</code></pre><br>
+                    
+                    <h2><a name="botwrapper">BotWrapper</a></h2>
+                    <hr>
+                    In the library there is a wrapper for bots!
+                    Initialization:
+
+                    <pre><code data-language="python">bw = BotWrapper()</code></pre><br>
+                    Getting a random date
+
+                    <pre><code data-language="python">date = bw.randomDate(fromYear="2001", toYear="3001")
+# Returned: string
+# The fromYear and toYear parameters are optional</code></pre><br>
+                    Getting a random chance
+
+                    <pre><code data-language="python">date = bw.randomChance()
+# Returned: string
+# The fromYear and toYear parameters are optional</code></pre><br>
+                    
+                    <h2><a name="bbb">BetterBotBase</a></h2>
+                    <hr>
+                    This class uses pickle to maintain the database.<br>
+                    Let's initialize this class.
+
+                    <pre><code data-language="python">bbs = BetterBotBase("users folder", "dat")
+# The first argument is the name of the folder where users will be stored
+# the second argument is the Postfix of the files, in our case the files will look like this:
+# 123123123.dat</code></pre><br>
+BetterBotBase can also be used with Vkcom:
+
+                    <pre><code data-language="python">@vk.on_message_new
+def getNewMessage(message):
+  from_id = message.from_id
+  if from_id > 0:
+    user = bbs.autoInstallUser(from_id, vk)
+# autoInstallUser automatically creates or loads users and returns the user for further action with it.</code></pre><br>
+BotWrapper can also be used to interact with BetterBotBase!
+
+                    <pre><code data-language="python">text = bw.answerPattern("Hello, &lt;name&gt;, your money is &lt;money&gt;!", user)
+# the answer Pattern method automatically substitutes variables from user,
+# thus making it a little easier to format the string</code></pre><br>
+You can define your own templates to the database!
+
+                    <pre><code data-language="python"># right after BetterBotBase announcement
+bbs.addPattern("countMessages", 0)
+# the first argument is the variable name
+# the second argument is the default value of the variable (when creating a user)</code></pre><br>
+You created a template, but it was not added to the old users? not a problem!
+
+                    <pre><code data-language="python">bbs.addNewVariable("countMessages", 0)
+# this method works the same as addPattern, but with older users</code></pre><br>
+                    
+                    <h2><a name="tpdne">This X does not exists</a></h2>
+                    <hr>
+                    Initialization is quite simple
+
+                    <pre><code data-language="python">person = ThisPerson()</code></pre><br>
+
+                    In the class now only 3 methods to retrieve non-existent people/cats/waifu
+
+                    <pre><code data-language="python">rperson = person.getRandomPerson()
+rcat = person.getRandomCat()
+rwaifu = person.getRandomWaifu()</code></pre><br>
+                    after receiving the generated photo, it should be written to a file.
+
+                    <pre><code data-language="python">person.writeFile("person.png", rperson)
+person.writeFile("cat.png", rcat)
+person.writeFile("waifu.png", rwaifu)</code></pre><br>
+                    
+                    <h2><a name="yummyanime">Yummyanime club</a></h2>
+                    <hr>
+                    There are few methods here, as I have not found an official API. Let's get started.
+
+                    <pre><code data-language="python">ym = YummyAnime()
+ym = YummyAnime(login="yourmail@gmail.com", password="iampassword")
+# You can log in to your account if you need to</code></pre><br>
+                    Getting random anime
+
+                    <pre><code data-language="python">randomAnime = ym.getRandomAnime()
+print(dir(randomAnime))
+print(randomAnime())</code></pre><br>
+                    You can also get a list of anime updates
+
+                    <pre><code data-language="python">updates = ym.getUpdates()
+anime = updates[0].open() # You will get the same object that the getRandomAnime() method returns
+print(updates)
+print(anime)</code></pre><br>
+                    And also you can view your profile
+
+                    <pre><code data-language="python">profile = ym.getProfile()
+print(profile)</code></pre><br>
+                    <h2><a name="emath">eMath</a></h2>
+                    <hr>
+                    I decided that very few people will need this module, so importing it separately from the main one:
+
+                    <pre><code data-language="python">from social_ethosa.eMath import *</code></pre><br>
+                    <h3>Point</h3>
+                    You can create an N-dimensional point:
+
+                <pre><code data-language="python">point = Point(0, 0, 0)
+point1 = Point(4, 2, 3)</code></pre><br>
+                And also you can find the Euclidean distance between them:
+
+                <pre><code data-language="python">distance = point.euclideanDistance(point1)
+print(distance)</code></pre><br>
+                <h3>Matrix</h3>
+                Also this module has a Matrix class
+
+                <pre><code data-language="python">matrix = Matrix(3, 3) # Creating a 3x3 matrix
+matrix1 = Matrix([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9]]) # Creating a 3x3 matrix</code></pre><br>
+                You can transpose the matrix
+
+                <pre><code data-language="python">matrix1.transpose()
+# 1 4 7
+# 2 5 8
+# 3 6 9</code></pre><br>
+                And multiply the matrix by the number
+
+                <pre><code data-language="python">matrix1 *= 3
+# 3 12 21
+# 6 15 24
+# 9 18 27</code></pre><br>
+                The addition of two matrices is also possible
+
+                <pre><code data-language="python">matrix2 = Matrix([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9]])
+matrix1 += matrix2
+# 4 14 24
+# 10 20 30
+# 16 26 36</code></pre><br>
+                Matrix multiplication? No problem!
+
+                <pre><code data-language="python">matrix = Matrix([[1, 2, 3],
+                [4, 5, 6]])
+matrix1 = Matrix([[1, 2],
+                [3, 4],
+                [5, 6]])
+matrix *= matrix1
+# 22, 28 
+# 49, 64
+
+matrix = Matrix([[1, 2],
+                [3, 4]])
+matrix1 = Matrix([[1, 2],
+                [3, 4]])
+matrix *= matrix1
+# 7, 10
+# 15, 22</code></pre><br>
+                You can also clear or fill the matrix with any numbers!
+
+                <pre><code data-language="python">matrix = Matrix([[1, 2],
+                [3, 4]])
+# 1 2
+# 3 4
+
+matrix.clear()
+# 0 0
+# 0 0
+
+matrix.fill()
+# 0 0
+# 0 0
+
+matrix.fill(7)
+# 7 7
+# 7 7</code></pre><br>
+                you can also edit individual parts of the matrix
+
+                <pre><code data-language="python">matrix.setAt(1, 1, 8)
+# 8 7
+# 7 7
+
+a = matrix.getAt(1, 1)
+# 7</code></pre><br>
+                And also you can mirror the matrix:
+
+                <pre><code data-language="python">matrix.flip()
+# 7 7
+# 7 8</code></pre><br>
+                <h3>ArithmeticSequence</h3>
+                There are many ways to initialize an arithmetic sequence.
+
+                <pre><code data-language="python">ars = ArithmeticSequence(0, 2)
+ars = ArithmeticSequence([0, 2])
+ars.getElem(1) # 2
+ars.getElem(0) # 0
+ars.getElem(4) # 8</code></pre><br>
+                You can also get the sum of the elements
+
+                <pre><code data-language="python">ars = ArithmeticSequence(5, 5)
+ars.getSum(0) # 5
+ars.getSum(2) # 15</code></pre><br>
+                <h3>GeometricSequence</h3>
+                There are many ways to initialize an geometric sequence.
+
+                <pre><code data-language="python">ars = GeometricSequence(1, 2)
+ars = GeometricSequence([1, 2])
+ars.getElem(1) # 2
+ars.getElem(0) # 1
+ars.getElem(4) # 16</code></pre><br>
+                You can also get the sum of the elements
+
+                <pre><code data-language="python">ars = ArithmeticSequence(1, 2)
+ars.getSum(0) # 1
+ars.getSum(2) # 7
+ars.getSum(1) # 3</code></pre><br>
+                
+                <h2><a name="utils">Utils</a></h2>
+                <hr>
+                This module can make your life much easier.
+
+                <pre><code data-language="python">def smthDef(arg1, arg2, **kwargs):
+    print(getValue(kwargs, "argument", None))
+# getValue - abbreviation of kwargs["argument"] if "argument" in kwargs else None
+
+@autoRun
+# the decorator simply automatically invokes the object as soon as it is initialized
+def hello():
+    print("hi")
+
+downloadFileFromUrl("url", "path to file")
+# this method downloads the file from the link and places it in the specified path.
+
+updateLibrary("0.2.42")
+# this method automatically updates the library to the specified version.
+# if no version is specified, the library is updated to the latest version.
+
+lst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+print(splitList(lst, 2))
+# [[1, 2], [3, 4], [5, 6], [7, 8], [9, 0]]
+
+lst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+print(splitList(lst, 3))
+# [[1, 2, 3], [4, 5, 6], [7, 8, 9], [0]]
+# the splitList method tries to divide the passed list into equal parts
+
+timer = Timer()
+# Timer-class for calling certain functions after a certain time.
+
+@timer.after(1000)
+# after method run this function after 1000 milliseconds
+def hi():
+  print("hello world")
+
+@timer.afterEvery(100, 1000)
+# the after Every method starts this function after 100 milliseconds and will call it every subsequent 1000 milliseconds
+def hello(): print("hello")
+
+timer.cancel()
+# when the timer method is called.cancel will automatically close all running timers of this timer</code></pre><br>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>

@@ -215,7 +215,7 @@ class Point:
     def __eq__(self, other): return self.points == other.points
 
     def __str__(self):
-        return "<Point %s>" % self.points
+        return "<Point (%s)>" % ", ".join("%s" % i for i in self.points)
 
 class ArithmeticSequence:
     def __init__(self, *args):

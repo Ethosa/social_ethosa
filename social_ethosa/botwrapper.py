@@ -46,7 +46,7 @@ class BotWrapper(object):
 
     def randomDate(self, fromYear="2001", toYear="3001"):
         self.count_use += 1
-        return randomDate("01.01.%s 00:00:00", "01.01.%s 00:00:00" % (fromYear, toYear), random.random())
+        return randomDate("01.01.%s 00:00:00" % fromYear, "01.01.%s 00:00:00" % toYear, random.random())
 
     def randomChance(self):
         self.count_use += 1

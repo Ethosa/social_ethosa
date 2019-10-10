@@ -98,7 +98,7 @@ class Audio:
         }
 
     def search(self, q=None, *args, **kwargs):
-        url = f'https://m.vk.com/audios{self.user_id}?q={q}'
+        url = 'https://m.vk.com/audios%s?q=%s' % (self.user_id, q)
         response = self.session.get(url).text
 
         artists = response.split('ColumnSlider__column', 1)[1].split('</div></div></div></div>')[0].split('OwnerRow__content al_artist"')

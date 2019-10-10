@@ -9,3 +9,4 @@ from .tracemoe import *
 from .tpdne import *
 from .yandex import *
 from .yummyanimeclub import *
+from .bloggercom import *

@@ -160,6 +160,10 @@ class YummyPage:
         try:
             self.description = self.content.split('<div id="content-desc-text"><p>', 1)[1].split('</p>', 1)[0].strip()
             self.description = self.description.replace('<br />', '').replace("&nbsp;", "").replace("&mdash;", "—").replace("&quot;", '"').replace("&hellip;", "...").replace("&ndash;", "—").replace("&laquo;", "«").replace("&raquo;", "»")
+            while "<" in self.description and ">" in self.description:
+                start = self.description.find("<")
+                end = self.description.find(">")
+                self.description = self.description[:start] + self.description[end+1:]
         except:
             self.description = ""
         try:

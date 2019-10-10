@@ -17,7 +17,7 @@ def autoRun(callObject, *args, **kwargs):
 
 def printf(a, *args):
     # faster than print
-    sys.stdout.write("%s\n" % ("%s" % a % args))
+    sys.stdout.write("%s\n" % (str(a) % args if len(args) > 0 else str(a)))
 
 def downloadFileFromUrl(url, path):
     response = requests.get(url)
@@ -126,6 +126,11 @@ def timeIt(count=1, libs=[], launch="thread"):
     return timer
 
 def updateLibrary(version=None):
+    """function to update the library
+    
+    Keyword Arguments:
+        version {[str]} -- [library version] (default: {None})
+    """
     if version:
         os.system("pip install social-ethosa==%s" % version)
     else:
@@ -185,4 +190,20 @@ class Timer:
     def setSeconds(self): self.ms = 1
     def setMilliseconds(self): self.ms = 1000
     def cancel(self): self.canceled = 1
-    
+
+class Obj:
+    def __init__(self, obj):
+        self.obj = obj
+        if type(self.obj) == dict:
+            self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
+
+
+    def __getattr__(self, attribute):
+        val = getValue(self.obj, attribute)
+        return val if val else getValue(getValue(self.obj, "object", self.obj), attribute, None)
+
+    def __getitem__(self, item):
+        return self.__getattr__(item)
+
+    def __str__(self):
+        return "%s" % self.obj

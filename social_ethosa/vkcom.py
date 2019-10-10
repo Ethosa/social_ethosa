@@ -41,7 +41,20 @@ class Vk:
     vk.messages.send(message='message', peer_id=1234567890, random_id=vk.getRandomId())
     '''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
+        """initialization method
+        
+        Required for authorization in VK via token
+        
+        Arguments:
+            **kwargs {[dict]} -- [
+                token {str} -- VK token
+                debug {bool} -- an option to enable debugging
+                version_api {float or str} -- the version of VK API
+                group_id {str or int} -- ID groups (if you authorize through the group)
+                lang {str} -- language for debuging (can be "en", "ru", "de", "fr", "ja")
+            ]
+        """
         self.token_vk = getValue(kwargs, "token") # Must be string
         self.debug = getValue(kwargs, "debug") # Must be boolean
         if self.debug: self.debug = 1.0
@@ -54,6 +67,8 @@ class Vk:
         self.longpoll = LongPoll(vk=self)
         self.method = Method(access_token=self.token_vk, version_api=self.version_api).use
         self.fastMethod = Method(access_token=self.token_vk, version_api=self.version_api).fuse
+        self.execute = lambda **kwargs: self.fastMethod("execute", kwargs)
+
         self.help = Help
 
         # Other variables:
@@ -389,18 +404,6 @@ class Error:
         self.line = kwargs["line"]
     def __str__(self):
         return "%s, Line %s:\n%s" % (self.code, self.line, self.message)
-
-
-class Obj:
-    def __init__(self, obj):
-        self.obj = obj
-        if type(self.obj) == dict:
-            self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
-    def __str__(self):
-        return "%s" % self.obj
-    def __getattr__(self, attribute):
-        val = getValue(self.obj, attribute)
-        return val if val else getValue(self.obj['object'], attribute)
 
 class UserObj:
     def __init__(self, obj):
