@@ -178,6 +178,33 @@ profile = ym.getProfile()
 print(profile)
 ```
 
+## bloggercom api
+Module to work with [blogger.com](https://blogger.com)  
+Initialization:
+```python
+blogger = Blogger(apiKey="Your api key")
+```
+
+get blog by id:
+```python
+blog = blogger.blogs.get(123123)
+printf(blog["name"]) # You can use the resulting object as a dictionary
+printf(blog.name) # or as an object :/
+printf(blog)
+```
+get blog by url:
+```python
+blog = blogger.blogs.getByUrl("https://meethosa.blogspot.com")
+```
+get posts by blog id
+```python
+posts = blogger.posts.get(123123)
+```
+get pages by blog id
+```python
+posts = blogger.pages.get(123123)
+```
+
 ## eMath
 I decided that very few people will need this module, so importing it separately from the main one:
 ```python
