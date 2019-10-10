@@ -1,4 +1,5 @@
-# social ethosa
+<h1 align="center">Social-ethosa</h1>
+
 A Python library that uses requests  
 <details>
 <summary> Documentation in other languages </summary>
