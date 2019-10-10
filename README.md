@@ -1,10 +1,9 @@
 <h1 align="center">Social-ethosa</h1>
 
 A Python library that uses requests  
-<details>
-<summary> Documentation in other languages </summary>
-Russian - https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md
-</details>
+| Documentation in other languages |
+| :------------------------------: |
+| [Russian](https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md) |
 
 ## Get started
 Installation: `pip install --upgrade social-ethosa`  
