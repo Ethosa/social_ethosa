@@ -1,8 +1,8 @@
 # social ethosa
 A Python library that uses requests  
 <details>
-  <summary> Documentation in other languages </summary>
-    [Russian documentation](https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md)
+<summary> Documentation in other languages </summary>
+Russian - https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md
 </details>
 
 ## Get started
