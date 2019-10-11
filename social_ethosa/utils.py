@@ -164,18 +164,21 @@ class Timer:
     """ 
     def __init__(self, *args, **kwargs):
         self.canceled = 0
+        self.isWorking = lambda: 0
         self.ms = 1000
 
     def after(self, ms):
         def decorator(function):
             def func():
                 time.sleep(ms/self.ms)
+                self.isWorking = lambda: 1
                 function()
             Thread_VK(func).start()
         return decorator
 
     def afterEvery(self, ms1, ms2):
         time.sleep(ms1/self.ms)
+        self.isWorking = lambda: 1
         def decorator(function):
             def func():
                 while not self.canceled:
@@ -189,7 +192,9 @@ class Timer:
 
     def setSeconds(self): self.ms = 1
     def setMilliseconds(self): self.ms = 1000
-    def cancel(self): self.canceled = 1
+    def cancel(self):
+        self.canceled = 1
+        self.isWorking = lambda: 0
 
 class Obj:
     def __init__(self, obj):
