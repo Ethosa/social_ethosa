@@ -45,14 +45,32 @@ class BotWrapper(object):
         self.smiles = ["&#127815;", "&#127821;", "&#127826;", "&#127827;"]
 
     def randomDate(self, fromYear="2001", toYear="3001"):
+        """generate random date
+        
+        Keyword Arguments:
+            fromYear {str} -- [start generate year] (default: {"2001"})
+            toYear {str} -- [end generate year] (default: {"3001"})
+        
+        Returns:
+            [str] -- [generated date]
+        """
         self.count_use += 1
         return randomDate("01.01.%s 00:00:00" % fromYear, "01.01.%s 00:00:00" % toYear, random.random())
 
     def randomChance(self):
+        """generate random chance
+        Returns:
+            [str] -- [generated chance (7%)]
+        """
         self.count_use += 1
         return "%s%%" % random.randint(0, 100)
 
     def yesOrNo(self):
+        """return random yes or no
+        
+        Returns:
+            [str] -- [yes or no]
+        """
         self.count_use += 1
         return random.choice(["Да", "Нет"])
 
@@ -72,12 +90,28 @@ class BotWrapper(object):
         return ''.join([self.rus_eng[i] if i in self.rus_eng else self.eng_rus[i] if i in self.eng_rus else i for i in text])
 
     def delirium(self, number=1):
+        """generate random text
+        
+        Keyword Arguments:
+            number {number} -- [number of sentense] (default: {1})
+        
+        Returns:
+            [str] -- [generated text]
+        """
         self.count_use += 1
         resp = requests.get("https://fish-text.ru/get?type=sentence&number=%s&format=json" % number)
         resp.encoding = resp.apparent_encoding
         return json.loads(resp.text)['text']
 
     def calc(self, text):
+        """calculator
+        
+        Arguments:
+            text {[str]} -- [example for calculation]
+        
+        Returns:
+            [str] -- [result]
+        """
         self.count_use += 1
         text = text.replace("^", "**") # ''.join(i for i in text if i in self.validate_for_calc)
         glb = {
@@ -148,15 +182,6 @@ class User:
             if i in self._obj:
                 self._obj[i] = eval("self.%s" % i)
         return self._obj
-
-    def isMoneyMoreThenZero(self):
-        return self.obj['money'] > 0
-
-    def changeName(self, name):
-        self.obj['name'] = name
-
-    def addMoney(self, amount):
-        self.obj['money'] += amount
 
     def __getattr__(self, attribute):
         value = getValue(self.obj, attribute)

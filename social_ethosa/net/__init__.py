@@ -8,3 +8,4 @@ from .tpdne import *
 from .yandex import *
 from .yummyanimeclub import *
 from .bloggercom import *
+from .pastebincom import *

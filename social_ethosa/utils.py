@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 from threading import Thread
+import datetime
 import requests
 import inspect
 import base64
@@ -28,6 +29,14 @@ def downloadFileFromUrl(url, path):
     else: return False
 
 def getMaxPhoto(attachments):
+    """returns a list of links to images with the highest quality
+    
+    Arguments:
+        attachments {[list]} -- [attachments from vk]
+    
+    Returns:
+        [list] -- [list of links to images with the highest quality]
+    """
     files = []
     for attachment in attachments:
         if attachment["type"] == "photo":
@@ -112,7 +121,6 @@ def timeIt(count=1, libs=[], launch="thread"):
     # launch option to run. default "thread"
     def timer(function):
         global Thread_VK
-        a = None
         def asd():
             setup = "\n".join(["import %s" % i for i in libs])
             setup += "\ndef" + inspect.getsource(function).split('def', 1)[1]
@@ -156,6 +164,27 @@ def splitList(lst, number):
         splitted.pop()
     return splitted
 
+def resplit(string, ssymbol=",", symbol="/", splitNum=-1):
+    """split string
+    
+    Arguments:
+        string {[str]} -- string for split
+    
+    Keyword Arguments:
+        ssymbol {str} -- [split symbol] (default: {","})
+        symbol {str} -- [exception symbol] (default: {"/"})
+        splitNum {number} -- [split number] (default: {-1})
+    
+    Returns:
+        [list] -- [splitted list]
+    """
+    tlist = list("qwertyuiopasdfghjklzxcvbnm1234567890_QWERTYUIOPASDFGHJKLZXCVBNM")
+    tstr = "".join([random.choice(tlist) for i in range(25)])
+    out = string.replace("%s%s" % (symbol, ssymbol), tstr)
+    out = out.split(ssymbol, splitNum)
+    out = [i.replace(tstr, ssymbol) for i in out]
+    return out
+
 class Timer:
     """
     Timer is used to call certain functions after N seconds or milliseconds,
@@ -165,9 +194,14 @@ class Timer:
     def __init__(self, *args, **kwargs):
         self.canceled = 0
         self.isWorking = lambda: 0
-        self.ms = 1000
+        self.ms = 1000 # this parameter controls which unit of measure to use for waiting
 
     def after(self, ms):
+        """calls the function after a certain amount of time
+        
+        Arguments:
+            ms {[int]} -- time in milliseconds (default) or seconds
+        """
         def decorator(function):
             def func():
                 time.sleep(ms/self.ms)
@@ -177,6 +211,12 @@ class Timer:
         return decorator
 
     def afterEvery(self, ms1, ms2):
+        """calls the function after a certain time each time after a time interval
+        
+        Arguments:
+            ms1 {[int]} -- time in milliseconds (default) or seconds
+            ms2 {[int]} -- time in milliseconds (default) or seconds
+        """
         time.sleep(ms1/self.ms)
         self.isWorking = lambda: 1
         def decorator(function):
@@ -190,11 +230,45 @@ class Timer:
             Thread_VK(func).start()
         return decorator
 
-    def setSeconds(self): self.ms = 1
-    def setMilliseconds(self): self.ms = 1000
+    def setSeconds(self):
+        """
+        sets the time to milliseconds
+        """
+        self.ms = 1
+
+    def setMilliseconds(self):
+        """
+        sets the time to seconds
+        """
+        self.ms = 1000
+
     def cancel(self):
+        """
+        stops all currently running timers
+        """
         self.canceled = 1
         self.isWorking = lambda: 0
+
+
+class Event:
+    def __init__(self, update, *args, **kwargs):
+        self.update = update
+        if type(update) == list:
+            self.update = UserObj(update).obj
+            self.update[0] = self.update["type"]
+
+    def __str__(self):
+        return "%s" % self.update
+
+    def __getattr__(self, attr):
+        val = getValue(self.update, attr, None)
+        if isinstance(val, dict):
+            return Obj(val)
+        return val
+
+    def __getitem__(self, item):
+        return self.__getattr__(item)
+
 
 class Obj:
     def __init__(self, obj):
@@ -202,13 +276,43 @@ class Obj:
         if type(self.obj) == dict:
             self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
 
-
     def __getattr__(self, attribute):
         val = getValue(self.obj, attribute)
-        return val if val else getValue(getValue(self.obj, "object", self.obj), attribute, None)
+        if val:
+            exec("self.%s = %s%s%s" % (attribute, '"' if type(val) == str else '', val, '"' if type(val) == str else ''))
+            if isinstance(val, dict):
+                return Obj(eval("self.%s" % attribute))
+            return eval("self.%s" % attribute)
+        else:
+            val = getValue(getValue(self.obj, "object", self.obj), attribute, None)
+            exec("self.%s = %s%s%s" % (attribute, '"' if type(val) == str else '', val, '"' if type(val) == str else ''))
+            if isinstance(val, dict):
+                return Obj(eval("self.%s" % attribute))
+            return eval("self.%s" % attribute)
 
     def __getitem__(self, item):
         return self.__getattr__(item)
 
+    def __setitem__(self, item, value):
+        self.obj[item] = value
+
+    def __str__(self):
+        return "%s" % self.obj
+
+
+class UserObj:
+    def __init__(self, obj):
+        self.objs = obj
+        self.obj = {"type" : obj[0]}
+        self.type = obj[0]
+        for tp in users_event:
+            if self.type == users_event[tp][0]:
+                current = 0
+                for i in users_event[tp]:
+                    if current > 0 and current < len(obj):
+                        self.obj[i] = obj[current]
+                        exec("self.%s = obj[current]" % i, locals(), globals())
+                    current += 1
+                break
     def __str__(self):
         return "%s" % self.obj

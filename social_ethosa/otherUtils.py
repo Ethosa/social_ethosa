@@ -53,8 +53,3 @@ class UtilsManager:
                     time.sleep(timer)
 
         Thread_VK(start).start()
-
-    def startInOtherThread(self, func):
-        def start(*args, **kwargs):
-            Thread_VK(func, *args, **kwargs).start()
-        return start

@@ -58,7 +58,7 @@ class Vk:
         self.token_vk = getValue(kwargs, "token") # Must be string
         self.debug = getValue(kwargs, "debug") # Must be boolean
         if self.debug: self.debug = 1.0
-        self.version_api = getValue(kwargs, "version_api", "5.101") # Can be float / integer / string
+        self.version_api = getValue(kwargs, "version_api", "5.102") # Can be float / integer / string
         self.group_id = getValue(kwargs, "group_id") # can be string or integer
         self.lang = getValue(kwargs, "lang", "en") # must be string
         self.errors_parsed = 0.0
@@ -297,7 +297,7 @@ class Keyboard:
     """
     def __init__(self, *args, **kwargs):
         self.keyboard = {
-            "one_time" : getValue(kwargs, "one_time", 1.0),
+            "one_time" : getValue(kwargs, "one_time", True),
             "buttons" : getValue(kwargs, "buttons", [[]])
         }
 
@@ -377,29 +377,17 @@ class Button:
     def setColor(self, color): self.color = color
 
     def getButton(self):
-        kb = { 'action' : self.action, 'color' : self.color }
+        kb = {'action' : self.action, 'color' : self.color}
         if kb['action']['type'] != 'text':
             del kb['color']
         return kb
 
     def __new__(self, *args, **kwargs):
         self.__init__(self, *args, **kwargs)
-        return self.getButton()
+        return self.getButton(self)
 
 
 # Enums start here:
-class Event:
-    def __init__(self, update, *args, **kwargs):
-        self.update = update
-        if type(update) == list:
-            self.update = UserObj(update).obj
-            self.update[0] = self.update["type"]
-    def __str__(self):
-        return "%s" % self.update
-    def __getattr__(self, attr):
-        return self.update[attr]
-
-
 class ButtonColor:
     PRIMARY = "primary"
     SECONDARY = "secondary"
@@ -414,23 +402,6 @@ class Error:
         self.line = kwargs["line"]
     def __str__(self):
         return "%s, Line %s:\n%s" % (self.code, self.line, self.message)
-
-class UserObj:
-    def __init__(self, obj):
-        self.objs = obj
-        self.obj = {"type" : obj[0]}
-        self.type = obj[0]
-        for tp in users_event:
-            if self.type == users_event[tp][0]:
-                current = 0
-                for i in users_event[tp]:
-                    if current > 0 and current < len(obj):
-                        self.obj[i] = obj[current]
-                        exec("self.%s = obj[current]" % i, locals(), globals())
-                    current += 1
-                break
-    def __str__(self):
-        return "%s" % self.obj
 
 
 class Help:
