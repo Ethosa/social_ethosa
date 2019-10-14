@@ -382,3 +382,35 @@ def hello(): print("hello")
 timer.cancel()
 # при вызове метода timer.отмена автоматически закроет все таймеры этого таймера
 ```
+## extra
+Этот модуль также, как и eMath должен импортироваться отдельно:
+```python
+from social_ethosa.extra import *
+```
+в этом модуле пока что один класс: eList
+```python
+lst1 = eList() # create []
+lst2 = eList("string") # create ["s", "t", "r", "i", "n", "g"]
+lst3 = eList(1, 2, 3) # create [1, 2, 3]
+lst4 = eList([1, 2, 3]) # create [1, 2, 3]
+```
+все методы обычных списков присутствуют в этом, однако здесь есть несколько особенностей 
+```python
+lst1 += 1 # [1]
+lst1 += [1, 2] # [1, 1, 2]
+lst1 += eList(3, 4) # [1, 1, 2, 3, 4]
+lst1.clear() # []
+lst1 += [1, 2, 3] # [1, 2, 3]
+lst1.split(1) # [[1], [2], [3]]
+lst1.clear()
+lst1 += [1, 2, 3]
+lst1[2] # 3
+lst1[3] # error
+lst1[3] = 4 # working!
+lst1 # [1, 2, 3, 4]
+lst1.len() == len(lst1) # True
+lst1.sum() == sum(lst1) # True
+lst1.standartItem(0)
+lst1[8] = 1
+lst1 # [1, 2, 3, 4, 0, 0, 0, 0, 1]
+```
