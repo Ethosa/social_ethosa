@@ -3,7 +3,8 @@
 
 from ..utils import *
 
-class eList:
+class EList:
+    __metaclass__ = list
     def __init__(self, *args):
         """custom list create
         
@@ -13,14 +14,14 @@ class eList:
         if len(args) == 1:
             lst = args[0]
             if isinstance(lst, eList):
-                self.lst = lst.lst[:]
+                self.lst = list(lst.lst[:])
             else:
                 self.lst = list(lst)
         elif len(args) == 0:
             self.lst = []
         else:
             self.lst = list(args)
-        self.sitem = ""
+        self.sitem = 0
 
     def pop(self, num=-1):
         self.lst.pop(num)
@@ -46,6 +47,12 @@ class eList:
         if isinstance(other, list) or isinstance(other, eList):
             for i in other:
                 self.append(i)
+
+    def __set__(self, value):
+        if isinstance(value, eList) or isinstance(value, list):
+            self.__init__(value)
+        else:
+            raise ValueError("%s isn't list object" % value)
 
     def reverse(self):
         self.lst = self.lst[::-1]
@@ -93,6 +100,8 @@ class eList:
             return self.lst == other.lst
         else:
             return 0
+    def equals(self, other):
+        return self.__eq__(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -107,6 +116,8 @@ class eList:
 
     def __contains__(self, val):
         return val in self.lst
+    def contains(self, val):
+        return self.__contains__(val)
 
     def __instancecheck__(self, instance):
         return isinstance(instance, eList)

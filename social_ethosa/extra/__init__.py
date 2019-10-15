@@ -2,3 +2,4 @@
 # author: Ethosa
 
 from .eList import *
+from .logManager import *
