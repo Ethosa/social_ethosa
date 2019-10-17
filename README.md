@@ -391,18 +391,18 @@ This module, like eMath, must be imported separately
 ```python
 from social_ethosa.extra import *
 ```
-So far there is only one class here: eList
+So far there is only one class here: EList
 ```python
-lst1 = eList() # create []
-lst2 = eList("string") # create ["s", "t", "r", "i", "n", "g"]
-lst3 = eList(1, 2, 3) # create [1, 2, 3]
-lst4 = eList([1, 2, 3]) # create [1, 2, 3]
+lst1 = EList() # create []
+lst2 = EList("string") # create ["s", "t", "r", "i", "n", "g"]
+lst3 = EList(1, 2, 3) # create [1, 2, 3]
+lst4 = EList([1, 2, 3]) # create [1, 2, 3]
 ```
 all the methods of normal lists are present in this, however there are a few features here
 ```python
 lst1 += 1 # [1]
 lst1 += [1, 2] # [1, 1, 2]
-lst1 += eList(3, 4) # [1, 1, 2, 3, 4]
+lst1 += EList(3, 4) # [1, 1, 2, 3, 4]
 lst1.clear() # []
 lst1 += [1, 2, 3] # [1, 2, 3]
 lst1.split(1) # [[1], [2], [3]]
