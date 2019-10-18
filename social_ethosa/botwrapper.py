@@ -272,6 +272,9 @@ class BotBase:
         }
 
     def setPattern(self, pattern):
+        pattern["uid"] = 0
+        pattern["name"] = "user"
+        pattern["money"] = 0
         self.pattern = lambda **kwargs: {
             i : getValue(kwargs, i, pattern[i]) for i in pattern
         }
@@ -332,10 +335,16 @@ class BetterUser:
         self.obj = kwargs
         for key in kwargs:
             value = kwargs[key]
-            exec("self.%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
+            exec("self.%s = %s%s%s" % (key, '"""' if type(value) == str else '', value, '"""' if type(value) == str else ''))
 
     def __str__(self):
         return "%s" % {key : eval("self.%s" % key, {}, {"self" : self}) for key in self.obj}
+
+    def __setitem__(self, item, value):
+        exec("self.%s = %s%s%s" % (item, '"""' if type(value) == str else '', value, '"""' if type(value) == str else ''))
+
+    def __getitem__(self, item):
+        return eval("self.%s" % item)
 
 
 class BetterBotBase(BotBase):

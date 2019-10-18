@@ -5,7 +5,6 @@ requests.packages.urllib3.disable_warnings()
 from .vkaudio import *
 import traceback
 import datetime
-import asyncio
 import random
 import time
 import sys

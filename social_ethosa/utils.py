@@ -279,13 +279,13 @@ class Obj:
     def __getattr__(self, attribute):
         val = getValue(self.obj, attribute)
         if val:
-            exec("self.%s = %s%s%s" % (attribute, '"' if type(val) == str else '', val, '"' if type(val) == str else ''))
+            exec("self.%s = %s%s%s" % (attribute, '"""' if type(val) == str else '', val, '"""' if type(val) == str else ''))
             if isinstance(val, dict):
                 return Obj(eval("self.%s" % attribute))
             return eval("self.%s" % attribute)
         else:
             val = getValue(getValue(self.obj, "object", self.obj), attribute, None)
-            exec("self.%s = %s%s%s" % (attribute, '"' if type(val) == str else '', val, '"' if type(val) == str else ''))
+            exec("self.%s = %s%s%s" % (attribute, '"""' if type(val) == str else '', val, '"""' if type(val) == str else ''))
             if isinstance(val, dict):
                 return Obj(eval("self.%s" % attribute))
             return eval("self.%s" % attribute)

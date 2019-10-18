@@ -13,7 +13,7 @@ class EList:
         """
         if len(args) == 1:
             lst = args[0]
-            if isinstance(lst, eList):
+            if isinstance(lst, EList):
                 self.lst = list(lst.lst[:])
             else:
                 self.lst = list(lst)
@@ -41,15 +41,15 @@ class EList:
     def count(self, val):
         return self.lst.count(val)
 
-    def sum(self): return sum(self.lst)
+    def sum(self): return math.fsum(self.lst)
 
     def extend(self, lst):
-        if isinstance(other, list) or isinstance(other, eList):
+        if isinstance(other, list) or isinstance(other, EList):
             for i in other:
                 self.append(i)
 
     def __set__(self, value):
-        if isinstance(value, eList) or isinstance(value, list):
+        if isinstance(value, EList) or isinstance(value, list):
             self.__init__(value)
         else:
             raise ValueError("%s isn't list object" % value)
@@ -79,7 +79,7 @@ class EList:
         self.sitem = item
 
     def split(self, number=1):
-        return eList(splitList(self.lst, number))
+        return EList(splitList(self.lst, number))
 
     def copy(self):
         return self.lst[:]
@@ -96,7 +96,7 @@ class EList:
     def __eq__(self, other):
         if isinstance(other, list):
             return self.lst == other
-        elif isinstance(other, eList):
+        elif isinstance(other, EList):
             return self.lst == other.lst
         else:
             return 0
@@ -111,7 +111,7 @@ class EList:
             yield i
 
     def __reversed__(self):
-        return eList(self.lst[::-1])
+        return EList(self.lst[::-1])
     def reversed(self): return self.__reversed__()
 
     def __contains__(self, val):
@@ -120,20 +120,20 @@ class EList:
         return self.__contains__(val)
 
     def __instancecheck__(self, instance):
-        return isinstance(instance, eList)
+        return isinstance(instance, EList)
 
     def __bool__(self):
         return True if self.lst else False
     def bool(self): return self.__bool__()
 
     def __add__(self, other):
-        if isinstance(other, list) or isinstance(other, eList):
-            out = eList(self)
+        if isinstance(other, list) or isinstance(other, EList):
+            out = EList(self)
             for i in other:
                 out.append(i)
             return out
         elif isinstance(other, int) or isinstance(other, float):
-            out = eList(self)
+            out = EList(self)
             out.append(other)
             return out
 
