@@ -21,6 +21,7 @@ class Uploader:
 
     def __init__(self, *args, **kwargs):
         self.vk = getValue(kwargs, "vk")
+        self.multi = getValue(kwargs, "multi")
         self.errorMsg = lambda: sys.stdout.write("param \"vk\" undefined\n")
         self.working = False
 
@@ -66,18 +67,19 @@ class Uploader:
         self.current = ''
 
 
-    def getUploadUrl(self, type_obj, *args, **kwargs):
-        if self.working:
-            response = getValue(self.types, type_obj)[1](**kwargs)
-            if "response" in response:
-                self.url = response["response"]["upload_url"]
-            else:
-                sys.stdout.write("%s\n" % response)
-            self.current = type_obj
-            if self.debug: sys.stdout.write(self.translate('Ошибка' if not self.url else 'Успешно!', self.lang))
-        else: self.errorMsg()
+    def getUploadUrl(self, type_obj, **kwargs):
+        if self.current != type_obj:
+            if self.working:
+                response = getValue(self.types, type_obj)[1](**kwargs)
+                if "response" in response:
+                    self.url = response["response"]["upload_url"]
+                else:
+                    sys.stdout.write("%s\n" % response)
+                self.current = type_obj
+                if self.debug: sys.stdout.write(self.translate('Ошибка' if not self.url else 'Успешно!', self.lang))
+            else: self.errorMsg()
 
-    def uploadFile(self, file, *args, **kwargs):
+    def uploadFile(self, file, **kwargs):
         # usage:
         # param file must be path to file
         if self.url:
@@ -89,6 +91,27 @@ class Uploader:
                 return upload_files(self.url, file)
         else:
             raise ValueError("You should get a link to upload to the server")
+
+    def autoUpload(self, type_obj, files, typeRules={}, filesRules={}):
+        if isinstance(files, str):
+            files = [files]
+        if self.current != type_obj:
+            self.getUploadUrl(type_obj, **typeRules)
+        out = []
+        def add(i):
+            out.append(self.uploadFile(i, **filesRules))
+        for i in files:
+            Thread_VK(add, i).start()
+            time.sleep(0.2)
+        while len(out) < len(files): pass # wait
+        return out
+
+    def uploadMessagePhoto(self, files, formatting=0, **kwargs):
+        response = self.autoUpload("message_photo", files, typeRules=kwargs)
+        if formatting:
+            return ["photo%s_%s" % (i["owner_id"], i["id"]) for i in response]
+        else:
+            return response
 
     def getAllTypes(self):
         return { key : self.types[key][1].__code__.co_varnames for key in self.types.keys() }

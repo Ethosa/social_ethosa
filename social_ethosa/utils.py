@@ -274,15 +274,33 @@ class Obj:
     def __init__(self, obj, parentObj=None):
         self.obj = obj
         self.parentObj = parentObj
-        if type(self.obj) == dict:
+        if isinstance(self.obj, dict):
             self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
 
     def __getattr__(self, attribute):
-        obj = self.obj[attribute]
-        if isinstance(obj, dict) or isinstance(obj, list):
-            return Obj(obj, self)
+        currentObj = self.obj
+        if attribute in currentObj:
+            obj = currentObj[attribute]
+            if isinstance(obj, dict) or isinstance(obj, list):
+                return Obj(obj, self)
+            else:
+                return obj
         else:
-            return obj
+            a = None
+            if isinstance(currentObj, dict):
+                for key in currentObj:
+                    o = currentObj[key]
+                    if isinstance(o, dict):
+                        a = Obj(o).__getattr__(attribute)
+                        if a != None:
+                            return a
+            elif isinstance(currentObj, list):
+                for o in currentObj:
+                    if isinstance(o, dict):
+                        a = Obj(o).__getattr__(attribute)
+                        if a != None:
+                            return a
+            return a
 
     def isNull(self):
         return self.obj

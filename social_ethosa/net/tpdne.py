@@ -16,7 +16,10 @@ class ThisPerson:
         return self.session.get(self.person).content
 
     def getRandomWaifu(self):
-        return self.session.get("%s%s.jpg" % (self.waifu, random.randint(1, 200000))).content
+        return self.session.get("%s%s.jpg" % (self.waifu, random.randint(1, 200_000))).content
+
+    def getBestRandomWaifu(self):
+        return self.session.get("%s%s.jpg" % (self.waifu, random.randint(100_000, 200_000))).content
 
     def getRandomCat(self):
         return self.session.get(self.cat).content

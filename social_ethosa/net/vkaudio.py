@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 from ..utils import *
-try:
-    import lxml.html
-except:
-    sys.stdout.write(
-        TranslatorDebug().translate('Это просто предупреждение. Аудио методы не будут поддерживаться на вашей платформе.', "en")
-    )
+import re
 
 class Audio:
     """
-    docstring for VkAudio
+    docstring for Audio
 
     usage:
     audio = Audio(login='Your login', password='Your password')
@@ -36,14 +31,21 @@ class Audio:
         }
         self.session = requests.session()
         self.session.headers = self.headers
-        data = self.session.get(url)
-        page = lxml.html.fromstring(data.content)
+        data = self.session.get(url).text
+        start = re.search("<form.+name=\"login.+", data).start()
+        end = re.search("<input type=\"submit\" class=\"submit\" />", data).start()
+        data = data[start:end]
+        lg_h = re.findall("<input.+lg_h.+", data)[0]
+        lg_h = lg_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
+        ip_h = re.findall("<input.+ip_h.+", data)[0]
+        ip_h = ip_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
+        form = {'act' : 'login', 'role' : 'al_frame', 'expire' : '',
+                'recaptcha' : '', 'captcha_sid' : '', 'captcha_key' : '',
+                '_origin': 'https://vk.com', 'ip_h': ip_h,
+                'lg_h': lg_h, 'ul': '',
+                'email': self.login, 'pass': self.password}
 
-        form = page.forms[0]
-        form.fields['email'] = self.login
-        form.fields['pass'] = self.password
-
-        response = self.session.post(form.action, data=form.form_values())
+        response = self.session.post("https://login.vk.com/", data=form)
         if self.debug: print(self.translate(u'Успешно!' if 'onLoginDone' in response.text else u'Ошибка', self.lang))
         if 'onLoginDone' in response.text:
             url = 'https://vk.com%s' % response.text.split('onLoginDone(', 1)[1].split("'")[1]

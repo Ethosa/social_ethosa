@@ -65,9 +65,9 @@ class Vk:
 
         # Initialize methods
         self.longpoll = LongPoll(vk=self)
-        self.method = Method(access_token=self.token_vk, version_api=self.version_api).use
-        self.fastMethod = Method(access_token=self.token_vk, version_api=self.version_api).fuse
-        self.execute = lambda **kwargs: self.fastMethod("execute", kwargs)
+        self.method = Method(vk=self).use
+        self.fastMethod = Method(vk=self).fuse
+        self.execute = lambda code: self.fastMethod("execute", {"code" : code})
 
         self.help = Help
 
@@ -164,7 +164,7 @@ def newMessage(obj):
                 return lambda function: self.listenWrapper(method, Obj, function)
             else:
                 return lambda function: self.listenWrapper(users_event[method][0], Obj, function)
-        else: return Method(access_token=self.token_vk, version_api=self.version_api, method=method)
+        else: return Method(vk=self, method=method)
 
     def __str__(self):
         return "<Vk %s object at 0x%0x (group_id=%s)>" % (self.version_api, self.__hash__(), self.group_id)
@@ -261,8 +261,11 @@ class LongPoll:
 # response = vk.method(method='wall.post', message='Hello, world!')
 class Method:
     def __init__(self, *args, **kwargs):
-        self.access_token = kwargs["access_token"]
-        self.version_api = getValue(kwargs, "version_api", '5.101')
+        self.vk = getValue(kwargs, "vk")
+        if self.vk:
+            self.group_id = self.vk.group_id
+            self.access_token = self.vk.token_vk
+            self.version_api = self.vk.version_api
         self.method = getValue(kwargs, "method", '')
 
     def use(self, method, **kwargs):
@@ -279,12 +282,25 @@ class Method:
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
         response = requests.post(url, data=kwargs).json()
+        print(kwargs)
         if "error" in response:
             raise VkError("error in method call <%s>" % response)
         return response
 
     def __getattr__(self, method):
-        return lambda **kwargs: self.fuse("%s.%s" % (self.method, method), kwargs)
+        method = "%s.%s" % (self.method, method)
+        def send(**kwargs):
+            if method == "messages.send":
+                kwargs["random_id"] = self.vk.getRandomId()
+            if "attachment" in kwargs:
+                if isinstance(kwargs["attachment"], list) or isinstance(kwargs["attachment"], tuple):
+                    kwargs["attachment"] = ",".join(kwargs["attachment"])
+            elif "attachments" in kwargs:
+                if isinstance(kwargs["attachment"], list) or isinstance(kwargs["attachment"], tuple):
+                    kwargs["attachment"] = ",".join(kwargs["attachments"])
+                del kwargs["attachments"]
+            return self.fuse(method, kwargs)
+        return lambda **kwargs: send(**kwargs)
 
 from .uploader import *
 
