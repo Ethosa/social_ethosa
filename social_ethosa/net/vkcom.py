@@ -167,13 +167,11 @@ def newMessage(obj):
         else: return Method(access_token=self.token_vk, version_api=self.version_api, method=method)
 
     def __str__(self):
-        return '''**********
-The Vk object with params:
-token = %s
-debug = %s
-version_api = %s
-group_id = %s
-**********''' % ("%s**********%s" % (self.token_vk[:5], self.token_vk[-5:]), self.debug, self.version_api, self.group_id)
+        return "<Vk %s object at 0x%0x (group_id=%s)>" % (self.version_api, self.__hash__(), self.group_id)
+
+
+class VkError(Exception):
+    def __init__(self, message): self.message = message
 
 
 class LongPoll:
@@ -207,8 +205,11 @@ class LongPoll:
         """
         if self.group_id:
             response = self.session.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
-                                    (self.vk_api_url, self.access_token, self.version_api,
-                                        self.group_id)).json()['response']
+                                (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()
+            try:
+                response = response['response']
+            except Exception as e:
+                raise VkError("auth error, %s. response: <%s>" % (e, response))
             self.ts = response['ts']
             self.key = response['key']
             self.server = response['server']
@@ -229,7 +230,11 @@ class LongPoll:
                 yield e
         else:
             response = self.session.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
-                                    (self.vk_api_url, self.access_token, self.version_api)).json()['response']
+                                (self.vk_api_url, self.access_token, self.version_api)).json()
+            try:
+                response = response['response']
+            except Exception as e:
+                raise VkError("auth error, %s. response: <%s>" % (e, response))
             self.ts = response["ts"]
             self.key = response["key"]
             self.server = response["server"]
@@ -265,6 +270,8 @@ class Method:
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
         response = requests.post(url, data=kwargs).json()
+        if "error" in response:
+            raise VkError("error in method call <%s>" % response)
         return response
 
     def fuse(self, method, kwargs):
@@ -272,6 +279,8 @@ class Method:
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
         response = requests.post(url, data=kwargs).json()
+        if "error" in response:
+            raise VkError("error in method call <%s>" % response)
         return response
 
     def __getattr__(self, method):

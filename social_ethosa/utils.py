@@ -25,8 +25,8 @@ def downloadFileFromUrl(url, path):
     if response.ok:
         with open(path, 'wb') as f:
             f.write(response.content)
-        return True
-    else: return False
+        return 1
+    else: return 0
 
 def getMaxPhoto(attachments):
     """returns a list of links to images with the highest quality
@@ -271,27 +271,79 @@ class Event:
 
 
 class Obj:
-    def __init__(self, obj):
+    def __init__(self, obj, parentObj=None):
         self.obj = obj
+        self.parentObj = parentObj
         if type(self.obj) == dict:
             self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
 
     def __getattr__(self, attribute):
-        val = getValue(self.obj, attribute)
-        if val:
-            exec("self.%s = %s%s%s" % (attribute, '"""' if type(val) == str else '', val, '"""' if type(val) == str else ''))
-            if isinstance(val, dict):
-                return Obj(eval("self.%s" % attribute))
-            return eval("self.%s" % attribute)
+        obj = self.obj[attribute]
+        if isinstance(obj, dict) or isinstance(obj, list):
+            return Obj(obj, self)
         else:
-            val = getValue(getValue(self.obj, "object", self.obj), attribute, None)
-            exec("self.%s = %s%s%s" % (attribute, '"""' if type(val) == str else '', val, '"""' if type(val) == str else ''))
-            if isinstance(val, dict):
-                return Obj(eval("self.%s" % attribute))
-            return eval("self.%s" % attribute)
+            return obj
+
+    def isNull(self):
+        return self.obj
+
+    def __contains__(self, value):
+        return value in self.obj
+    def contains(self, value):
+        return value in self.obj
+
+    def index(self, number):
+        if isinstance(self.obj, list):
+            return self.obj.index(number)
+
+    def pop(self, number=-1):
+        if isinstance(self.obj, list):
+            self.obj.pop(number)
+
+    def insert(self, value, number):
+        if isinstance(self.obj, list):
+            self.obj.insert(value, number)
+
+    def append(self, value):
+        if isinstance(self.obj, list):
+            self.obj.append(value)
+
+    def get(self, number=-1):
+        if isinstance(self.obj, dict):
+            return self.obj.get(number)
+
+    def clear(self):
+        if isinstance(self.obj, dict) or isinstance(self.obj, list):
+            self.obj.clear()
+
+    def copy(self):
+        if isinstance(self.obj, dict) or isinstance(self.obj, list):
+            return self.obj.copy()
+
+    def keys(self):
+        if isinstance(self.obj, dict):
+            return self.obj.keys()
+
+    def items(self):
+        if isinstance(self.obj, dict):
+            return self.obj.items()
+
+    def values(self):
+        if isinstance(self.obj, dict):
+            return self.obj.values()
+
+    def __bool__(self):
+        return bool(self.obj)
 
     def __getitem__(self, item):
-        return self.__getattr__(item)
+        if isinstance(item, str):
+            return self.__getattr__(item)
+        else:
+            obj = self.obj[item]
+            if isinstance(obj, dict) or isinstance(obj, list):
+                return Obj(obj, self)
+            else:
+                return obj
 
     def __setitem__(self, item, value):
         self.obj[item] = value
