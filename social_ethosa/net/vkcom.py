@@ -5,6 +5,7 @@ requests.packages.urllib3.disable_warnings()
 from .vkaudio import *
 import traceback
 import datetime
+import asyncio
 import random
 import time
 import sys
@@ -267,8 +268,10 @@ class Method:
             self.access_token = self.vk.token_vk
             self.version_api = self.vk.version_api
         self.method = getValue(kwargs, "method", '')
+        self.fuse = lambda method, kwargs: asyncio.run(self.Fuse(method, kwargs))
+        self.use = lambda method, **kwargs: asyncio.run(self.Use(method, **kwargs))
 
-    def use(self, method, **kwargs):
+    async def Use(self, method, **kwargs):
         url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
@@ -277,12 +280,11 @@ class Method:
             raise VkError("error in method call <%s>" % response)
         return response
 
-    def fuse(self, method, kwargs):
+    async def Fuse(self, method, kwargs):
         url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
         response = requests.post(url, data=kwargs).json()
-        print(kwargs)
         if "error" in response:
             raise VkError("error in method call <%s>" % response)
         return response
@@ -296,7 +298,7 @@ class Method:
                 if isinstance(kwargs["attachment"], list) or isinstance(kwargs["attachment"], tuple):
                     kwargs["attachment"] = ",".join(kwargs["attachment"])
             elif "attachments" in kwargs:
-                if isinstance(kwargs["attachment"], list) or isinstance(kwargs["attachment"], tuple):
+                if isinstance(kwargs["attachments"], list) or isinstance(kwargs["attachments"], tuple):
                     kwargs["attachment"] = ",".join(kwargs["attachments"])
                 del kwargs["attachments"]
             return self.fuse(method, kwargs)
