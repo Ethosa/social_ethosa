@@ -291,6 +291,7 @@ class Method:
 
     def __getattr__(self, method):
         method = "%s.%s" % (self.method, method)
+        print(method)
         def send(**kwargs):
             if method == "messages.send":
                 kwargs["random_id"] = self.vk.getRandomId()
@@ -299,8 +300,7 @@ class Method:
                     kwargs["attachment"] = ",".join(kwargs["attachment"])
             elif "attachments" in kwargs:
                 if isinstance(kwargs["attachments"], list) or isinstance(kwargs["attachments"], tuple):
-                    kwargs["attachment"] = ",".join(kwargs["attachments"])
-                del kwargs["attachments"]
+                    kwargs["attachments"] = ",".join(kwargs["attachments"])
             return self.fuse(method, kwargs)
         return lambda **kwargs: send(**kwargs)
 
