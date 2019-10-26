@@ -440,3 +440,24 @@ mchains = MarkovChains()
 mchains.execute("name => hello => c <=> ban => name => c")
 mchains.generateSequence(5) # ['c', 'ban', 'name', 'hello', 'c']
 ```
+### AMarkov
+Вы легко можете использовать алгоритм Маркова
+```python
+m = AMarkov()
+m.addRule("1", "0|")
+m.addRule("|0", "||0")
+m.addRule("0", "")
+m.compile("101") # |||||
+```
+
+### EQueue
+Здесь присутствует асинхронная очередь
+```python
+queue = EQueue()
+for i in range(10):
+    queue.add(i)
+queue.len() # 10
+test = ", ".join("%s" % queue.getRandom() for i in range(queue.len()))
+queue.len() # 0
+test # 8, 1, 9, 0, 6, 4, 2, 5, 3, 7
+```
