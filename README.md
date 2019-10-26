@@ -428,7 +428,7 @@ lst1.sortA(EList.GNOME_SORT) # [0, 0, 0, 0, 1, 1, 2, 3, 4]
 ### LogManager
 ```python
 LogManager("filename.txt", "text for log")
-or
+# or
 with LogManager("filename.txt") as log:
   log.write("text for log")
 ```
@@ -443,4 +443,26 @@ mchains.generateSequence(5, auth="name")
 mchains = MarkovChains()
 mchains.execute("name => hello => c <=> ban => name => c")
 mchains.generateSequence(5) # ['c', 'ban', 'name', 'hello', 'c']
+```
+
+### AMarkov
+Also you can easily use Markov algorithm
+```python
+m = AMarkov()
+m.addRule("1", "0|")
+m.addRule("|0", "||0")
+m.addRule("0", "")
+m.compile("101") # |||||
+```
+
+### EQueue
+There is an asynchronous queue here
+```python
+queue = EQueue()
+for i in range(10):
+    queue.add(i)
+print(queue.len())
+test = ", ".join("%s" % queue.getRandom() for i in range(queue.len()))
+queue.len() # 0
+test # 8, 1, 9, 0, 6, 4, 2, 5, 3, 7
 ```
