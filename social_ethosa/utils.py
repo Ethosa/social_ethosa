@@ -11,6 +11,7 @@ import time
 import json
 import sys
 import os
+import re
 
 def autoRun(callObject, *args, **kwargs):
     # Decorator for auto-call object
@@ -50,6 +51,16 @@ def getMaxPhoto(attachments):
                     url = size["url"]
             files.append(url)
     return files
+
+def checkPatternString(string, pattern):
+    string = "%s%s" % (string, " "*(len(pattern)-len(string)))
+    pattern = "%s%s" % (pattern, " "*(len(string)-len(pattern)))
+    out = []
+    for i in range(len(string)):
+        if string[i] == pattern[i]:
+            out.append(string[i])
+    return (len(out)/len(string))*100
+
 
 def getValue(obj, string, returned=False):
     return obj[string] if string in obj else returned
@@ -121,16 +132,17 @@ def timeIt(count=1, libs=[], launch="thread"):
     # launch option to run. default "thread"
     def timer(function):
         global Thread_VK
+        name = function.__name__
         def asd():
             setup = "\n".join(["import %s" % i for i in libs])
             setup += "\ndef" + inspect.getsource(function).split('def', 1)[1]
-            return min(timeit.Timer("%s()" % function.__name__, setup=setup).repeat(1, count))
+            return min(timeit.Timer("%s()" % name, setup=setup).repeat(1, count))
         if launch == "thread":
-            print("%s() - %s time" % (function.__name__, Thread_VK(asd).run()))
+            print("%s() - %s time" % (name, Thread_VK(asd).run()))
         elif launch == "not thread":
-            return print("%s() - %s time" % (function.__name__, asd()))
+            return print("%s() - %s time" % (name, asd()))
         elif launch == "variable":
-            return "%s() - %s time" % (function.__name__, asd())
+            return "%s() - %s time" % (name, asd())
     return timer
 
 def updateLibrary(version=None):
@@ -164,26 +176,22 @@ def splitList(lst, number):
         splitted.pop()
     return splitted
 
-def resplit(string, ssymbol=",", symbol="/", splitNum=-1):
+def resplit(string, s=",", forSplit="/", splitNum=-1):
     """split string
     
     Arguments:
         string {[str]} -- string for split
     
     Keyword Arguments:
-        ssymbol {str} -- [split symbol] (default: {","})
-        symbol {str} -- [exception symbol] (default: {"/"})
+        s {str} -- [split symbol] (default: {","})
+        forSplit {str} -- [exception symbol] (default: {"/"})
         splitNum {number} -- [split number] (default: {-1})
     
     Returns:
         [list] -- [splitted list]
     """
-    tlist = list("qwertyuiopasdfghjklzxcvbnm1234567890_QWERTYUIOPASDFGHJKLZXCVBNM")
-    tstr = "".join([random.choice(tlist) for i in range(25)])
-    out = string.replace("%s%s" % (symbol, ssymbol), tstr)
-    out = out.split(ssymbol, splitNum)
-    out = [i.replace(tstr, ssymbol) for i in out]
-    return out
+    pattern = "[^%s]%s" % (s, forSplit)
+    return re.split(pattern, string)
 
 class Timer:
     """

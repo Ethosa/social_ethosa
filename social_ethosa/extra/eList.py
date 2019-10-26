@@ -2,9 +2,14 @@
 # author: Ethosa
 
 from ..utils import *
+from copy import copy
+import math
 
 class EList:
     __metaclass__ = list
+    COMB_SORT = 0
+    GNOME_SORT = 1
+    ODD_EVEN_SORT = 2
     def __init__(self, *args):
         """custom list create
         
@@ -55,13 +60,83 @@ class EList:
             raise ValueError("%s isn't list object" % value)
 
     def reverse(self):
-        self.lst = self.lst[::-1]
+        self.lst = self.lst.reverse()
+
+    def binarySearch(self, T):
+        n = len(self)-1
+        L = 0
+        R = n - 1
+        while L <= R:
+            m = (L + R) // 2
+            if self[m] < T:
+                L = m + 1
+            elif self[m] > T:
+                R = m - 1
+            else:
+                return m
+
+    def interpolationSearch(self, key):
+        low = 0
+        high = len(self)-1
+        mid = None
+        while self[high] != self[low] and key >= self[low] and key <= self[high]:
+            mid = low + ((key - self[low]) * (high - low) // (self[high] - self[low]))
+
+            if self[mid] < key:
+                low = mid + 1
+            elif key < self[mid]:
+                high = mid - 1
+            else: return mid
+
+        if key == self[low]: return low
+        else: return None
 
     def sort(self, key):
         return self.lst.sort(key)
 
+    def sortA(self, method, reverse=False):
+        if method == EList.COMB_SORT:
+            alen = len(self.lst)
+            gap = (alen * 10 // 13) if alen > 1 else 0
+            while gap:
+                if 8 < gap < 11:    ## variant "comb-11"
+                    gap = 11
+                swapped = False
+                for i in range(alen - gap):
+                    if self.lst[i + gap] < self.lst[i]:
+                        self.lst[i], self.lst[i + gap] = self.lst[i + gap], self.lst[i]
+                        swapped = True
+                gap = (gap * 10 // 13) or swapped
+        elif method == EList.GNOME_SORT:
+            pos = 0
+            while pos < len(self.lst):
+                if pos == 0 or self.lst[pos] >= self.lst[pos-1]:
+                    pos += 1
+                else:
+                    self.swap(pos, pos-1)
+                    pos -= 1
+        elif method == EList.ODD_EVEN_SORT:
+            srtd = 0
+            while not srtd:
+                srtd = 1
+                for i in range(1, len(self.lst)-1):
+                    if self.lst[i] > self.lst[i + 1]:
+                        self.swap(i, i+1)
+                        srtd = 0
+                for i in range(0, len(self.lst)-1):
+                    if self.lst[i] > self.lst[i + 1]:
+                        self.swap(i, i+1)
+                        srtd = 0
+        if reverse:
+            self.lst = self.lst[::-1]
+
     def clear(self):
         self.lst = []
+
+    def swap(self, i, j):
+        o = copy(self.lst[i])
+        self.lst[i] = copy(self.lst[j])
+        self.lst[j] = o
 
     def __setitem__(self, item, value):
         if isinstance(item, int):

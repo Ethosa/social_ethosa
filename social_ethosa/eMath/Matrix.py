@@ -59,7 +59,7 @@ class Matrix:
             self.widthFill = len("%s" % value)
 
     def getAt(self, x, y):
-        return self.obj[x+1][y+1]
+        return self.obj[x][y]
 
     def transpose(self):
         width = self.height
@@ -85,6 +85,12 @@ class Matrix:
             obj.append(self.obj[x][:])
             self.obj[x] = [i for i in reversed(self.obj[x])]
         self.obj = [i for i in reversed(self.obj)]
+
+    def search(self, value):
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.obj[x][y] == value:
+                    return [x, y]
 
     def getSum(self):
         s = 0

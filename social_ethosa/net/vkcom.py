@@ -366,6 +366,10 @@ class Button:
     and use red button:
     keyboard.add_button(red_button) # easy and helpfull!
     """
+    PRIMARY = "primary"
+    SECONDARY = "secondary"
+    NEGATIVE = "negative"
+    POSITIVE = "positive"
     def __init__(self, *args, **kwargs):
         self.type = getValue(kwargs, "type", "text")
 
@@ -395,10 +399,10 @@ class Button:
         }
 
         self.action = getValue(actions, kwargs['type'], actions['text'])
-        self.color = getValue(kwargs, 'color', ButtonColor.PRIMARY)
+        self.color = getValue(kwargs, 'color', Button.PRIMARY)
 
     def setText(self, text):
-        if getValue(self.action, "label"):
+        if "label" in self.action:
             self.action["label"] = text
 
     def setColor(self, color): self.color = color
@@ -412,14 +416,6 @@ class Button:
     def __new__(self, *args, **kwargs):
         self.__init__(self, *args, **kwargs)
         return self.getButton(self)
-
-
-# Enums start here:
-class ButtonColor:
-    PRIMARY = "primary"
-    SECONDARY = "secondary"
-    NEGATIVE = "negative"
-    POSITIVE = "positive"
 
 
 class Error:
