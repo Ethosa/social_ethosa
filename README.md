@@ -461,7 +461,7 @@ There is an asynchronous queue here
 queue = EQueue()
 for i in range(10):
     queue.add(i)
-print(queue.len())
+queue.len() # 10
 test = ", ".join("%s" % queue.getRandom() for i in range(queue.len()))
 queue.len() # 0
 test # 8, 1, 9, 0, 6, 4, 2, 5, 3, 7
