@@ -424,7 +424,7 @@ lst1.sortA(EList.GNOME_SORT) # [0, 0, 0, 0, 1, 1, 2, 3, 4]
 ### LogManager
 ```python
 LogManager("filename.txt", "text for log")
-or
+# or
 with LogManager("filename.txt") as log:
   log.write("text for log")
 ```
