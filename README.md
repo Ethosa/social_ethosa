@@ -294,11 +294,11 @@ matrix.fill(7)
 ```
 you can also edit individual parts of the matrix
 ```python
-matrix.setAt(1, 1, 8)
+matrix.setAt(0, 0, 8)
 # 8 7
 # 7 7
 
-a = matrix.getAt(1, 1)
+a = matrix.getAt(0, 0)
 # 7
 ```
 And also you can mirror the matrix:
@@ -391,7 +391,7 @@ This module, like eMath, must be imported separately
 ```python
 from social_ethosa.extra import *
 ```
-So far there is only one class here: EList
+### EList:
 ```python
 lst1 = EList() # create []
 lst2 = EList("string") # create ["s", "t", "r", "i", "n", "g"]
@@ -417,4 +417,30 @@ lst1.sum() == sum(lst1) # True
 lst1.standartItem(0)
 lst1[8] = 1
 lst1 # [1, 2, 3, 4, 0, 0, 0, 0, 1]
+```
+There are also non-standard methods, for example:
+```python
+lst1.binarySearch(1) # 0
+lst1.interpolationSearch(1) # 0
+lst1.sortA(EList.GNOME_SORT) # [0, 0, 0, 0, 1, 1, 2, 3, 4]
+```
+
+### LogManager
+```python
+LogManager("filename.txt", "text for log")
+or
+with LogManager("filename.txt") as log:
+  log.write("text for log")
+```
+### MarkovChains
+```python
+mchains = MarkovChains()
+mchains.addChain("name", "hello")
+mchains.addChain("hello", "name")
+mchains.generateSequence(5, auth="name")
+# ["hello", "name", "hello", "name", "hello"]
+
+mchains = MarkovChains()
+mchains.execute("name => hello => c <=> ban => name => c")
+mchains.generateSequence(5) # ['c', 'ban', 'name', 'hello', 'c']
 ```
