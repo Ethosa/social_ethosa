@@ -205,7 +205,7 @@ posts = blogger.pages.get(123123)
 ```
 
 ## eMath
-Я решил, что этот модуль мало кому понадобится, поэтому его импорт отделен от основного:
+Думаю, что этот модуль мало кому понадобится, поэтому его импорт отделен от основного:
 ```python
 from social_ethosa.eMath import *
 ```
@@ -387,18 +387,18 @@ timer.cancel()
 ```python
 from social_ethosa.extra import *
 ```
-в этом модуле пока что один класс: eList
+### EList:
 ```python
-lst1 = eList() # create []
-lst2 = eList("string") # create ["s", "t", "r", "i", "n", "g"]
-lst3 = eList(1, 2, 3) # create [1, 2, 3]
-lst4 = eList([1, 2, 3]) # create [1, 2, 3]
+lst1 = EList() # create []
+lst2 = EList("string") # create ["s", "t", "r", "i", "n", "g"]
+lst3 = EList(1, 2, 3) # create [1, 2, 3]
+lst4 = EList([1, 2, 3]) # create [1, 2, 3]
 ```
-все методы обычных списков присутствуют в этом, однако здесь есть несколько особенностей 
+все методы обычных списков присутствуют в этом, однако есть несколько особенностей здесь
 ```python
 lst1 += 1 # [1]
 lst1 += [1, 2] # [1, 1, 2]
-lst1 += eList(3, 4) # [1, 1, 2, 3, 4]
+lst1 += EList(3, 4) # [1, 1, 2, 3, 4]
 lst1.clear() # []
 lst1 += [1, 2, 3] # [1, 2, 3]
 lst1.split(1) # [[1], [2], [3]]
@@ -413,4 +413,30 @@ lst1.sum() == sum(lst1) # True
 lst1.standartItem(0)
 lst1[8] = 1
 lst1 # [1, 2, 3, 4, 0, 0, 0, 0, 1]
+```
+Также есть нестандартные методы, например:
+```python
+lst1.binarySearch(1) # 0
+lst1.interpolationSearch(1) # 0
+lst1.sortA(EList.GNOME_SORT) # [0, 0, 0, 0, 1, 1, 2, 3, 4]
+```
+
+### LogManager
+```python
+LogManager("filename.txt", "text for log")
+or
+with LogManager("filename.txt") as log:
+  log.write("text for log")
+```
+### MarkovChains
+```python
+mchains = MarkovChains()
+mchains.addChain("name", "hello")
+mchains.addChain("hello", "name")
+mchains.generateSequence(5, auth="name")
+# ["hello", "name", "hello", "name", "hello"]
+
+mchains = MarkovChains()
+mchains.execute("name => hello => c <=> ban => name => c")
+mchains.generateSequence(5) # ['c', 'ban', 'name', 'hello', 'c']
 ```
