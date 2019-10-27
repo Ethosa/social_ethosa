@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ethosa</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Raleway:100.600">
+    <link rel="stylesheet" type="text/css" href="css/highlight.css">
+    <script type="text/javascript" src="assets/js/jquery.js"></script>
+    <script type="text/javascript" src="assets/js/rainbow-custom.min.js"></script>
+    <script type="text/javascript" src="assets/js/brython.js"></script>
+    <link rel="shortcut icon" href="assets/img/logo.png" type="image/png">
+    <link rel="stylesheet" type="text/css" href="assets/css/m.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script type="text/javascript">
+        var theme = window.localStorage["theme_sosal_esosa"];
+        if (!(theme)){
+            window.localStorage["theme_sosal_esosa"] = "dark";
+            theme = "dark";
+        }
+        function changeTheme(){
+            if (theme == "dark"){
+                theme = "light";
+                window.localStorage["theme_sosal_esosa"] = "light";
+                $("#ThemeChanger").css({color : "#2B2E3B"});
+                $("#ToolBar").attr("class", "toolbarLight");
+                $("body").attr("class", "bodyLight");
+                $("#Content").attr("class", "contentLight");
+                $("#Line").attr("class", "hrLight");
+                $(".text").css({color : "#2B2E3B"});
+            } else {
+                theme = "dark";
+                window.localStorage["theme_sosal_esosa"] = "dark";
+                $("#ThemeChanger").css({color : "#E7E7E3"});
+                $("#ToolBar").attr("class", "toolbarDark");
+                $("body").attr("class", "bodyDark");
+                $("#Content").attr("class", "contentDark");
+                $("#Line").attr("class", "hrDark");
+                $(".text").css({color : "#E7E7E3"});
+            }
+        }
+    </script>
+    <script type="text/python3">
+    </script>
+</head>
+<body onload="brython()" class="bodyDark">
+    <div id="ToolBar" class="toolbarDark" align="right">
+        <i id="ThemeChanger" class="material-icons" style="color: #E7E7E3;" onclick="changeTheme()">invert_colors</i>
+    </div>
+
+    <div id="Content" class="contentDark">
+        <h1 align="center" class="text">U r banned ^^</h1>
+        <hr id="Line" class="hrDark">
+        <audio src="assets/padoru.mp3" autoplay loop controls></audio>
+        <ul>
+            <li>
+                <h2 class="text"><a href="social_ethosa.html">Social ethosa</a></h2>
+            </li>
+        </ul>
+    </div>
+
+    <script type="text/javascript">
+        if (theme == "light"){
+            changeTheme();
+            changeTheme();
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,13 @@
+a {
+    color: #7799DD;
+}
+
 body{
     font-family: "Raleway", sans-serif;
+}
+.text {
+    color: #ededed;
+    font-weight: 800;
 }
 
 .bodyDark {
