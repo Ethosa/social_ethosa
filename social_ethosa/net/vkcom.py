@@ -291,7 +291,6 @@ class Method:
 
     def __getattr__(self, method):
         method = "%s.%s" % (self.method, method)
-        print(method)
         def send(**kwargs):
             if method == "messages.send":
                 kwargs["random_id"] = self.vk.getRandomId()

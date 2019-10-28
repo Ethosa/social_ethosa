@@ -4,6 +4,7 @@ from threading import Thread
 import datetime
 import requests
 import inspect
+import asyncio
 import base64
 import timeit
 import random
@@ -21,13 +22,14 @@ def printf(a, *args):
     # faster than print
     sys.stdout.write("%s\n" % (str(a) % args if len(args) > 0 else str(a)))
 
-def downloadFileFromUrl(url, path):
+async def downloadFileFromUrlA(url, path):
     response = requests.get(url)
     if response.ok:
         with open(path, 'wb') as f:
             f.write(response.content)
         return 1
     else: return 0
+downloadFileFromUrl = lambda url, path: asyncio.run(downloadFileFromUrlA(url, path))
 
 def getMaxPhoto(attachments):
     """returns a list of links to images with the highest quality
@@ -145,7 +147,7 @@ def timeIt(count=1, libs=[], launch="thread"):
             return "%s() - %s time" % (name, asd())
     return timer
 
-def updateLibrary(version=None):
+async def updateLibraryA(version=None):
     """function to update the library
     
     Keyword Arguments:
@@ -155,6 +157,7 @@ def updateLibrary(version=None):
         os.system("pip install social-ethosa==%s" % version)
     else:
         os.system("pip install social-ethosa --upgrade")
+updateLibrary = lambda version=None: asyncio.run(updateLibraryA(version))
     
 def splitList(lst, number):
     # This function is intended for equal division of the list, for example:
@@ -192,6 +195,7 @@ def resplit(string, s=",", forSplit="/", splitNum=-1):
     """
     pattern = "[^%s]%s" % (s, forSplit)
     return re.split(pattern, string)
+
 
 class Timer:
     """
@@ -239,21 +243,15 @@ class Timer:
         return decorator
 
     def setSeconds(self):
-        """
-        sets the time to milliseconds
-        """
+        # sets the time to milliseconds
         self.ms = 1
 
     def setMilliseconds(self):
-        """
-        sets the time to seconds
-        """
+        # sets the time to seconds
         self.ms = 1000
 
     def cancel(self):
-        """
-        stops all currently running timers
-        """
+        # stops all currently running timers
         self.canceled = 1
         self.isWorking = lambda: 0
 
@@ -282,6 +280,9 @@ class Obj:
     def __init__(self, obj, parentObj=None):
         self.obj = obj
         self.parentObj = parentObj
+        if "object" in self.obj:
+            for key in self.obj[object]:
+                exec("self.obj[%s] = %s" % (key, repr(self.obj[object][key])))
         if isinstance(self.obj, dict):
             self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
 
@@ -293,22 +294,6 @@ class Obj:
                 return Obj(obj, self)
             else:
                 return obj
-        else:
-            a = None
-            if isinstance(currentObj, dict):
-                for key in currentObj:
-                    o = currentObj[key]
-                    if isinstance(o, dict):
-                        a = Obj(o).__getattr__(attribute)
-                        if a != None:
-                            return a
-            elif isinstance(currentObj, list):
-                for o in currentObj:
-                    if isinstance(o, dict):
-                        a = Obj(o).__getattr__(attribute)
-                        if a != None:
-                            return a
-            return a
 
     def isNull(self):
         return self.obj

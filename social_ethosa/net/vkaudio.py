@@ -20,8 +20,8 @@ class Audio:
         url = 'https://vk.com'
 
         self.translate = TranslatorDebug().translate
-
-        self.headers = {
+        self.session = requests.session()
+        self.session.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
@@ -29,8 +29,6 @@ class Audio:
             'Connection':'keep-alive',
             'DNT':'1'
         }
-        self.session = requests.session()
-        self.session.headers = self.headers
         data = self.session.get(url).text
         start = re.search("<form.+name=\"login.+", data).start()
         end = re.search("<input type=\"submit\" class=\"submit\" />", data).start()
