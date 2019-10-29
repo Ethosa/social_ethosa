@@ -6,6 +6,7 @@ Documentation in other languages
 
 Examples:
 - [Inline keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_inline.py)
+- [Standart keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_standart.py)
 
 ## Get started
 Installation: `pip install --upgrade social-ethosa`  
