@@ -4,6 +4,9 @@ A Python library that uses requests
 Documentation in other languages
 - [Russian](https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md)
 
+Examples:
+- [Inline keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_inline.py)
+
 ## Get started
 Installation: `pip install --upgrade social-ethosa`  
 Import:
