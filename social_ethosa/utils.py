@@ -100,7 +100,7 @@ users_event = {
 }
 
 class TranslatorDebug:
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self.path = os.path.dirname(os.path.abspath(__file__))
         with open("%s/translate.py" % self.path, 'r', encoding='utf-8') as f:
             self.base = json.loads(f.read())
@@ -281,8 +281,8 @@ class Obj:
         self.obj = obj
         self.parentObj = parentObj
         if "object" in self.obj:
-            for key in self.obj[object]:
-                exec("self.obj[%s] = %s" % (key, repr(self.obj[object][key])))
+            for key in self.obj["object"]:
+                exec("self.obj[\"%s\"] = %s" % (key, repr(self.obj["object"][key])))
         if isinstance(self.obj, dict):
             self.strdate = datetime.datetime.utcfromtimestamp(self.obj['date']).strftime('%d.%m.%Y %H:%M:%S') if 'date' in self.obj else None
 

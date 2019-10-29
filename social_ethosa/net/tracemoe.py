@@ -13,7 +13,7 @@ class TraceMoe:
     getVideo
     getImagePreview
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self.session = requests.Session()
         self.session.headers = {
             "Content-Type" : "application/json"

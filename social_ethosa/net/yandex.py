@@ -4,16 +4,16 @@ from ..utils import *
 
 class YandexRoot:
     # Yandex Root-the main class in order to reduce the code of obtaining a token when initializing the class.
-    def __init__(self, *args, **kwargs):
-        self.token = getValue(kwargs, "token")
+    def __init__(self, token=""):
+        self.token = token
         self.session = requests.Session()
 
 class YTranslator(YandexRoot):
     # YTranslator - class to use Yandex Translate
     # We recommend that you read its documentation before using this class
     # Used to translate text
-    def __init__(self, *args, **kwargs):
-        super(YTranslator, self).__init__(*args, **kwargs)
+    def __init__(self, token=""):
+        super(YTranslator, self).__init__(token)
         self.detectUrl = "https://translate.yandex.net/api/v1.5/tr.json/detect"
         self.getLangsUrl = "https://translate.yandex.net/api/v1.5/tr.json/getLangs"
         self.translateUrl = "https://translate.yandex.net/api/v1.5/tr.json/translate"
@@ -42,8 +42,8 @@ class YTranslator(YandexRoot):
 class YDictionary(YandexRoot):
     # YDictionary-class to use Yandex Dictionary
     # We recommend that you read its documentation before using this class
-    def __init__(self, *args, **kwargs):
-        super(YDictionary, self).__init__(*args, **kwargs)
+    def __init__(self, token=""):
+        super(YDictionary, self).__init__(token)
         self.getLangsUrl = "https://dictionary.yandex.net/api/v1/dicservice.json/getLangs"
         self.lookupUrl = "https://dictionary.yandex.net/api/v1/dicservice.json/lookup"
 
@@ -61,8 +61,8 @@ class YDictionary(YandexRoot):
 class YPredictor(YandexRoot):
     # YPredictor-class to use Yandex Predictor
     # We recommend that you read its documentation before using this class
-    def __init__(self, *args, **kwargs):
-        super(YPredictor, self).__init__(*args, **kwargs)
+    def __init__(self, token=""):
+        super(YPredictor, self).__init__(token)
         self.getLangsUrl = "https://predictor.yandex.net/api/v1/predict.json/getLangs"
         self.completeUrl = "https://predictor.yandex.net/api/v1/predict.json/complete"
 
@@ -80,8 +80,8 @@ class YPredictor(YandexRoot):
 class YSpeller(YandexRoot):
     # YSpeller-class to use Yandex Speller
     # We recommend that you read its documentation before using this class
-    def __init__(self, *args, **kwargs):
-        super(YSpeller, self).__init__(*args, **kwargs)
+    def __init__(self, token=""):
+        super(YSpeller, self).__init__(token)
         self.checkTextUrl = "https://speller.yandex.net/services/spellservice.json/checkText"
         self.checkTextsUrl = "https://speller.yandex.net/services/spellservice.json/checkTexts"
 

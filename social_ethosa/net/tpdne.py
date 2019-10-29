@@ -4,7 +4,7 @@ from ..utils import *
 from copy import copy
 
 class ThisPerson:
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self.person = "https://thispersondoesnotexist.com/image"
         self.waifu = "https://www.thiswaifudoesnotexist.net/example-"
         self.cat = "https://thiscatdoesnotexist.com/"

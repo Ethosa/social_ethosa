@@ -42,7 +42,8 @@ class Vk:
     vk.messages.send(message='message', peer_id=1234567890, random_id=vk.getRandomId())
     '''
 
-    def __init__(self, **kwargs):
+    def __init__(self, token="", debug=0, version_api="5.103",
+            group_id="", lang="en"):
         """initialization method
         
         Required for authorization in VK via token
@@ -56,12 +57,11 @@ class Vk:
                 lang {str} -- language for debuging (can be "en", "ru", "de", "fr", "ja")
             ]
         """
-        self.token_vk = getValue(kwargs, "token") # Must be string
-        self.debug = getValue(kwargs, "debug") # Must be boolean
-        if self.debug: self.debug = 1.0
-        self.version_api = getValue(kwargs, "version_api", "5.102") # Can be float / integer / string
-        self.group_id = getValue(kwargs, "group_id") # can be string or integer
-        self.lang = getValue(kwargs, "lang", "en") # must be string
+        self.token_vk = token # Must be string
+        self.debug = debug # Must be boolean
+        self.version_api = version_api # Can be float / integer / string
+        self.group_id = group_id # can be string or integer
+        self.lang = lang # must be string
         self.errors_parsed = 0.0
 
         # Initialize methods
@@ -125,7 +125,7 @@ class Vk:
     # @a
     # def get_mess(obj):
     #   print(obj.text)
-    def listenWrapper(self, type_value, classWrapper, function, user=False, e="type"):
+    def listenWrapper(self, type_value, classWrapper, function, e="type"):
         def listen(e=e):
             if type(type_value) == int: e = 0
             for event in self.longpoll.listen():
@@ -138,9 +138,13 @@ class Vk:
                             self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
                     else:
                         function(classWrapper(event.update))
-        Thread_VK(listen).start()
+        if "%s" % type(function) == "<class 'function'>":
+            Thread_VK(listen).start()
+        else:
+            classWrapper = function
+            return lambda function: self.listenWrapper(type_value, classWrapper, function)
 
-    def getRandomId(self): return random.randint(-2000000, 2000000)
+    def getRandomId(self): return random.randint(-2_000_000, 2_000_000)
 
     def createExampleScript(self, name="testScript"):
         with open("%s.py" % name, "w") as f:
@@ -184,12 +188,11 @@ class LongPoll:
     for event in longpoll.listen():
         print(event)
     '''
-    def __init__(self, *args, **kwargs):
-        self.vk = getValue(kwargs, "vk")
-        if self.vk:
-            self.group_id = self.vk.group_id
-            self.access_token = self.vk.token_vk
-            self.version_api = self.vk.version_api
+    def __init__(self, vk=None):
+        if vk:
+            self.group_id = vk.group_id
+            self.access_token = vk.token_vk
+            self.version_api = vk.version_api
         self.vk_api_url = 'https://api.vk.com/method/'
         self.ts = "0"
         self.errors = []
@@ -261,13 +264,13 @@ class LongPoll:
 # Usage:
 # response = vk.method(method='wall.post', message='Hello, world!')
 class Method:
-    def __init__(self, *args, **kwargs):
-        self.vk = getValue(kwargs, "vk")
-        if self.vk:
-            self.group_id = self.vk.group_id
-            self.access_token = self.vk.token_vk
-            self.version_api = self.vk.version_api
-        self.method = getValue(kwargs, "method", '')
+    def __init__(self, vk=None, method=""):
+        if vk:
+            self.group_id = vk.group_id
+            self.access_token = vk.token_vk
+            self.version_api = vk.version_api
+            self.getRandomId = vk.getRandomId
+        self.method = method
         self.fuse = lambda method, kwargs: asyncio.run(self.Fuse(method, kwargs))
         self.use = lambda method, **kwargs: asyncio.run(self.Use(method, **kwargs))
 
@@ -293,7 +296,7 @@ class Method:
         method = "%s.%s" % (self.method, method)
         def send(**kwargs):
             if method == "messages.send":
-                kwargs["random_id"] = self.vk.getRandomId()
+                kwargs["random_id"] = self.getRandomId()
             if "attachment" in kwargs:
                 if isinstance(kwargs["attachment"], list) or isinstance(kwargs["attachment"], tuple):
                     kwargs["attachment"] = ",".join(kwargs["attachment"])
@@ -321,31 +324,37 @@ class Keyboard:
     keyboard.addButton(Button(type='vkapps'', label='hello, world!'))
     keyboard.addButton(Button(type='vkpay''))
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, one_time=True, buttons=[[]], inline=True):
         self.keyboard = {
-            "one_time" : getValue(kwargs, "one_time", True),
-            "buttons" : getValue(kwargs, "buttons", [[]])
+            "one_time" : one_time,
+            "buttons" : buttons,
+            "inline" : inline
         }
+        if inline:
+            self.maxSize = (3, 3)
+            del self.keyboard["one_time"]
+        else:
+            self.maxSize = (4, 10)
 
     def addLine(self):
-        if len(self.keyboard['buttons']) < 10:
+        if len(self.keyboard['buttons']) < self.maxSize[1]:
             self.keyboard['buttons'].append([])
 
     def addButton(self, button):
-        if len(self.keyboard['buttons'][::-1][0]) < 4:
+        if len(self.keyboard['buttons'][::-1][0]) < self.maxSize[0]:
             if button['action']['type'] != 'text' and len(self.keyboard['buttons'][-1]) >= 1:
                 self.addLine()
-            if len(self.keyboard['buttons']) < 10:
+            if len(self.keyboard['buttons']) < self.maxSize[1]:
                 self.keyboard['buttons'][::-1][0].append(button)
         else:
             self.addLine()
-            if len(self.keyboard['buttons']) < 10:
+            if len(self.keyboard['buttons']) < self.maxSize[1]:
                 self.addButton(button)
 
     def compile(self): return json.dumps(self.keyboard)
 
-    def createAndPlaceButton(self, *args, **kwargs):
-        self.addButton(Button(*args, **kwargs))
+    def createAndPlaceButton(self, **kwargs):
+        self.addButton(Button(**kwargs))
 
     def visualize(self):
         for line in self.keyboard["buttons"]:
@@ -369,36 +378,38 @@ class Button:
     SECONDARY = "secondary"
     NEGATIVE = "negative"
     POSITIVE = "positive"
-    def __init__(self, *args, **kwargs):
-        self.type = getValue(kwargs, "type", "text")
+    def __init__(self, type="text", label="бан", payload="",
+            hash="action=transfer-to-group&group_id=1&aid=10", owner_id="-181108510",
+            app_id="6979588", color="primary"):
+        self.type = type
 
         actions = {
             "text" : {
                 "type" : "text",
-                "label" :getValue(kwargs, "label","бан"),
-                "payload" : getValue(kwargs, "payload", '')
+                "label" : label,
+                "payload" : payload
             },
             "location" : {
                 "type" : "location",
-                "payload" : getValue(kwargs, "payload", '')
+                "payload" : payload
             },
             "vkpay" : {
                 "type" : "vkpay",
-                "payload" : getValue(kwargs, "payload", ''),
-                "hash" : getValue(kwargs, "hash", 'action=transfer-to-group&group_id=1&aid=10')
+                "payload" : payload,
+                "hash" : hash
             },
             "vkapps" : {
                 "type" : "open_app",
-                "payload" : getValue(kwargs, "payload", ''),
-                "hash" : getValue(kwargs, "hash", "ethosa_lib"),
-                "label" : getValue(kwargs, "label", ''),
-                "owner_id" : getValue(kwargs, "owner_id", "-181108510"),
-                "app_id" : getValue(kwargs, "app_id", "6979558")
+                "payload" : payload,
+                "hash" : hash,
+                "label" : label,
+                "owner_id" : owner_id,
+                "app_id" : app_id
             }
         }
 
-        self.action = getValue(actions, kwargs['type'], actions['text'])
-        self.color = getValue(kwargs, 'color', Button.PRIMARY)
+        self.action = getValue(actions, self.type, actions['text'])
+        self.color = color
 
     def setText(self, text):
         if "label" in self.action:
@@ -412,13 +423,15 @@ class Button:
             del kb['color']
         return kb
 
-    def __new__(self, *args, **kwargs):
-        self.__init__(self, *args, **kwargs)
+    def __new__(self, type="text", label="бан", payload="",
+                hash="action=transfer-to-group&group_id=1&aid=10", owner_id="-181108510",
+                app_id="6979588", color="primary"):
+        self.__init__(self, type, label, payload, hash, owner_id, app_id, color)
         return self.getButton(self)
 
 
 class Error:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.code = kwargs["code"]
         self.message = kwargs["message"]
         self.line = kwargs["line"]
