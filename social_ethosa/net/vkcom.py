@@ -138,7 +138,7 @@ class Vk:
                             self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
                     else:
                         function(classWrapper(event.update))
-        if "%s" % type(function) == "<class 'function'>":
+        if "%s" % type(function) == "<class 'function'>" or "%s" % type(function) == "<class 'method'>":
             Thread_VK(listen).start()
         else:
             classWrapper = function
@@ -324,7 +324,7 @@ class Keyboard:
     keyboard.addButton(Button(type='vkapps'', label='hello, world!'))
     keyboard.addButton(Button(type='vkpay''))
     """
-    def __init__(self, one_time=True, buttons=[[]], inline=True):
+    def __init__(self, one_time=True, buttons=[[]], inline=False):
         self.keyboard = {
             "one_time" : one_time,
             "buttons" : buttons,
@@ -344,11 +344,11 @@ class Keyboard:
         if len(self.keyboard['buttons'][::-1][0]) < self.maxSize[0]:
             if button['action']['type'] != 'text' and len(self.keyboard['buttons'][-1]) >= 1:
                 self.addLine()
-            if len(self.keyboard['buttons']) < self.maxSize[1]:
+            if len(self.keyboard['buttons']) < self.maxSize[1]+1:
                 self.keyboard['buttons'][::-1][0].append(button)
         else:
             self.addLine()
-            if len(self.keyboard['buttons']) < self.maxSize[1]:
+            if len(self.keyboard['buttons']) < self.maxSize[1]+1:
                 self.addButton(button)
 
     def compile(self): return json.dumps(self.keyboard)
