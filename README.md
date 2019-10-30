@@ -4,6 +4,8 @@ A Python library that uses requests
 Documentation in other languages
 - [Russian](https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md)
 
+[Changelog](https://github.com/Ethosa/social_ethosa/blob/master/ChangeLog.md)
+
 Examples:
 - [Inline keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_inline.py)
 - [Standart keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_standart.py)
