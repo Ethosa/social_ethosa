@@ -28,7 +28,7 @@ class Matrix:
     def __init__(self, *args):
         if len(args) == 2:
             self.width, self.height = args
-            self.obj = [[0 for x in range(self.width)] for y in range(self.height)]
+            self.obj = [[0 for x in range(self.height)] for y in range(self.width)]
             self.widthFill = 1
         elif len(args) == 1:
             if isinstance(args[0], Matrix):
@@ -54,7 +54,7 @@ class Matrix:
         self.widthFill = len("%s" % value)
 
     def setAt(self, x, y, value):
-        self.obj[x+1][y+1] = value
+        self.obj[x][y] = value
         if len("%s" % value) > self.widthFill:
             self.widthFill = len("%s" % value)
 
@@ -81,6 +81,7 @@ class Matrix:
                     self.obj[x][y] *= -1
 
     def flip(self):
+        obj = []
         for x in range(self.width):
             obj.append(self.obj[x][:])
             self.obj[x] = [i for i in reversed(self.obj[x])]

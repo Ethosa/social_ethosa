@@ -19,6 +19,9 @@ class Path:
                 l += self.path[p].euclideanDistance(self.path[p+1])
         return l
 
+    def bezierCurve(self):
+        pass
+
     def __eq__(self, other):
         if isinstance(other, Path):
             return self.path == other.path
@@ -30,6 +33,9 @@ class Path:
     def __lt__(self, other):
         if isinstance(other, Path):
             return self.length() < other.length()
+
+    def __contains__(self, val):
+        return val in self.path
 
     def __iter__(self):
         for point in self.path:

@@ -15,13 +15,19 @@ class Point:
         elif len(args) == 0:
             self.points = [0, 0]
         else:
-            self.points = args
+            self.points = [i for i in args]
 
     def euclideanDistance(self, *args):
         r = Point(*args)
         sum_sqr = sum([(self.points[i] - r.points[i])**2 for i in range(len(self.points))])
         distance = math.sqrt(sum_sqr)
         return distance
+
+    def middlePoint(self, pnt):
+        pnt1 = Point(self)
+        for p in range(len(pnt1.points)):
+            pnt1.points[p] = (self.points[p]+pnt.points[p])//2
+        return pnt1
 
     def offset(self, points):
         for i in range(len(points)):

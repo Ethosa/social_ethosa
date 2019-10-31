@@ -113,5 +113,12 @@ class Uploader:
         else:
             return response
 
+    def uploadVideo(self, files, formatting=0, **kwargs):
+        response = self.autoUpload("video", files, typeRules=kwargs)
+        if formatting:
+            return ["video%s_%s" % (i["owner_id"], i["video_id"]) for i in response]
+        else:
+            return response
+
     def getAllTypes(self):
         return { key : self.types[key][1].__code__.co_varnames for key in self.types.keys() }
