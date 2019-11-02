@@ -176,7 +176,7 @@ Getting random anime
 ```python
 randomAnime = ym.getRandomAnime()
 print(dir(randomAnime))
-print(randomAnime())
+print(randomAnime)
 ```
 You can also get a list of anime updates
 ```python
