@@ -324,13 +324,13 @@ class Keyboard:
     keyboard.addButton(Button(type='vkapps'', label='hello, world!'))
     keyboard.addButton(Button(type='vkpay''))
     """
-    def __init__(self, one_time=True, buttons=[[]], inline=False):
+    def __init__(self, **kwargs):
         self.keyboard = {
-            "one_time" : one_time,
-            "buttons" : buttons,
-            "inline" : inline
+            "one_time" : getValue(kwargs, "one_time", True),
+            "buttons" : getValue(kwargs, "buttons", [[]]),
+            "inline" : getValue(kwargs, "inline", False)
         }
-        if inline:
+        if self.keyboard["inline"]:
             self.maxSize = (3, 3)
             del self.keyboard["one_time"]
         else:
@@ -353,8 +353,11 @@ class Keyboard:
 
     def compile(self): return json.dumps(self.keyboard)
 
-    def createAndPlaceButton(self, **kwargs):
-        self.addButton(Button(**kwargs))
+    def clear(self):
+        self.keyboard["buttons"] = [[]]
+
+    def createAndPlaceButton(self, *args, **kwargs):
+        self.addButton(Button(*args, **kwargs))
 
     def visualize(self):
         for line in self.keyboard["buttons"]:

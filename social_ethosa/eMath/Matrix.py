@@ -80,6 +80,36 @@ class Matrix:
                 if a < 0 and b > 0 or a > 0 and b < 0:
                     self.obj[x][y] *= -1
 
+    def lol(self):
+        offset = [1, self.height-1]
+        result = [0, 0, 0, 0]
+        for y in range(self.height//2):
+            for x in range(offset[0], offset[1]):
+                result[0] += self.obj[y][x]
+            offset[0] += 1
+            offset[1] -= 1
+        offset = [1, self.height-1]
+        for y in range(self.height-1, self.height//2, -1):
+            for x in range(offset[0], offset[1]):
+                result[1] += self.obj[y][x]
+            offset[0] += 1
+            offset[1] -= 1
+        obj = Matrix(self)
+        obj.transpose()
+        offset = [1, obj.height-1]
+        for y in range(obj.height//2):
+            for x in range(offset[0], offset[1]):
+                result[2] += obj.obj[y][x]
+            offset[0] += 1
+            offset[1] -= 1
+        offset = [1, obj.height-1]
+        for y in range(obj.height-1, obj.height//2, -1):
+            for x in range(offset[0], offset[1]):
+                result[3] += obj.obj[y][x]
+            offset[0] += 1
+            offset[1] -= 1
+        return result
+
     def flip(self):
         obj = []
         for x in range(self.width):

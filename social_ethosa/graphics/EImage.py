@@ -17,7 +17,6 @@ class EImage:
         self.fill = lambda color=b"\xFF\xFF\xFF\xFF": asyncio.run(self.fillA(color))
         self.save = lambda file, mode="bmp": asyncio.run(self.saveA(file, mode))
         self.flip = lambda: asyncio.run(self.flipA())
-        self.getAt = lambda x, y: asyncio.run(self.getAtA(x, y))
         self.drawRect = lambda x, y, width, height, color=b"\xFF\xFF\xFF\xFF": asyncio.run(self.drawRectA(x, y, width, height, color))
         self.fill(color)
 
@@ -41,8 +40,16 @@ class EImage:
         self.width = width
         self.height = height
 
-    async def getAtA(self, x, y):
+    def getAt(self, x, y):
         return self.colors[x][y]
+
+    def getRect(self, x, y, width, height):
+        obj = []
+        for i in range(x, x+width):
+            obj.append([])
+            for j in range(y, y+height):
+                obj[i].append(self.colors[i][j])
+        return Matrix(obj)
 
     def setAt(self, x, y, color=b"\xFF\xFF\xFF\xFF"):
         self.colors[x][y] = ecolor(color)
@@ -60,7 +67,7 @@ class EImage:
         color = ecolor(color)
         if width > 1:
             for i in range(1, nb_points+1):
-                self.drawCircle((int(x1 + i * x_spacing)+width)//2, (int(y1 + i * y_spacing)+width)//2, width, color)
+                self.drawCircle((int(x1 + i * x_spacing)+width)//2, (int(y1 + i * y_spacing)+width)//2, width//2, color)
         else:
             for i in range(1, nb_points+1):
                 self.colors[int(x1 + i * x_spacing)][int(y1 + i * y_spacing)] = color
@@ -68,10 +75,10 @@ class EImage:
 
     def drawCircle(self, x, y, r, color=b"\xFF\xFF\xFF\xFF", width=1):
         color = ecolor(color)
-        #The lower this value the higher quality the circle is with more points generated
+        # The lower this value the higher quality the circle is with more points generated
         stepSize = r/r/100
 
-        #Generated vertices
+        # Generated vertices
         positions = []
 
         t = 0
@@ -90,6 +97,11 @@ class EImage:
                 self.drawLine(path.path[p].points[0], path.path[p].points[1],
                     path.path[p+1].points[0], path.path[p+1].points[1], color, width)
 
+    def drawPathBezier(self, path, color=b"\xFF\xFF\xFF\xFF", width=1):
+        color = ecolor(color)
+        pnts = [[i.points[0], i.points[1]] for i in path]
+        self.drawBezier(pnts, color, width)
+
     def drawTriangle(self, x, y, width, height, color=b"\xFF\xFF\xFF\xFF", lineWidth=1):
         pnt1 = [x, y+height]
         pnt2 = [x+width, y+height]
@@ -97,6 +109,65 @@ class EImage:
         self.drawLine(pnt1[0], pnt1[1], pnt2[0], pnt2[1], color, lineWidth)
         self.drawLine(pnt3[0], pnt3[1], pnt2[0], pnt2[1], color, lineWidth)
         self.drawLine(pnt3[0], pnt3[1], pnt1[0], pnt1[1], color, lineWidth)
+
+    def drawBezier(self, pnts, color=b"\xFF\xFF\xFF\xFF", width=1):
+        t = [t/100 for t in range(101)]
+        points = self.make_bezier(pnts)(t)
+        for i in range(len(points)):
+            if i+1 < len(points):
+                self.drawLine(points[i][0], points[i][1], points[i+1][0], points[i+1][1], color, width)
+
+    def make_bezier(self, xys):
+        # xys should be a sequence of 2-tuples (Bezier control points)
+        n = len(xys)
+        combinations = self.pascal_row(n-1)
+        def bezier(ts):
+            # This uses the generalized formula for bezier curves
+            result = []
+            for t in ts:
+                tpowers = (t**i for i in range(n))
+                upowers = [(1-t)**i for i in range(n)][::-1]
+                coefs = [c*a*b for c, a, b in zip(combinations, tpowers, upowers)]
+                result.append([int(sum([coef*p for coef, p in zip(coefs, ps)])) for ps in zip(*xys)])
+            return result
+        return bezier
+
+    def pascal_row(self, n):
+        # This returns the nth row of Pascal's Triangle
+        result = [1]
+        x, numerator = 1, n
+        for denominator in range(1, n//2+1):
+            # print(numerator,denominator,x)
+            x *= numerator
+            x /= denominator
+            result.append(x)
+            numerator -= 1
+        if n&1 == 0:
+            # n is even
+            result.extend(reversed(result[:-1]))
+        else:
+            result.extend(reversed(result)) 
+        return result
+
+    def floodFill(self, x,y, clr=b"\xFF\xFF\xFF\xFF", clr1=b"\x00\x00\x00\x00", mode="custom"):
+        clr = ecolor(clr)
+        if mode == "auto":
+            a = self.colors[x][y]
+            clr = a
+        clr1 = ecolor(clr1)
+        toFill = []
+        toFill.append([x, y])
+        while toFill:
+            x, y = toFill.pop()
+            if x < len(self.colors) and y < len(self.colors[x]):
+                a = self.colors[x][y]
+                if a != clr:
+                    continue
+                self.colors[x][y] = clr1
+                toFill.append([x-1,y])
+                toFill.append([x+1,y])
+                toFill.append([x,y-1])
+                toFill.append([x,y+1])
 
     def I1(self, value):
         return struct.pack("!B", value & (2**8-1))

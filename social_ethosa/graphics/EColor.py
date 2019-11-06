@@ -13,7 +13,10 @@ colors = {
 
 def ecolor(color=b"\xFF\xFF\xFF\xFF"):
     if isinstance(color, tuple) or isinstance(color, list):
-        return (color[3] & 0xff) << 24 | (color[0] & 0xff) << 16 | (color[1] & 0xff) << 8 | (color[1] & 0xff).to_bytes(4, byteorder="little")
+        color = "#{:02x}{:02x}{:02x}{:02x}".format(color[3], color[0], color[1], color[2])
+        if color in colors:
+            return colors[color]
+        return (int(re.sub("#", "0x", color), 0)).to_bytes(4, byteorder="little")
     elif isinstance(color, str):
         if color in colors:
             return colors[color]
