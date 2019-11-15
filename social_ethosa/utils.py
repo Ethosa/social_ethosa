@@ -22,14 +22,13 @@ def printf(a, *args):
     # faster than print
     sys.stdout.write("%s\n" % (str(a) % args if len(args) > 0 else str(a)))
 
-async def downloadFileFromUrlA(url, path):
+def downloadFileFromUrl(url, path):
     response = requests.get(url)
     if response.ok:
         with open(path, 'wb') as f:
             f.write(response.content)
         return 1
     else: return 0
-downloadFileFromUrl = lambda url, path: asyncio.run(downloadFileFromUrlA(url, path))
 
 def getMaxPhoto(attachments):
     """returns a list of links to images with the highest quality
@@ -147,7 +146,7 @@ def timeIt(count=1, libs=[], launch="thread"):
             return "%s() - %s time" % (name, asd())
     return timer
 
-async def updateLibraryA(version=None):
+def updateLibraryA(version=None):
     """function to update the library
     
     Keyword Arguments:
@@ -157,7 +156,6 @@ async def updateLibraryA(version=None):
         os.system("pip install social-ethosa==%s" % version)
     else:
         os.system("pip install social-ethosa --upgrade")
-updateLibrary = lambda version=None: asyncio.run(updateLibraryA(version))
     
 def splitList(lst, number):
     # This function is intended for equal division of the list, for example:

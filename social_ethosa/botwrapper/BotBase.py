@@ -33,7 +33,7 @@ class BotBase:
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 
-    def addNewUser(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
+    def addNew(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
         user = self.pattern(uid=uid, name=name, role=role, status=status, money=money, **kwargs)
 
         with open("%s/%s.%s" % (self.path, uid, self.postfix), 'w', encoding='utf-8') as f:
@@ -56,15 +56,15 @@ class BotBase:
         for i in range(len(self.users)):
             self.users[i].obj[key] = defult_value
 
-    def saveUser(self, user):
+    def save(self, user):
         with open("%s/%s.%s" % (self.path, user.obj["uid"], self.postfix), 'w', encoding='utf-8') as f:
             f.write(json.dumps(user.obj))
 
-    def saveUsers(self, *users):
+    def saves(self, *users):
         for user in users:
             self.saveUser(user)
 
-    def loadUser(self, user_id):
+    def load(self, user_id):
         with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'r', encoding='utf-8') as f:
             user =  json.loads(f.read())
 
@@ -75,10 +75,13 @@ class BotBase:
     def notInBD(self, user_id):
         return not os.path.exists("%s/%s.%s" % (self.path, user_id, self.postfix))
 
-    def autoInstallUser(self, uid, vk, **kwargs):
+    def autoInstall(self, uid, vk=None, **kwargs):
         if uid > 0:
             if self.notInBD(uid):
-                name = vk.users.get(user_ids=uid)['response'][0]["first_name"]
+                if vk:
+                    name = vk.users.get(user_ids=uid)['response'][0]["first_name"]
+                else:
+                    name="Пользователь"
                 return self.addNewUser(uid=uid, name=name, **kwargs)
             else:
                 return self.loadUser(uid)
@@ -114,7 +117,7 @@ class BotBase:
             current_path = "%s/%s" % (old_path, user)
             shutil.copy(current_path, "%s/%s" % (new_path, user), follow_symlinks=True)
 
-    def getUsersByKeys(self, *args):
+    def getByKeys(self, *args):
         allUsers = [self.loadUser(i[:-len(self.postfix)-1]).obj for i in os.listdir(self.path)]
 
         args = [i for i in args]
@@ -124,7 +127,7 @@ class BotBase:
             key : user[key] for key in args
         } for user in allUsers]
 
-    def getSortedUsersByKey(self, key, count=None, offset=0, sortType="1-9", formatting=False, otherKeys=[]):
+    def getSortedByKeys(self, key, count=None, offset=0, sortType="1-9", formatting=False, otherKeys=[]):
         sortedUsers = sorted(self.getUsersByKeys(key, "name", *otherKeys), key=itemgetter(key), reverse=True if sortType == "1-9" else False if sortType == "9-1" else True)
         if formatting:
             for user in sortedUsers:

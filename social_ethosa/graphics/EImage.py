@@ -11,14 +11,14 @@ import zlib
 
 class EImage:
     def __init__(self, width=256, height=256, color=b"\xFF\xFF\xFF\xFF"):
+        color = ecolor(color)
         self.width = width
         self.height = height
-        self.colors = [[0 for x in range(self.height)] for y in range(self.width)]
+        self.colors = [[color for x in range(self.height)] for y in range(self.width)]
         self.fill = lambda color=b"\xFF\xFF\xFF\xFF": asyncio.run(self.fillA(color))
         self.save = lambda file, mode="bmp": asyncio.run(self.saveA(file, mode))
         self.flip = lambda: asyncio.run(self.flipA())
         self.drawRect = lambda x, y, width, height, color=b"\xFF\xFF\xFF\xFF": asyncio.run(self.drawRectA(x, y, width, height, color))
-        self.fill(color)
 
     async def fillA(self, color=b"\xFF\xFF\xFF\xFF"):
         color = ecolor(color)
@@ -40,6 +40,30 @@ class EImage:
         self.width = width
         self.height = height
 
+    def scale(self, number):
+        m = Matrix(self.colors[:]).scale(number)
+        self.colors = m.obj[:]
+        self.width = m.width
+        self.height = m.height
+
+    def paste(self, image, x, y, mask=None):
+        x1 = 0
+        if not mask:
+            self.drawRect(x, y, image.width, image.height, "#FF000000")
+            for i in range(x, image.width+x):
+                y1 = 0
+                for j in range(y, image.height+y):
+                    self.colors[i][j] = image.colors[x1][y1]
+                    y1 += 1
+                x1 += 1
+        else:
+            for i in range(x, image.width+x):
+                y1 = 0
+                for j in range(y, image.height+y):
+                    self.colors[i][j] = self.calcAlpha(self.colors[i][j], image.colors[x1][y1])
+                    y1 += 1
+                x1 += 1
+
     def getAt(self, x, y):
         return self.colors[x][y]
 
@@ -58,7 +82,7 @@ class EImage:
         color = ecolor(color)
         for i in range(x, width+x):
             for j in range(y, height+y):
-                self.colors[i][j] = color
+                self.colors[i][j] = self.calcAlpha(self.colors[i][j], color)
 
     def drawLine(self, x1, y1, x2, y2, color=b"\xFF\xFF\xFF\xFF", width=1):
         nb_points = x1+x2 if x1+x2 > y1+y2 else y1+y2
@@ -70,7 +94,8 @@ class EImage:
                 self.drawCircle((int(x1 + i * x_spacing)+width)//2, (int(y1 + i * y_spacing)+width)//2, width//2, color)
         else:
             for i in range(1, nb_points+1):
-                self.colors[int(x1 + i * x_spacing)][int(y1 + i * y_spacing)] = color
+                x, y = int(x1 + i * x_spacing), int(y1 + i * y_spacing)
+                self.colors[x][y] = self.calcAlpha(self.colors[x][y], color)
 
 
     def drawCircle(self, x, y, r, color=b"\xFF\xFF\xFF\xFF", width=1):
@@ -88,7 +113,7 @@ class EImage:
         for p in positions:
             x = p[0] if p[0] > 0 else p[0]*-2
             y = p[1] if p[1] > 0 else p[1]*-2
-            self.colors[x][y] = color
+            self.colors[x][y] = self.calcAlpha(self.colors[x][y], color)
 
     def drawPath(self, path, color=b"\xFF\xFF\xFF\xFF", width=1):
         color = ecolor(color)
@@ -117,38 +142,6 @@ class EImage:
             if i+1 < len(points):
                 self.drawLine(points[i][0], points[i][1], points[i+1][0], points[i+1][1], color, width)
 
-    def make_bezier(self, xys):
-        # xys should be a sequence of 2-tuples (Bezier control points)
-        n = len(xys)
-        combinations = self.pascal_row(n-1)
-        def bezier(ts):
-            # This uses the generalized formula for bezier curves
-            result = []
-            for t in ts:
-                tpowers = (t**i for i in range(n))
-                upowers = [(1-t)**i for i in range(n)][::-1]
-                coefs = [c*a*b for c, a, b in zip(combinations, tpowers, upowers)]
-                result.append([int(sum([coef*p for coef, p in zip(coefs, ps)])) for ps in zip(*xys)])
-            return result
-        return bezier
-
-    def pascal_row(self, n):
-        # This returns the nth row of Pascal's Triangle
-        result = [1]
-        x, numerator = 1, n
-        for denominator in range(1, n//2+1):
-            # print(numerator,denominator,x)
-            x *= numerator
-            x /= denominator
-            result.append(x)
-            numerator -= 1
-        if n&1 == 0:
-            # n is even
-            result.extend(reversed(result[:-1]))
-        else:
-            result.extend(reversed(result)) 
-        return result
-
     def floodFill(self, x,y, clr=b"\xFF\xFF\xFF\xFF", clr1=b"\x00\x00\x00\x00", mode="custom"):
         clr = ecolor(clr)
         if mode == "auto":
@@ -163,18 +156,27 @@ class EImage:
                 a = self.colors[x][y]
                 if a != clr:
                     continue
-                self.colors[x][y] = clr1
+                self.colors[x][y] = self.calcAlpha(self.colors[x][y], clr1)
                 toFill.append([x-1,y])
                 toFill.append([x+1,y])
                 toFill.append([x,y-1])
                 toFill.append([x,y+1])
 
-    def I1(self, value):
-        return struct.pack("!B", value & (2**8-1))
-    def I1INT(self, value):
-        return struct.pack("!B", value)
-    def I4(self, value):
-        return struct.pack("!I", value)
+    def filter(self, f):
+        edgex = int(self.width/2)
+        edgey = int(self.height/2)
+        for x in range(edgex, self.width-edgex):
+            for x in range(edgey, self.height-edgey):
+                colorArray = self.colors[:]
+                for fx in range(self.width):
+                    for fy in range(self.height):
+                        colorArray[fx][fy] = self.colors[x + fx - edgex][y + fy - edgey]
+                self.colors[x][y] = colorArray[int(self.width/2)][int(self.height/2)]
+
+    def rotate(self, angle):
+        obj = Matrix(self.width, self.height)
+        obj.obj = self.colors[:]
+        self.colors = obj.rotate(angle, b"\xFF\xFF\xFF\xFF").obj
 
     async def saveA(self, file, mode="bmp"):
         if mode == "bmp":
@@ -243,3 +245,64 @@ class EImage:
             png += self.I4(0) + block + self.I4(zlib.crc32(block))
             with open(file,"wb") as f:
                 f.write(png)
+
+    def I1(self, value):
+        return struct.pack("!B", value & (2**8-1))
+    def I1INT(self, value):
+        return struct.pack("!B", value)
+    def I4(self, value):
+        return struct.pack("!I", value)
+
+    def make_bezier(self, xys):
+        # xys should be a sequence of 2-tuples (Bezier control points)
+        n = len(xys)
+        combinations = self.pascal_row(n-1)
+        def bezier(ts):
+            # This uses the generalized formula for bezier curves
+            result = []
+            for t in ts:
+                tpowers = (t**i for i in range(n))
+                upowers = [(1-t)**i for i in range(n)][::-1]
+                coefs = [c*a*b for c, a, b in zip(combinations, tpowers, upowers)]
+                result.append([int(sum([coef*p for coef, p in zip(coefs, ps)])) for ps in zip(*xys)])
+            return result
+        return bezier
+
+    def pascal_row(self, n):
+        # This returns the nth row of Pascal's Triangle
+        result = [1]
+        x, numerator = 1, n
+        for denominator in range(1, n//2+1):
+            # print(numerator,denominator,x)
+            x *= numerator
+            x /= denominator
+            result.append(x)
+            numerator -= 1
+        if n&1 == 0:
+            # n is even
+            result.extend(reversed(result[:-1]))
+        else:
+            result.extend(reversed(result)) 
+        return result
+
+    def calcAlpha(self, dst, src):
+        c = int.from_bytes(src, "big")
+        if c == 255:
+            return src
+        else:
+            imgcolor = hex(int.from_bytes(src, "little"))[2:]
+            selfcolor = hex(int.from_bytes(dst, "little"))[2:]
+            while len(imgcolor) < 8:
+                imgcolor = "0%s" % imgcolor
+            while len(selfcolor) < 8:
+                selfcolor = "0%s" % selfcolor
+            dist = [int(selfcolor[i:i+2], 16) for i in (0, 2, 4, 6)]
+            src = [int(imgcolor[i:i+2], 16) for i in (0, 2, 4, 6)]
+            dstBrigt = dist[1:]
+            srcBrigt = src[1:]
+            result = []
+            a = src[0]*(1.0/255.0)
+            for d, s in zip(dstBrigt, srcBrigt):
+                result.append(int(d*(1.0-a) + s*a))
+            result.append(255)
+            return ecolor(result)

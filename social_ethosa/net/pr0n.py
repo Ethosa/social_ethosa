@@ -71,13 +71,13 @@ class PHub:
     SFW = "sfw"
     GAY = "gayporn"
     DESCRIBED = "described-video"
-    BABE = "babe"
+    BABE = "categories/babe"
     INTERACTIVE = "interactive"
-    COLLEGE = "college"
-    TEEN = "teen"
+    COLLEGE = "categories/college"
+    TEEN = "categories/teen"
     SCISSORS = 532
     ASS = 4
-    PORNSTARS = "pornstar"
+    PORNSTARS = "categories/pornstar"
     def __init__(self):
         self.url = "https://rt.pornhub.com/"
         self.session = requests.Session()
@@ -97,51 +97,11 @@ class PHub:
         return response
 
     def getPage(self, number=1, min_duration=0, c=""):
-        if c == "hd":
-            response = PHPage(self.session.get("%shd" % self.url, params={
+        if isinstance(c, str):
+            response = PHPage(self.session.get("%s%s" % (self.url, c), params={
                     "page" : number,
                     "min_duration" : min_duration
-                }), self.session)
-        elif c == "sfw":
-            response = PHPage(self.session.get("%shd" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration
-                }), self.session)
-        elif c == "described-video":
-            response = PHPage(self.session.get("%sdescribed-video" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration
-                }), self.session)
-        elif c == "gayporn":
-            response = PHPage(self.session.get("%sgayporn" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration
-                }), self.session)
-        elif c == "interactive":
-            response = PHPage(self.session.get("%sinteractive" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration
-                }), self.session)
-        elif c == "college":
-            response = PHPage(self.session.get("%scategories/college" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration
-                }), self.session)
-        elif c == "babe":
-            response = PHPage(self.session.get("%scategories/babe" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration
-                }), self.session)
-        elif c == "teen":
-            response = PHPage(self.session.get("%scategories/teen" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration
-                }), self.session)
-        elif c == "pornstar":
-            response = PHPage(self.session.get("%scategories/pornstar" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration
-                }), self.session)
+                }))
         else:
             response = PHPage(self.session.get("%svideo" % self.url, params={
                     "page" : number,

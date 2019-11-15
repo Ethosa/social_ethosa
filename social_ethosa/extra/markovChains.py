@@ -2,14 +2,10 @@
 # author: Ethosa
 from .eList import EList
 from random import choices, choice
-import asyncio
 
 class MarkovChains:
     def __init__(self):
         self.chains = {}
-        self.execute = lambda string: asyncio.run(self.executing(string))
-        self.deleteChain = lambda name: asyncio.run(self.deleteChainA(name))
-        self.generateSequence = lambda length, auth=None: asyncio.run(self.generateSequenceA(length, auth))
 
     def addChain(self, name, value, weight=1):
         if name not in self.chains:
@@ -17,7 +13,7 @@ class MarkovChains:
         else:
             self.chains[name].append([value, weight])
 
-    async def deleteChainA(self, name):
+    def deleteChain(self, name):
         for key in self.chains:
             ns = [i[0] for i in self.chains[key]]
             ws = [i[1] for i in self.chains[key]]
@@ -31,7 +27,7 @@ class MarkovChains:
                 i -= 1
         del self.chains[name]
 
-    async def generateSequenceA(self, length, auth=None):
+    def generateSequence(self, length, auth=None):
         out = []
         if not auth:
             auth = choice([key for key in self.chains])
@@ -42,7 +38,7 @@ class MarkovChains:
             out.append(key)
         return out
 
-    async def executing(self, string):
+    def execute(self, string):
         out = string.replace("=", "-").split("-")
         for i in range(len(out)):
             current = out[i]

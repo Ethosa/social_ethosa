@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 from copy import copy, deepcopy
+from .Point import Point
 import math
 
 class Matrix:
@@ -72,13 +73,46 @@ class Matrix:
         obj = []
         for x in range(self.width):
             obj.append(self.obj[x][:])
-            self.obj[x] = [i for i in reversed(self.obj[x])]
-        self.obj = [i for i in reversed(self.obj)]
+            self.obj[x] = [i for i in self.obj[x][::-1]]
+        self.obj = [i for i in self.obj[::-1]]
         for x in range(self.width):
             for y in range(self.height):
                 a, b = obj[x][y], self.obj[x][y]
                 if a < 0 and b > 0 or a > 0 and b < 0:
                     self.obj[x][y] *= -1
+
+    def rotate(self, angle, f=0):
+        offsetX = offsetY = 10
+        aRad = 180*angle/math.pi
+        rMx = ((math.cos(aRad), -math.sin(aRad)), (math.sin(aRad), math.cos(aRad)))
+        matrix = Matrix(self.width+self.width, self.height+self.width)
+        matrix.fill(f)
+        for y in range(self.height):
+            for x in range(self.width):
+                tx = (x-offsetX)*rMx[0][0] + (y-offsetY)*rMx[0][1] + offsetX
+                ty = (x-offsetX)*rMx[1][0] + (y-offsetY)*rMx[1][1] + offsetY
+                itx = int(tx)
+                ity = int(ty)
+                # rtx = round(tx)
+                # rty = round(ty)
+                # mtx = math.ceil(tx)
+                # mty = math.ceil(ty)
+                # if not [itx, ity] in timed:
+                if itx < -self.width:
+                    itx += self.width//2
+                if ity < -self.height:
+                    ity += self.height//2
+                matrix.obj[itx][ity] = self.obj[x][y]
+                    # timed.append([itx, ity])
+                # elif not [rtx, rty] in timed:
+                #     matrix.obj[rtx][rty] = self.obj[x][y]
+                #     timed.append([rtx, rty])
+                # elif not [mtx, mty] in timed:
+                #     matrix.obj[mtx][mty] = self.obj[x][y]
+                #     timed.append([mtx, mty])
+            print(y)
+        return matrix
+        
 
     def lol(self):
         offset = [1, self.height-1]
@@ -110,12 +144,41 @@ class Matrix:
             offset[1] -= 1
         return result
 
+    def scale(self, number):
+        if isinstance(number, float):
+            number = round(number)
+        if isinstance(number, int):
+            w, h = self.width*number, self.height*number
+            matrix = Matrix(w, h)
+            if number > 0:
+                for x in range(self.width):
+                    for y in range(self.height):
+                        x1 = [i for i in range(x*number, x*number+number)]
+                        y1 = [i for i in range(y*number, y*number+number)]
+                        for i, j in zip(x1, y1):
+                            matrix.obj[i][j] = self.obj[x][y]
+                            for offset in range(1, number):
+                                if i+offset < w:
+                                    matrix.obj[i+offset][j] = self.obj[x][y]
+                                if j+offset < h:
+                                    matrix.obj[i][j+offset] = self.obj[x][y]
+            else:
+                obj = []
+                c = 0
+                for x in range(0, self.width, -number):
+                    obj.append([])
+                    for y in range(0, self.height, -number):
+                        obj[c].append(self.obj[x][y])
+                    c += 1
+                matrix = Matrix(obj)
+        return matrix
+
     def flip(self):
         obj = []
         for x in range(self.width):
             obj.append(self.obj[x][:])
-            self.obj[x] = [i for i in reversed(self.obj[x])]
-        self.obj = [i for i in reversed(self.obj)]
+            self.obj[x] = [i for i in self.obj[x][::-1]]
+        self.obj = [i for i in self.obj[::-1]]
 
     def search(self, value):
         for x in range(self.width):
@@ -147,6 +210,10 @@ class Matrix:
         koef = (-1)**(xc+yc)
         minor = self.minor(xc, yc)
         return minor*koef
+
+    def determinant(self):
+        if self.width == 2 == self.height:
+            return self.obj[0][0]*self.obj[1][1] - self.obj[0][1]*self.obj[1][0]
 
     def __neg__(self):
         obj = copy(self.obj)

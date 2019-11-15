@@ -2,7 +2,6 @@
 # author: Ethosa
 
 from copy import copy
-import asyncio
 import random
 
 class EQueue:
@@ -14,19 +13,19 @@ class EQueue:
         self.len = lambda: asyncio.run(self.lenA())
         self.onNewObject = lambda: None
 
-    async def getNextA(self):
+    def getNext(self):
         if self.queue:
             n = copy(self.queue[0])
             self.queue.pop(0)
             return n
 
-    async def getLastA(self):
+    def getLast(self):
         if self.queue:
             n = copy(self.queue[-1])
             self.queue.pop()
             return n
 
-    async def getRandomA(self):
+    def getRandom(self):
         if self.queue:
             number = random.randint(0, len(self.queue)-1)
             n = copy(self.queue[number])
@@ -44,7 +43,7 @@ class EQueue:
         for i in range(len(self.queue)):
             yield self.getNext()
 
-    async def lenA(self):
+    def len(self):
         return len(self.queue)
 
     def __len__(self):

@@ -68,6 +68,6 @@ class HPage:
         for key in h:
             exec("self.%s = %s" % (key, repr(h[key])))
         self.page = session.get(self.url).text
-        self.videos = re.findall("http://.+mp4", self.page)
+        self.videos = re.findall(r"http://.+mp4", self.page)
         self.dict = h
 

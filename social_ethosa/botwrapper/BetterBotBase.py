@@ -13,7 +13,7 @@ class BetterBotBase(BotBase):
         super().__init__(*args)
         self.postfix = args[1] if len(args) > 1 else "dat"
 
-    def addNewUser(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
+    def addNew(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
         user = self.pattern(uid=uid, name=name, role=role, status=status, money=money, **kwargs)
 
         with open("%s/%s.%s" % (self.path, uid, self.postfix), 'wb') as f:
@@ -37,11 +37,11 @@ class BetterBotBase(BotBase):
             exec("self.users[i].%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
             self.users[i].obj[key] = defult_value
 
-    def saveUser(self, user):
+    def save(self, user):
         with open("%s/%s.%s" % (self.path, user.uid, self.postfix), 'wb') as f:
             pickle.dump(user, f)
 
-    def loadUser(self, user_id):
+    def load(self, user_id):
         with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'rb') as f:
             user =  pickle.load(f)
 
@@ -49,7 +49,7 @@ class BetterBotBase(BotBase):
 
         return self.users[len(self.users)-1]
 
-    def getUsersByKeys(self, *args):
+    def getByKeys(self, *args):
         allUsers = [self.loadUser(i[:-len(self.postfix)-1]) for i in os.listdir(self.path)]
 
         args = [i for i in args]
