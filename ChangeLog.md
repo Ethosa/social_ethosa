@@ -6,7 +6,7 @@
 - small fixes
 
 ## 0.4.2
-- Added graphics module
+- Added graphics module  
 [Browse files](https://github.com/Ethosa/social_ethosa/tree/d2143b2525809cf8b1223e5b74dd59bcb14ed9a3)
 
 ## 0.4.12
