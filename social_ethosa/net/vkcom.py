@@ -21,7 +21,7 @@ class Vk:
     vk = Vk(token=Access_Token) # if you want auth to user
     vk = Vk(token=Group_Access_Token) # if you want auth to group
 
-    use param version_api for change verison api. Default value is 5.101
+    use param version_api for change verison api. Default value is 5.103
     use param debug=True for debugging!
     use param lang='en' for set debug language! # en, ru, de, fr, ja
 
@@ -36,32 +36,74 @@ class Vk:
         printf(obj.peer_id)
 
     use any vk api method:
-    vk.method(method='messages.send', message='message', peer_id=1234567890, random_id=0)
+    vk.method(method='messages.send', message='message', peer_id=1234567890)
 
     use messages methods:
-    vk.messages.send(message='message', peer_id=1234567890, random_id=vk.getRandomId())
+    vk.messages.send(message='message', peer_id=1234567890)
     '''
 
     def __init__(self, token="", debug=0, version_api="5.103",
-            group_id="", lang="en"):
+            group_id="", lang="en", login="", password=""):
         """initialization method
         
         Required for authorization in VK via token
         
         Arguments:
-            **kwargs {[dict]} -- [
-                token {str} -- VK token
-                debug {bool} -- an option to enable debugging
-                version_api {float or str} -- the version of VK API
-                group_id {str or int} -- ID groups (if you authorize through the group)
-                lang {str} -- language for debuging (can be "en", "ru", "de", "fr", "ja")
-            ]
+            token {str} -- VK token
+            debug {bool} -- an option to enable debugging
+            version_api {float or str} -- the version of VK API
+            group_id {str or int} -- ID groups (if you authorize through the group)
+            lang {str} -- language for debuging (can be "en", "ru", "de", "fr", "ja")
         """
-        self.token_vk = token # Must be string
-        self.debug = debug # Must be boolean
-        self.version_api = version_api # Can be float / integer / string
-        self.group_id = group_id # can be string or integer
-        self.lang = lang # must be string
+        if login and password:
+            session = requests.Session()
+            def auth(session):
+                location = str("https://login.vk.com/?act=grant_access&client_id=2685278&settings=1040183263"
+                                "&redirect_uri=https%3A%2F%2Foauth.vk.com%2Fblank.html&response_type=token"
+                                "&group_ids=&token_type=0&v=&state=&display=page&ip_h=0ce35355c94dac1278"
+                                "&hash=1574456300_200c5d0e2c43de5377&https=1")
+                return session.get(location)
+            url = 'https://vk.com'
+            session.headers = {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
+                        'Accept-Encoding':'gzip, deflate',
+                        'Connection':'keep-alive',
+                        'DNT':'1'
+                    }
+            data = session.get(url).text
+            start = re.search("<form.+name=\"login.+", data).start()
+            end = re.search("<input type=\"submit\" class=\"submit\" />", data).start()
+            data = data[start:end]
+            lg_h = re.findall("<input.+lg_h.+", data)[0]
+            lg_h = lg_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
+            ip_h = re.findall("<input.+ip_h.+", data)[0]
+            ip_h = ip_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
+            form = {'act' : 'login', 'role' : 'al_frame', 'expire' : '',
+                    'recaptcha' : '', 'captcha_sid' : '', 'captcha_key' : '',
+                    '_origin': 'https://vk.com', 'ip_h': ip_h,
+                    'lg_h': lg_h, 'ul': '',
+                    'email': login, 'pass': password}
+            response = session.post("https://login.vk.com/", data=form)
+            if not ('onLoginDone' in response.text):
+                raise VkError("Auth error.")
+
+            url1 = "https://oauth.vk.com/authorize?client_id=2685278&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token"
+            text = session.get(url1).text
+            location = re.findall(r'location.href = "(\S+)"\+addr;', text)
+            if debug:
+                print(location)
+            if location:
+                token = re.findall(r"token=([^&]+)", session.get(location[0]).url)
+                if debug:
+                    print(token)
+                token = token[0]
+        self.token_vk = token
+        self.debug = debug 
+        self.version_api = version_api
+        self.group_id = group_id
+        self.lang = lang
         self.errors_parsed = 0.0
 
         # Initialize methods
@@ -104,7 +146,7 @@ class Vk:
         """call function when find error
         
         Arguments:
-            function {[callable object]} -- [function or class]
+            function {callable object} -- [function or class]
         """
         self.errors_parsed = 1.0
         def parseError():
@@ -469,7 +511,9 @@ class Help:
         else:
             response = requests.get('https://vk.com/dev/%s' % method).text.split('<table class="dev_params_table">')[1].split('</table>')[0]
 
-            params = { i.split('<td')[1].split('>')[1].split('</td')[0] : i.split('<td')[2].split('>', 1)[1].split('</td')[0] for i in response.split('<tr') if len(i) > 2 }
+            params = {
+                i.split('<td')[1].split('>')[1].split('</td')[0] : i.split('<td')[2].split('>', 1)[1].split('</td')[0]
+                for i in response.split('<tr') if len(i) > 2 }
 
             for i in params.keys():
                 params[i] = params[i].replace('\n', ' ').replace('&lt;', '{').replace('&gt;', '}')

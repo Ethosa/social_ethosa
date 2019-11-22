@@ -4,7 +4,6 @@ from threading import Thread
 import datetime
 import requests
 import inspect
-import asyncio
 import base64
 import timeit
 import random
@@ -146,7 +145,7 @@ def timeIt(count=1, libs=[], launch="thread"):
             return "%s() - %s time" % (name, asd())
     return timer
 
-def updateLibraryA(version=None):
+def updateLibrary(version=None):
     """function to update the library
     
     Keyword Arguments:

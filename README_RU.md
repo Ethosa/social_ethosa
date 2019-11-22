@@ -1,5 +1,17 @@
-# social ethosa
+<h1 align="center">Social-ethosa</h1>
 Библиотека Python, использующая requests
+
+[Changelog](https://github.com/Ethosa/social_ethosa/blob/master/ChangeLog.md)
+
+Examples:
+- [Inline-клавиатура](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_inline.py)
+- [Стандартная клавиатура](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_standart.py)
+- [Получение сообщений группой](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages.py)
+- [Получение сообщений группой (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages_oop.py)
+- [Получение сообщений пользователем](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages.py)
+- [Получение сообщений пользователем (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages_oop.py)
+- [Кнопки в клавиатуре](https://github.com/Ethosa/social_ethosa/blob/master/examples/buttons.py)
+- [Загрузка файлов](https://github.com/Ethosa/social_ethosa/blob/master/examples/uploadFilesVk.py)
 
 ## Get started
 Установка: `pip install --upgrade social-ethosa`  
@@ -104,8 +116,8 @@ BetterBotBase может также использоваться вместе с
 def getNewMessage(message):
   from_id = message.from_id
   if from_id > 0:
-    user = bbs.autoInstallUser(from_id, vk)
-# autoInstallUser автоматически создает или загружает пользователей и возвращает пользователя для дальнейших действий с ним.
+    user = bbs.autoInstall(from_id, vk)
+# autoInstall автоматически создает или загружает пользователей и возвращает пользователя для дальнейших действий с ним.
 ```
 
 BotWrapper cможет также взаимодействовать с BetterBotBase!
