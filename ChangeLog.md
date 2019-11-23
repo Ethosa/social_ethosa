@@ -1,5 +1,17 @@
 <h1 align="center">ChangeLog</h1>
 
+## 0.4.6
+- New functionality in botwrapper:
+```python
+from social_ethosa import *
+
+bbs = BetterBotBase("usersFolder")
+bbs.autoInstall(1) # 1 is file name
+bbs.model1.money += 1000 # model1 -> model 1 -> 1 -> 1 is file name
+bbs.saveSelf() # save all opened users
+print(bbs.model1.money) # 1000
+```
+
 ## 0.4.4
 :heavy_exclamation_mark: IMPORTANT :heavy_exclamation_mark: - changed method names in BetterBotBase and BotBase! note this change when updating your current version. 
 - removed some unnecessary async methods. 
