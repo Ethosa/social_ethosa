@@ -3,6 +3,7 @@
 from ..utils import *
 requests.packages.urllib3.disable_warnings()
 from .vkaudio import *
+from copy import copy
 import traceback
 import datetime
 import asyncio
@@ -102,7 +103,6 @@ class Vk:
         self.version_api = version_api
         self.group_id = group_id
         self.lang = lang
-        self.errors_parsed = 0.0
 
         # Initialize methods
         self.longpoll = LongPoll(vk=self)
@@ -140,20 +140,6 @@ class Vk:
     # Hander longpolls errors:
     # return object with variables:
     # object.message, object.line, object.code
-    def onError(self, function):
-        """call function when find error
-        
-        Arguments:
-            function {callable object} -- [function or class]
-        """
-        self.errors_parsed = 1.0
-        def parseError():
-            while True:
-                for error in self.longpoll.errors:
-                    function(error)
-                    self.longpoll.errors.remove(error)
-        Thread_VK(parseError).start()
-
     def getUserHandlers(self):
         # return ALL user handlers
         return ["on_%s" % i for i in users_event]
@@ -167,22 +153,45 @@ class Vk:
     #   print(obj.text)
     def listenWrapper(self, type_value, classWrapper, function, e="type"):
         def listen(e=e):
-            if type(type_value) == int: e = 0
+            if isinstance(type_value, int):
+                e = 0
             for event in self.longpoll.listen():
                 if event.update[e] == type_value:
-                    if self.errors_parsed:
-                        try: function(classWrapper(event.update))
-                        except Exception as error_msg:
-                            exc_type, exc_obj, exc_tb = sys.exc_info()
-                            line = traceback.extract_tb(exc_tb)[-1][1]
-                            self.longpoll.errors.append(Error(line=line, message=str(error_msg), code=type(error_msg).__name__))
-                    else:
-                        function(classWrapper(event.update))
+                    function(classWrapper(event.update))
         if "%s" % type(function) == "<class 'function'>" or "%s" % type(function) == "<class 'method'>":
             Thread_VK(listen).start()
         else:
             classWrapper = function
             return lambda function: self.listenWrapper(type_value, classWrapper, function)
+
+    def on_message(self, classWrapper=dict, command=None, text=None, startCommand=["/"]):
+        def listen(function):
+            type_value = "message_new" if self.group_id else 4
+            e = "type" if self.group_id else 0
+
+            def send(update):
+                update["text"] = update["text"][len("/%s" % command):]
+                returned = function(update)
+                attachments = getValue(returned, "attachments", [])
+                sticker_id = getValue(returned, "sticker_id", 0)
+                self.messages.send(message=getValue(returned, "message", returned),
+                        peer_id=getValue(returned, "peer_id", update["peer_id"]),
+                        attachment=",".join(attachments),
+                        sticker_id=sticker_id)
+
+            def l():
+                for event in self.longpoll.listen():
+                    if event.update[e] == type_value:
+                        update = classWrapper(event.update)
+
+                        for cmd in startCommand:
+                            if update["text"].startswith(cmd):
+                                update["text"] = update["text"][len(cmd):]
+
+                        if update["text"] == text or update["text"].startswith("%s" % (command)):
+                            Thread_VK(send, update).start()
+            Thread_VK(l).start()
+        return copy(listen)
 
     def getRandomId(self): return random.randint(-2_000_000, 2_000_000)
 

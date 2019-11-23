@@ -69,7 +69,7 @@ class BotBase:
 
     def saveSelf(self):
         self.saves(*self.users)
-        self.saves = []
+        self.users = []
 
     def load(self, user_id):
         with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'r', encoding='utf-8') as f:
