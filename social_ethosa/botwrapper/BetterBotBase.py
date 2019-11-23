@@ -16,12 +16,15 @@ class BetterBotBase(BotBase):
     def addNew(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
         user = self.pattern(uid=uid, name=name, role=role, status=status, money=money, **kwargs)
 
+        user = BetterUser(**user)
         with open("%s/%s.%s" % (self.path, uid, self.postfix), 'wb') as f:
-            pickle.dump(BetterUser(**user), f)
+            pickle.dump(user, f)
 
-        self.users.append(BetterUser(**user))
-
-        return self.users[len(self.users)-1]
+        if user not in self.users:
+            self.users.append(user)
+            return self.users[len(self.users)-1]
+        else:
+            return self.users[self.users.index(user)]
 
     def addNewValue(self, key, defult_value=0):
         for user in os.listdir(self.path):
@@ -45,9 +48,11 @@ class BetterBotBase(BotBase):
         with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'rb') as f:
             user =  pickle.load(f)
 
-        self.users.append(user)
-
-        return self.users[len(self.users)-1]
+        if user not in self.users:
+            self.users.append(user)
+            return self.users[len(self.users)-1]
+        else:
+            return self.users[self.users.index(user)]
 
     def getByKeys(self, *args):
         allUsers = [self.loadUser(i[:-len(self.postfix)-1]) for i in os.listdir(self.path)]

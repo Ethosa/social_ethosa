@@ -39,9 +39,12 @@ class BotBase:
         with open("%s/%s.%s" % (self.path, uid, self.postfix), 'w', encoding='utf-8') as f:
             f.write(json.dumps(user))
 
-        self.users.append(User(**user))
-
-        return self.users[len(self.users)-1]
+        user = User(**user)
+        if user not in self.users:
+            self.users.append(user)
+            return self.users[len(self.users)-1]
+        else:
+            return self.users[self.users.index(user)]
 
     def addNewValue(self, key, defult_value=0):
         for user in os.listdir(self.path):
@@ -62,15 +65,22 @@ class BotBase:
 
     def saves(self, *users):
         for user in users:
-            self.saveUser(user)
+            self.save(user)
+
+    def saveSelf(self):
+        self.saves(*self.users)
+        self.saves = []
 
     def load(self, user_id):
         with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'r', encoding='utf-8') as f:
             user =  json.loads(f.read())
 
-        self.users.append(User(**user))
-
-        return self.users[len(self.users)-1]
+        user = User(**user)
+        if user not in self.users:
+            self.users.append(user)
+            return self.users[len(self.users)-1]
+        else:
+            return self.users[self.users.index(user)]
 
     def notInBD(self, user_id):
         return not os.path.exists("%s/%s.%s" % (self.path, user_id, self.postfix))
@@ -82,9 +92,9 @@ class BotBase:
                     name = vk.users.get(user_ids=uid)['response'][0]["first_name"]
                 else:
                     name="Пользователь"
-                return self.addNewUser(uid=uid, name=name, **kwargs)
+                return self.addNew(uid=uid, name=name, **kwargs)
             else:
-                return self.loadUser(uid)
+                return self.load(uid)
                 
     def clearPattern(self):
         self.pattern = lambda **kwargs: {
@@ -148,3 +158,10 @@ class BotBase:
             return {"amount" : math.ceil(a), "users" : users}
         elif roundInt < 0:
             return {"amount" : math.floor(a), "users" : users}
+
+
+    def __getattr__(self, attribute):
+        if attribute.startswith("model"):
+            attribute = attribute[5:]
+            user = self.load(attribute)
+            return user

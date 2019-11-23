@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 
-from .net import *
+from .ConfigReader import *
 from .botwrapper import *
 from .UtilsManager import *
+
 
 __version__ = "0.4.52"
 __authors__ = ["Ethosa"]
