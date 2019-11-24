@@ -1,5 +1,13 @@
 <h1 align="center">ChangeLog</h1>
 
+## 0.4.7
+- added new method in vkcom:
+```python
+@vk.on_message(text="hello")
+def a(msg):
+  return "hello world!"
+```
+
 ## 0.4.6
 - New functionality in botwrapper:
 ```python
@@ -16,7 +24,8 @@ print(bbs.model1.money) # 1000
 ## 0.4.4
 :heavy_exclamation_mark: IMPORTANT :heavy_exclamation_mark: - changed method names in BetterBotBase and BotBase! note this change when updating your current version. 
 - removed some unnecessary async methods. 
-- small fixes
+- small fixes  
+[Browse files](https://github.com/Ethosa/social_ethosa/tree/11f61d75caad7b0cb7783ee48ebd8f0d6e9af8cc)
 
 ## 0.4.2
 - Added graphics module  
