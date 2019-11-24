@@ -11,6 +11,7 @@ bbs.model1.money += 1000 # model1 -> model 1 -> 1 -> 1 is file name
 bbs.saveSelf() # save all opened users
 print(bbs.model1.money) # 1000
 ```
+[Browse files](https://github.com/Ethosa/social_ethosa/tree/8f07e0fe16cca0f7d14d105f22b184f56ad66de6)
 
 ## 0.4.4
 :heavy_exclamation_mark: IMPORTANT :heavy_exclamation_mark: - changed method names in BetterBotBase and BotBase! note this change when updating your current version. 
