@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import *
+import requests
+import sys
 
 class YandexRoot:
     # Yandex Root-the main class in order to reduce the code of obtaining a token when initializing the class.
@@ -34,7 +35,6 @@ class YTranslator(YandexRoot):
         kwargs["key"] = self.token
         kwargs["lang"] = lang
         kwargs["text"] = text
-        print(kwargs)
         response = self.session.post(self.translateUrl, data=kwargs).json()
         return response
 

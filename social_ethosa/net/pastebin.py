@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 
-from ..utils import *
+import requests
 
 class Pastebin:
     def __init__(self, token=""):

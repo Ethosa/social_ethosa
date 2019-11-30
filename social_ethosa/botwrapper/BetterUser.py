@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..utils import getValue
-
 class BetterUser:
     def __init__(self, **kwargs):
         self.obj = kwargs

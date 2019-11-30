@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import *
+import requests
+import random
+import time
+import sys
+import re
 
 class YummyAnime:
     # The main class to interact with yummyanime.club
-    def __init__(self, **kwargs):
-        self.login = getValue(kwargs, "login", "")
-        self.password = getValue(kwargs, "password", "")
+    def __init__(self, login="", password=""):
+        self.login = login
+        self.password = password
         self.session = requests.Session()
         self.session.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36',
@@ -30,6 +34,12 @@ class YummyAnime:
             self.logIn(self.login, self.password)
 
     def logIn(self, login, password):
+        """auth in YummyAnime profile
+        
+        Arguments:
+            login {str}
+            password {str}
+        """
         self.mainPage = self.session.post(self.loginUrl, data={"email" : login, "password" : password}).text
         if '<li title="Мой профиль">' in self.mainPage:
             self.userName = self.mainPage.split('<span id="login" class="user-name-text">', 1)[1].split("</span>", 1)[0].strip()
@@ -38,25 +48,64 @@ class YummyAnime:
         else:
             sys.stdout.write("Login error.\n")
 
-    def isLogin(self): return self.logged
+    def isLogin(self):
+        """return True, if current session authorized
+        
+        Returns:
+            bool
+        """
+        return self.logged
 
     def logOut(self):
+        """log out from profile
+        """
         if self.isLogin():
             self.mainPage = self.session.post("%slogout" % self.mainPageUrl).text
             self.logged = 0
 
     def getRandomAnime(self):
+        """get random anime page
+        
+        Returns:
+            YummyPage
+        """
         return YummyPage(self.session.post(self.randomAnime))
 
     def getUpdates(self, page=1):
+        """get last anime updates
+        
+        Keyword Arguments:
+            page {int} -- number of page (default: {1})
+        
+        Returns:
+            YummyUpdates
+        """
         return YummyUpdates(self.session.get(self.updatesPage, params={"page" : page}), self.session)
 
     def getProfile(self):
+        """return profile info
+        
+        Returns:
+            YummyProfile
+        """
         if self.isLogin():
             return YummyProfile(self.session.get(self.profilePageUrl), self.session, self.userName)
 
     def onNewUpdate(self, timer=60):
+        """listener for new anime updates
+        
+        Keyword Arguments:
+            timer {number} -- time for recall method getLastUpdates() (default: {60})
+        
+        Returns:
+            decorator
+        """
         def asd1(func):
+            """start listener
+            
+            Arguments:
+                func {fucntion, method or class} -- callable object
+            """
             self.lastUpdate = self.getUpdates()[0]
             def asd():
                 while 1.0:

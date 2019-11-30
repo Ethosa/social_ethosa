@@ -2,14 +2,9 @@
 # author: ethosa
 from ..utils import *
 requests.packages.urllib3.disable_warnings()
-from .vkaudio import *
+from .vkaudio import Audio
 from copy import copy
-import traceback
-import datetime
-import asyncio
-import random
-import time
-import sys
+from .uploader import Uploader
 
 class Vk:
     '''
@@ -17,14 +12,6 @@ class Vk:
 
     Get vk access token here:
     https://vkhost.github.io/ (choose the Kate mobile.)
-
-    used:
-    vk = Vk(token=Access_Token) # if you want auth to user
-    vk = Vk(token=Group_Access_Token) # if you want auth to group
-
-    use param version_api for change verison api. Default value is 5.103
-    use param debug=True for debugging!
-    use param lang='en' for set debug language! # en, ru, de, fr, ja
 
     for handling new messages:
     In the official VK API documentation, the event of a new message is called "message_new", so use:
@@ -35,15 +22,9 @@ class Vk:
         printf('text message:', obj.text) # see https://vk.com/dev/objects/message for more info
         printf(obj.obj)
         printf(obj.peer_id)
-
-    use any vk api method:
-    vk.method(method='messages.send', message='message', peer_id=1234567890)
-
-    use messages methods:
-    vk.messages.send(message='message', peer_id=1234567890)
     '''
 
-    def __init__(self, token="", debug=0, version_api="5.103",
+    def __init__(self, token="", version_api="5.103",
             group_id="", lang="en", login="", password=""):
         """initialization method
         
@@ -55,6 +36,8 @@ class Vk:
             version_api {float or str} -- the version of VK API
             group_id {str or int} -- ID groups (if you authorize through the group)
             lang {str} -- language for debuging (can be "en", "ru", "de", "fr", "ja")
+            login {str} -- login in vk for get token and auth (default:{""})
+            password {str} -- password in vk for get token and auth (default:{""})
         """
         if login and password:
             session = requests.Session()
@@ -99,7 +82,6 @@ class Vk:
                     print(token)
                 token = token[0]
         self.token_vk = token
-        self.debug = debug 
         self.version_api = version_api
         self.group_id = group_id
         self.lang = lang
@@ -112,36 +94,17 @@ class Vk:
 
         self.help = Help
 
-        # Other variables:
-        self.translate = TranslatorDebug().translate
         self.vk_api_url = "https://api.vk.com/method/"
 
-        if self.token_vk:
-            if self.debug: sys.stdout.write(self.translate('Токен установлен. Проверяем его валидность ...', self.lang))
-            test = ''.join(requests.get('%smessages.getLongPollServer?access_token=%s&v=%s%s' % (self.vk_api_url, self.token_vk, self.version_api, "&group_id=%s" % (self.group_id) if self.group_id else "")).json().keys())
-            if self.debug: sys.stdout.write(self.translate("Ошибка" if test == "error" else 'Успешно!', self.lang))
-        else:
-            if self.debug: sys.stdout.write(self.translate("Ошибка", self.lang))
+        sys.stdout.write(self.translate('Токен установлен. Проверяем его валидность ...', self.lang))
+        test = ''.join(requests.get('%smessages.getLongPollServer?access_token=%s&v=%s%s' % (self.vk_api_url, self.token_vk, self.version_api, "&group_id=%s" % (self.group_id) if self.group_id else "")).json().keys())
+        sys.stdout.write(self.translate("Ошибка" if test == "error" else 'Успешно!', self.lang))
 
         self.uploader = Uploader(vk=self)
 
-
-    # Handlers:
-    # use handlers:
-    # @vk.*name function*
-    # def function(obj):
-    #     pass
-    #
-    # Example:
-    # @vk.on_wall_post_new
-    # def get_message(obj):
-    #     print("post text is", obj.text)
-    #
-    # Hander longpolls errors:
-    # return object with variables:
-    # object.message, object.line, object.code
     def getUserHandlers(self):
-        # return ALL user handlers
+        """get all user handlers
+        """
         return ["on_%s" % i for i in users_event]
 
 
@@ -193,23 +156,8 @@ class Vk:
             Thread_VK(l).start()
         return copy(listen)
 
-    def getRandomId(self): return random.randint(-2_000_000, 2_000_000)
-
-    def createExampleScript(self, name="testScript"):
-        with open("%s.py" % name, "w") as f:
-            f.write("""from social_ethosa import * # import library ..
-TOKEN = "your token here"
-GROUP_ID = "id of your group"
-
-vk = Vk(token=TOKEN, group_id=GROUP_ID, debug=1, lang="en") # auth in
-
-@vk.on_message_new # get all new messages
-def newMessage(obj):
-    print(obj.peer_id)
-    vk.messages.send(message="Hello world", peer_id=peer_id,
-                    random_id=vk.getRandomId())
-""")
-        sys.stdout.write(self.translate("В директории с текущим скриптом создан скрипт-пример использования библиотеки", self.lang))
+    def getRandomId(self):
+        return random.randint(-2_000_000, 2_000_000)
 
     def __getattr__(self, method):
         if method.startswith("on_"):
@@ -229,22 +177,18 @@ class VkError(Exception):
 
 
 class LongPoll:
-    '''
-    docstring for LongPoll
-
-    usage:
-    longpoll = LongPoll(access_token='your_access_token123')
-    for event in longpoll.listen():
-        print(event)
-    '''
     def __init__(self, vk=None):
+        """constructor for Longpoll
+        
+        Keyword Arguments:
+            vk {Vk} -- Vk authed object (default: {None})
+        """
         if vk:
             self.group_id = vk.group_id
             self.access_token = vk.token_vk
             self.version_api = vk.version_api
         self.vk_api_url = 'https://api.vk.com/method/'
         self.ts = "0"
-        self.errors = []
         self.session = requests.Session()
         self.session.headers = {
             "Content-Type" : "application/json"
@@ -320,10 +264,8 @@ class Method:
             self.version_api = vk.version_api
             self.getRandomId = vk.getRandomId
         self.method = method
-        self.fuse = lambda method, kwargs: asyncio.run(self.Fuse(method, kwargs))
-        self.use = lambda method, **kwargs: asyncio.run(self.Use(method, **kwargs))
 
-    async def Use(self, method, **kwargs):
+    def use(self, method, **kwargs):
         url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
@@ -332,7 +274,7 @@ class Method:
             raise VkError("error in method call <%s>" % response)
         return response
 
-    async def Fuse(self, method, kwargs):
+    def fuse(self, method, kwargs):
         url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
@@ -346,16 +288,8 @@ class Method:
         def send(**kwargs):
             if method == "messages.send":
                 kwargs["random_id"] = self.getRandomId()
-            if "attachment" in kwargs:
-                if isinstance(kwargs["attachment"], list) or isinstance(kwargs["attachment"], tuple):
-                    kwargs["attachment"] = ",".join(kwargs["attachment"])
-            elif "attachments" in kwargs:
-                if isinstance(kwargs["attachments"], list) or isinstance(kwargs["attachments"], tuple):
-                    kwargs["attachments"] = ",".join(kwargs["attachments"])
             return self.fuse(method, kwargs)
         return lambda **kwargs: send(**kwargs)
-
-from .uploader import *
 
 class Keyboard:
     """
@@ -400,7 +334,8 @@ class Keyboard:
             if len(self.keyboard['buttons']) < self.maxSize[1]+1:
                 self.addButton(button)
 
-    def compile(self): return json.dumps(self.keyboard)
+    def compile(self):
+        return json.dumps(self.keyboard)
 
     def clear(self):
         self.keyboard["buttons"] = [[]]
@@ -467,7 +402,8 @@ class Button:
         if "label" in self.action:
             self.action["label"] = text
 
-    def setColor(self, color): self.color = color
+    def setColor(self, color):
+        self.color = color
 
     def getButton(self):
         kb = {'action' : self.action, 'color' : self.color}
@@ -480,15 +416,6 @@ class Button:
                 app_id="6979588", color="primary"):
         self.__init__(self, type, label, payload, hash, owner_id, app_id, color)
         return self.getButton(self)
-
-
-class Error:
-    def __init__(self, **kwargs):
-        self.code = kwargs["code"]
-        self.message = kwargs["message"]
-        self.line = kwargs["line"]
-    def __str__(self):
-        return "%s, Line %s:\n%s" % (self.code, self.line, self.message)
 
 
 class Help:

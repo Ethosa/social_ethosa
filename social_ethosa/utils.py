@@ -97,21 +97,6 @@ users_event = {
     "notification_settings_edit" : [114, "peer_id", "sound", "disable_until"]
 }
 
-class TranslatorDebug:
-    def __init__(self):
-        self.path = os.path.dirname(os.path.abspath(__file__))
-        with open("%s/translate.py" % self.path, 'r', encoding='utf-8') as f:
-            self.base = json.loads(f.read())
-
-    def translate(self, *args):
-        text = args[0]
-        lang = args[1]
-        if text in self.base.keys():
-            if lang in self.base[text].keys():
-                return '%s\n' % self.base[text][lang]
-            else: return "%s\n" % text
-        else: return "%s\n" % text
-
 
 class Thread_VK(Thread):
     # This class is used to run callables on another thread.

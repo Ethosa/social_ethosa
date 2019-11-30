@@ -7,10 +7,6 @@ import random
 class EQueue:
     def __init__(self):
         self.queue = []
-        self.getNext = lambda: asyncio.run(self.getNextA())
-        self.getLast = lambda: asyncio.run(self.getLastA())
-        self.getRandom = lambda: asyncio.run(self.getRandomA())
-        self.len = lambda: asyncio.run(self.lenA())
         self.onNewObject = lambda: None
 
     def getNext(self):

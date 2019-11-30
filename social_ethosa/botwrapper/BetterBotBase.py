@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
-from ..utils import getValue
-from operator import itemgetter, attrgetter
 from .BotBase import BotBase
 from .BetterUser import BetterUser
 import pickle

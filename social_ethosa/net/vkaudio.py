@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import *
+import requests
 import re
 
 class Audio:
@@ -12,14 +12,12 @@ class Audio:
 
     printf(audio.get())
     """
-    def __init__(self, *args, **kwargs):
-        self.login = getValue(kwargs, 'login', '')
-        self.password = getValue(kwargs, 'password', '')
-        self.debug = getValue(kwargs, 'debug')
-        self.lang = getValue(kwargs, 'lang', 'en')
+    def __init__(self, login="", password="", lang="en"):
+        self.login = login
+        self.password = password
+        self.lang = lang
         url = 'https://vk.com'
 
-        self.translate = TranslatorDebug().translate
         self.session = requests.session()
         self.session.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
@@ -44,13 +42,13 @@ class Audio:
                 'email': self.login, 'pass': self.password}
 
         response = self.session.post("https://login.vk.com/", data=form)
-        if self.debug: print(self.translate(u'Успешно!' if 'onLoginDone' in response.text else u'Ошибка', self.lang))
+        sys.stdout.write(self.translate(u'Успешно!' if 'onLoginDone' in response.text else u'Ошибка', self.lang))
         if 'onLoginDone' in response.text:
             url = 'https://vk.com%s' % response.text.split('onLoginDone(', 1)[1].split("'")[1]
 
             self.user_id = self.session.get(url).text.split('<a id="profile_photo_link"', 1)[1].split('/photo', 1)[1].split('_', 1)[0]
 
-    def get(self, owner_id=None, offset=0, count=None, *args, **kwargs):
+    def get(self, owner_id=None, offset=0, count=None):
 
         # params owner_id, offset and count must be integer
         # get() method return list of dictionaries with audios
@@ -74,10 +72,10 @@ class Audio:
         return audios[offset:] if not count else audios[offset:count+offset]
         
 
-    def getCount(self, owner_id=None, *args, **kwargs):
+    def getCount(self, owner_id=None):
         return len(self.get(owner_id if owner_id else self.user_id))
 
-    def getById(self, audio_id, owner_id=None, *args, **kwargs):
+    def getById(self, audio_id, owner_id=None):
         owner_id = owner_id if owner_id else self.user_id
         url = 'https://m.vk.com/audio%s_%s' % (owner_id, audio_id)
 
@@ -97,7 +95,7 @@ class Audio:
             'artist' : artist
         }
 
-    def search(self, q=None, *args, **kwargs):
+    def search(self, q=None):
         url = 'https://m.vk.com/audios%s?q=%s' % (self.user_id, q)
         response = self.session.get(url).text
 

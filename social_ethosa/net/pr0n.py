@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..utils import *
+import requests
 import re
 
 class PHub:

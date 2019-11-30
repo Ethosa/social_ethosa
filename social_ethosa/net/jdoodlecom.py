@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import *
+import requests
 
 class JDoodle:
     JAVA = "java"
@@ -85,11 +85,14 @@ class JDoodle:
     print(compiled.memory)
     print(compiled.cpuTime)
     """
-    def __init__(self, *args, **kwargs):
-        self.lang = getValue(kwargs, "lang", "")
-        self.clientId = getValue(kwargs, "clientId", "")
-        self.clientSecret = getValue(kwargs, "clientSecret", "")
-        self.debug = getValue(kwargs, "debug", 0)
+    def __init__(self, language="python3", clientId="", clientSecret=""):
+        """initialize JDoodle
+        
+        Keyword Arguments:
+            language {str} -- computer language (default: {"python3"})
+            clientId {str} -- client id (default: {""})
+            clientSecret {str} -- client secret (default: {""})
+        """
         self.programLanguage = JDoodle.PYTHON3
         self.versionIndex = "0"
         self.stdin = ""
@@ -98,16 +101,50 @@ class JDoodle:
         self.url = "https://api.jdoodle.com/v1/execute"
         self.url1 = "https://api.jdoodle.com/v1/credit-spent"
 
-    def setLanguage(self, langName): self.programLanguage = langName
-    def setScript(self, script): self.script = script
-    def setStdIn(self, stdin): self.stdin = stdin
-    def setVersionIndex(self, versionindex): self.versionIndex = versionindex
+    def setLanguage(self, langName):
+        """set language code
+        
+        Arguments:
+            langName {str}
+        """
+        self.programLanguage = langName
 
-    def compile(self, **kwargs):
-        language = getValue(kwargs, "language", self.programLanguage)
-        versionIndex = getValue(kwargs, "versionIndex", self.versionIndex)
-        script = getValue(kwargs, "script", self.script)
-        stdin = getValue(kwargs, "stdin", self.stdin)
+    def setScript(self, script):
+        """set code for compile
+        
+        Arguments:
+            script {str}
+        """
+        self.script = script
+
+    def setStdIn(self, stdin):
+        """set input to compile
+        
+        Arguments:
+            stdin {str}
+        """
+        self.stdin = stdin
+
+    def setVersionIndex(self, versionindex):
+        """set language version index
+        
+        Arguments:
+            versionindex {int}
+        """
+        self.versionIndex = versionindex
+
+    def compile(self, language="python3", versionIndex=0, script="", stdin=""):
+        """compile source code
+        
+        Keyword Arguments:
+            language {str} -- script language (default: {"python3"})
+            versionIndex {number} -- language version (default: {0})
+            script {str} -- source code (default: {""})
+            stdin {str} -- input (default: {""})
+        
+        Returns:
+            dict -- compiled code
+        """
         data = { "clientId" : self.clientId,
             "clientSecret" : self.clientSecret,
             "script" : script,
@@ -116,17 +153,16 @@ class JDoodle:
             "versionIndex" : versionIndex }
         headers = { "Content-Type": "application/json" }
         response = requests.post(self.url, data=json.dumps(data), headers=headers).json()
-        return Compiled(response)
+        return response
 
     def getUsed(self):
+        """get used info
+        
+        Returns:
+           dict  -- used info
+        """
         data = { "clientId" : self.clientId,
             "clientSecret" : self.clientSecret }
         headers = { "Content-Type": "application/json" }
         response = requests.post(self.url1, data=json.dumps(data), headers=headers).json()
-        return response["used"]
-
-class Compiled:
-    def __init__(self, response):
-        self.response = response
-    def __getattr__(self, attr):
-        return self.response[attr]
+        return response

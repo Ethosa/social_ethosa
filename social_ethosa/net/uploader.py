@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import *
-from .vkcom import Method
+
+from ..utils import Thread_VK
 import sys
 
 class Uploader:
@@ -19,16 +19,14 @@ class Uploader:
     print(response)
     """
 
-    def __init__(self, *args, **kwargs):
-        self.vk = getValue(kwargs, "vk")
-        self.multi = getValue(kwargs, "multi")
+    def __init__(self, vk=None, multi=None):
+        self.vk = vk
+        self.multi = multi
         self.errorMsg = lambda: sys.stdout.write("param \"vk\" undefined\n")
         self.working = False
 
         if self.vk:
-            self.debug = self.vk.debug
             self.lang = self.vk.lang
-            self.translate = self.vk.translate
             self.method = self.vk.method
             self.working = 1.0
             self.types = {
@@ -68,6 +66,12 @@ class Uploader:
 
 
     def getUploadUrl(self, type_obj, **kwargs):
+        """get upload url for upload file
+        
+        Arguments:
+            type_obj {str} -- see method getAllTypes()
+            **kwargs {dict} -- extra arguments
+        """
         if self.current != type_obj:
             if self.working:
                 response = getValue(self.types, type_obj)[1](**kwargs)
@@ -76,12 +80,22 @@ class Uploader:
                 else:
                     sys.stdout.write("%s\n" % response)
                 self.current = type_obj
-                if self.debug: sys.stdout.write(self.translate('Ошибка' if not self.url else 'Успешно!', self.lang))
+                sys.stdout.write("get upload url for '%s'!" % type_obj)
             else: self.errorMsg()
 
     def uploadFile(self, file, **kwargs):
-        # usage:
-        # param file must be path to file
+        """upload file on server
+        
+        Arguments:
+            file {str} -- file path
+            **kwargs {dict} -- extra arguments
+        
+        Returns:
+            dict -- uploaded object
+        
+        Raises:
+            ValueError -- link to server not getted
+        """
         if self.url:
             file = upl(file, self.types[self.current][0])
 
@@ -93,6 +107,19 @@ class Uploader:
             raise ValueError("You should get a link to upload to the server")
 
     def autoUpload(self, type_obj, files, typeRules={}, filesRules={}):
+        """used for fast upload files at server
+        
+        Arguments:
+            type_obj {str} -- see getAllTypes method
+            files {list or str} -- files paths for uploading at server
+        
+        Keyword Arguments:
+            typeRules {dict} -- rules for server (default: {{}})
+            filesRules {dict} -- rules for uploading (default: {{}})
+        
+        Returns:
+            list -- list of dicts uploaded files
+        """
         if isinstance(files, str):
             files = [files]
         if self.current != type_obj:
@@ -107,6 +134,18 @@ class Uploader:
         return out
 
     def uploadMessagePhoto(self, files, formatting=0, **kwargs):
+        """upload photo in message
+        
+        Arguments:
+            files {list or str} -- files paths for uploading at server
+            **kwargs {dict} -- extra arguments
+        
+        Keyword Arguments:
+            formatting {bool} -- to apply formatting to the downloaded files (default: {0})
+        
+        Returns:
+            list -- list of dicts (or list of str, if you make formatting to True)
+        """
         response = self.autoUpload("message_photo", files, typeRules=kwargs)
         if formatting:
             return ["photo%s_%s" % (i["owner_id"], i["id"]) for i in response]
@@ -114,6 +153,18 @@ class Uploader:
             return response
 
     def uploadVideo(self, files, formatting=0, **kwargs):
+        """upload video
+        
+        Arguments:
+            files {list or str} -- files paths for uploading at server
+            **kwargs {dict} -- extra arguments
+        
+        Keyword Arguments:
+            formatting {bool} -- to apply formatting to the downloaded files (default: {0})
+        
+        Returns:
+            list -- list of dicts (or list of str, if you make formatting to True)
+        """
         response = self.autoUpload("video", files, typeRules=kwargs)
         if formatting:
             return ["video%s_%s" % (i["owner_id"], i["video_id"]) for i in response]
@@ -121,4 +172,6 @@ class Uploader:
             return response
 
     def getAllTypes(self):
+        """get all upload types
+        """
         return { key : self.types[key][1].__code__.co_varnames for key in self.types.keys() }
