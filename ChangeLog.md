@@ -1,5 +1,10 @@
 <h1 align="center">ChangeLog</h1>
 
+## 0.4.8
+- Optimized all imports
+- Removed unnecessary methods
+- Added documentation comments
+
 ## 0.4.7
 - added new method in vkcom:
 ```python
@@ -7,6 +12,7 @@
 def a(msg):
   return "hello world!"
 ```
+[Browse files](https://github.com/Ethosa/social_ethosa/tree/c52a9e300021c784398de57042714adb21757d87)
 
 ## 0.4.6
 - New functionality in botwrapper:
