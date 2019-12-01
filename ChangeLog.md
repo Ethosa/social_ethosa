@@ -8,7 +8,7 @@
 ## 0.4.8
 - Optimized all imports
 - Removed unnecessary methods
-- Added documentation comments
+- Added documentation comments  
 [Browse files](https://github.com/Ethosa/social_ethosa/tree/464d528e3afac5607e621134cf2447d224958650)
 
 ## 0.4.7
