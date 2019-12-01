@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 from ..utils import *
+from .vkauth import VKAuth
 requests.packages.urllib3.disable_warnings()
 from .vkaudio import Audio
 from copy import copy
@@ -25,80 +26,44 @@ class Vk:
     '''
 
     def __init__(self, token="", version_api="5.103",
-            group_id="", lang="en", login="", password=""):
+            group_id="", login="", password=""):
         """initialization method
         
         Required for authorization in VK via token
         
         Arguments:
             token {str} -- VK token
-            debug {bool} -- an option to enable debugging
             version_api {float or str} -- the version of VK API
             group_id {str or int} -- ID groups (if you authorize through the group)
-            lang {str} -- language for debuging (can be "en", "ru", "de", "fr", "ja")
             login {str} -- login in vk for get token and auth (default:{""})
             password {str} -- password in vk for get token and auth (default:{""})
         """
         if login and password:
-            session = requests.Session()
-            def auth(session):
-                location = str("https://login.vk.com/?act=grant_access&client_id=2685278&settings=1040183263"
-                                "&redirect_uri=https%3A%2F%2Foauth.vk.com%2Fblank.html&response_type=token"
-                                "&group_ids=&token_type=0&v=&state=&display=page&ip_h=0ce35355c94dac1278"
-                                "&hash=1574456300_200c5d0e2c43de5377&https=1")
-                return session.get(location)
-            url = 'https://vk.com'
-            session.headers = {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
-                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                        'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
-                        'Accept-Encoding':'gzip, deflate',
-                        'Connection':'keep-alive',
-                        'DNT':'1'
-                    }
-            data = session.get(url).text
-            start = re.search("<form.+name=\"login.+", data).start()
-            end = re.search("<input type=\"submit\" class=\"submit\" />", data).start()
-            data = data[start:end]
-            lg_h = re.findall("<input.+lg_h.+", data)[0]
-            lg_h = lg_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
-            ip_h = re.findall("<input.+ip_h.+", data)[0]
-            ip_h = ip_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
-            form = {'act' : 'login', 'role' : 'al_frame', 'expire' : '',
-                    'recaptcha' : '', 'captcha_sid' : '', 'captcha_key' : '',
-                    '_origin': 'https://vk.com', 'ip_h': ip_h,
-                    'lg_h': lg_h, 'ul': '',
-                    'email': login, 'pass': password}
-            response = session.post("https://login.vk.com/", data=form)
-            if not ('onLoginDone' in response.text):
-                raise VkError("Auth error.")
-
-            url1 = "https://oauth.vk.com/authorize?client_id=2685278&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token"
-            text = session.get(url1).text
-            location = re.findall(r'location.href = "(\S+)"\+addr;', text)
-            if location:
-                token = re.findall(r"token=([^&]+)", session.get(location[0]).url)
-                if debug:
-                    print(token)
-                token = token[0]
+            auther = VKAuth(login, password)
+            auther.logIn()
+            token = auther.getToken()
         self.token_vk = token
         self.version_api = version_api
         self.group_id = group_id
-        self.lang = lang
 
         # Initialize methods
-        self.longpoll = LongPoll(vk=self)
-        self.method = Method(vk=self).use
-        self.fastMethod = Method(vk=self).fuse
+        self.longpoll = LongPoll(self)
+        self.method = Method(self).use
+        self.fastMethod = Method(self).fuse
         self.execute = lambda code: self.fastMethod("execute", {"code" : code})
 
         self.help = Help
 
         self.vk_api_url = "https://api.vk.com/method/"
 
-        sys.stdout.write(self.translate('Токен установлен. Проверяем его валидность ...', self.lang))
-        test = ''.join(requests.get('%smessages.getLongPollServer?access_token=%s&v=%s%s' % (self.vk_api_url, self.token_vk, self.version_api, "&group_id=%s" % (self.group_id) if self.group_id else "")).json().keys())
-        sys.stdout.write(self.translate("Ошибка" if test == "error" else 'Успешно!', self.lang))
+        printf("The token is set. Check that it is correct ...")
+        test = ''.join(
+            requests.get(
+                '%smessages.getLongPollServer?access_token=%s&v=%s%s' % (self.vk_api_url,
+                    self.token_vk,
+                    self.version_api,
+                    "&group_id=%s" % (self.group_id) if self.group_id else "")).json())
+        printf("Error!" if test == "error" else 'Succesfull!')
 
         self.uploader = Uploader(vk=self)
 
@@ -433,7 +398,8 @@ class Help:
         if not args:
             resp = requests.get('https://vk.com/dev/methods').text
             response = resp.split('<div id="dev_mlist_submenu_methods" style="">')[1].split('</div>')[0].split('<a')
-            return [i.split('>')[1].split('</a')[0].lower() for i in response if len(i.split('>')) > 1 and i.split('>')[1].split('</a')[0] != '']
+            return [i.split('>')[1].split('</a')[0].lower()
+                    for i in response if len(i.split('>')) > 1 and i.split('>')[1].split('</a')[0] != '']
         else:
             return self.__getattr__(self, args[0])
     def __getattr__(self, method):
@@ -443,7 +409,8 @@ class Help:
             response = [i.split('</span>', 1)[0] for i in response if len(i.split('</span>', 1)[0]) <= 35]
             return response
         else:
-            response = requests.get('https://vk.com/dev/%s' % method).text.split('<table class="dev_params_table">')[1].split('</table>')[0]
+            response = requests.get(
+                'https://vk.com/dev/%s' % method).text.split('<table class="dev_params_table">')[1].split('</table>')[0]
 
             params = {
                 i.split('<td')[1].split('>')[1].split('</td')[0] : i.split('<td')[2].split('>', 1)[1].split('</td')[0]

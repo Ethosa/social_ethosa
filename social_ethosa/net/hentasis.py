@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
+from ..utils import browserFake
 import requests
 import random
 import re
@@ -9,14 +10,7 @@ class Hentasis:
     def __init__(self):
         self.url = "http://hentasis.top/"
         self.session = requests.Session()
-        self.session.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
-            'Accept-Encoding':'gzip, deflate',
-            'Connection':'keep-alive',
-            'DNT':'1'
-        }
+        self.session.headers = browserFake
 
     def getPage(self, pageNum=1):
         """get hentai page
@@ -54,7 +48,7 @@ class HMainPage:
             current = {}
             current["name"] = h.split("short-link nowrap", 1)[1].split(">", 1)[1].split("<", 1)[0]
             current["url"] = h.split("short-link nowrap", 1)[1].split('href="', 1)[1].split('"', 1)[0]
-            current["image"] = "%s%s" % ("http://hentasis.top", h.split('class="short-img">', 1)[1].split('src="', 1)[1].split('"', 1)[0]
+            current["image"] = "%s%s" % ("http://hentasis.top", h.split('class="short-img">', 1)[1].split('src="', 1)[1].split('"', 1)[0])
             current["year"] = h.split('<div class="mov-label"><b>Год выпуска:</b></div>', 1)[1].split("<", 1)[0].strip()
             current["genre"] = h.split('class="mov-label"><b>Жанр:</b></div>', 1)[1].split("<", 1)[0].strip()
             current["episodes"] = h.split('<div class="mov-label"><b>Эпизоды:</b></div>', 1)[1].split('<', 1)[0].strip()

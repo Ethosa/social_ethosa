@@ -97,6 +97,15 @@ users_event = {
     "notification_settings_edit" : [114, "peer_id", "sound", "disable_until"]
 }
 
+browserFake = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
+    'Accept-Encoding':'gzip, deflate',
+    'Connection':'keep-alive',
+    'DNT':'1'
+}
+
 
 class Thread_VK(Thread):
     # This class is used to run callables on another thread.

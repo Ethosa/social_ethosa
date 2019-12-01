@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
+from ..utils import browserFake
+from .vkauth import VKAuth
 import requests
+import json
 import re
 
 class Audio:
@@ -12,41 +15,12 @@ class Audio:
 
     printf(audio.get())
     """
-    def __init__(self, login="", password="", lang="en"):
-        self.login = login
-        self.password = password
-        self.lang = lang
-        url = 'https://vk.com'
-
-        self.session = requests.session()
-        self.session.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
-            'Accept-Encoding':'gzip, deflate',
-            'Connection':'keep-alive',
-            'DNT':'1'
-        }
-        data = self.session.get(url).text
-        start = re.search("<form.+name=\"login.+", data).start()
-        end = re.search("<input type=\"submit\" class=\"submit\" />", data).start()
-        data = data[start:end]
-        lg_h = re.findall("<input.+lg_h.+", data)[0]
-        lg_h = lg_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
-        ip_h = re.findall("<input.+ip_h.+", data)[0]
-        ip_h = ip_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
-        form = {'act' : 'login', 'role' : 'al_frame', 'expire' : '',
-                'recaptcha' : '', 'captcha_sid' : '', 'captcha_key' : '',
-                '_origin': 'https://vk.com', 'ip_h': ip_h,
-                'lg_h': lg_h, 'ul': '',
-                'email': self.login, 'pass': self.password}
-
-        response = self.session.post("https://login.vk.com/", data=form)
-        sys.stdout.write(self.translate(u'Успешно!' if 'onLoginDone' in response.text else u'Ошибка', self.lang))
-        if 'onLoginDone' in response.text:
-            url = 'https://vk.com%s' % response.text.split('onLoginDone(', 1)[1].split("'")[1]
-
-            self.user_id = self.session.get(url).text.split('<a id="profile_photo_link"', 1)[1].split('/photo', 1)[1].split('_', 1)[0]
+    def __init__(self, login="", password=""):
+        auther = VKAuth(login, password)
+        response = auther.logIn()
+        url = 'https://vk.com%s' % response.text.split('onLoginDone(', 1)[1].split("'")[1]
+        self.session = auther.session
+        self.user_id = self.session.get(url).text.split('<a id="profile_photo_link"', 1)[1].split('/photo', 1)[1].split('_', 1)[0]
 
     def get(self, owner_id=None, offset=0, count=None):
 

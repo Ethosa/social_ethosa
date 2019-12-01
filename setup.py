@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="social-ethosa",
-    version="0.4.8",
+    version="0.4.9",
     author="Ethosa",
     author_email="social.ethosa@gmail.com",
     description="The social ethosa library for Python",
@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Ethosa/social_ethosa",
     packages=setuptools.find_packages(),
-    license="LGNUv3",
+    license="LGPLv3",
     keywords="vk api botwrapper network math social ethosa",
     classifiers=[
         "Development Status :: 4 - Beta",

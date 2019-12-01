@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
+from ..utils import browserFake
 import requests
 import re
 
@@ -81,14 +82,7 @@ class PHub:
     def __init__(self):
         self.url = "https://rt.pornhub.com/"
         self.session = requests.Session()
-        self.session.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
-            'Accept-Encoding':'gzip, deflate',
-            'Connection':'keep-alive',
-            'DNT':'1'
-        }
+        self.session.headers = browserFake
 
     def search(self, q):
         response = PHPage(self.session.get("%svideo/search" % self.url, params={

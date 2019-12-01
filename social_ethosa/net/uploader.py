@@ -80,7 +80,7 @@ class Uploader:
                 else:
                     sys.stdout.write("%s\n" % response)
                 self.current = type_obj
-                sys.stdout.write("get upload url for '%s'!" % type_obj)
+                sys.stdout.write("get upload url for '%s'!\n" % type_obj)
             else: self.errorMsg()
 
     def uploadFile(self, file, **kwargs):
