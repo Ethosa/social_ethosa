@@ -1,9 +1,15 @@
 <h1 align="center">ChangeLog</h1>
 
+## 0.4.9
+- Fixed a lot of bugs from the previous version
+- Fixed bugs (also from previous version ._.)
+- Small optimization
+
 ## 0.4.8
 - Optimized all imports
 - Removed unnecessary methods
 - Added documentation comments
+[Browse files](https://github.com/Ethosa/social_ethosa/tree/464d528e3afac5607e621134cf2447d224958650)
 
 ## 0.4.7
 - added new method in vkcom:
