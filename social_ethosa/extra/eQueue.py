@@ -2,36 +2,56 @@
 # author: Ethosa
 
 from copy import copy
-import random
+from random import randint
 
 class EQueue:
     def __init__(self):
+        """constructor for EQueue
+        """
         self.queue = []
         self.onNewObject = lambda: None
 
     def getNext(self):
+        """get first object in queue
+        
+        Returns:
+            any
+        """
         if self.queue:
-            n = copy(self.queue[0])
-            self.queue.pop(0)
-            return n
+            return self.queue.pop(0)
 
     def getLast(self):
+        """get last object in queue
+        
+        Returns:
+            any
+        """
         if self.queue:
-            n = copy(self.queue[-1])
-            self.queue.pop()
-            return n
+            return self.queue.pop()
 
     def getRandom(self):
+        """get random object in queue
+        
+        Returns:
+            any
+        """
         if self.queue:
-            number = random.randint(0, len(self.queue)-1)
-            n = copy(self.queue[number])
-            self.queue.pop(number)
-            return n
+            return self.queue.pop(randint(0, len(self)-1))
 
     def onAdd(self, function):
-        self.onNewObject = lambda: function()
+        """call function on added new object
+        
+        Arguments:
+            function {function, method or class} -- callable object
+        """
+        self.onNewObject = function
 
     def add(self, val):
+        """add new object in queue
+        
+        Arguments:
+            val {any}
+        """
         self.queue.append(val)
         self.onNewObject()
 
@@ -48,3 +68,6 @@ class EQueue:
     def __iter__(self):
         for i in range(len(self.queue)):
             yield self.getNext()
+
+    def __str__(self):
+        return "<EQueue with %s items>" % len(self)

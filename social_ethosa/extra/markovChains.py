@@ -1,73 +1,45 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 from .eList import EList
-from random import choices, choice
+from random import choice
 
 class MarkovChains:
     def __init__(self):
         self.chains = {}
 
-    def addChain(self, name, value, weight=1):
+    def addChain(self, name, value):
         if name not in self.chains:
-            self.chains[name] = [[value, weight]]
+            self.chains[name] = [value]
         else:
-            self.chains[name].append([value, weight])
+            self.chains[name].append(value)
 
     def deleteChain(self, name):
         for key in self.chains:
-            ns = [i[0] for i in self.chains[key]]
-            ws = [i[1] for i in self.chains[key]]
-            i = 0
-            while name in ns:
-                index = ns.index(name) + i
-                o = [ns[index], ws[index]]
+            while name in self.chains[key]:
                 self.chains[key].remove(o)
-                ns.pop(index)
-                ws.pop(index)
-                i -= 1
         del self.chains[name]
 
     def generateSequence(self, length, auth=None):
-        out = []
         if not auth:
             auth = choice([key for key in self.chains])
         current = self.chains[auth]
+        out = []
         for now in range(length):
-            key = choices([i[0] for i in current], weights=[i[1] for i in current])[0]
+            key = choice(current)
             current = self.chains[key]
             out.append(key)
         return out
 
     def execute(self, string):
         out = string.replace("=", "-").split("-")
+        magic = lambda s: s.lstrip(">").rstrip("<").strip()
         for i in range(len(out)):
             current = out[i]
-            next_ = None
-            lasted = None
-            if i-1 > -1:
-                lasted = out[i-1]
-            if i+1 < len(out)-1:
-                next_ = out[i+1]
-            c = current[:].replace(">", "").replace("<", "").strip()
-            if lasted:
-                l = lasted[:].replace(">", "").replace("<", "").strip()
-            if next_:
-                n = next_[:].replace(">", "").replace("<", "").strip()
-            if current.endswith("<") and next_:
-                if n not in self.chains:
-                    self.addChain(n, c)
-                else:
-                    if c not in [i[0] for i in self.chains[n]]:
-                        self.addChain(n, c)
-            if current.startswith(">") and lasted:
-                if l not in self.chains:
-                    self.addChain(l, c)
-                else:
-                    if c not in [i[0] for i in self.chains[l]]:
-                        self.addChain(l, c)
-            if not current.endswith("<") and not current.endswith(">") and next_:
-                if c not in self.chains:
-                    self.addChain(c, n)
-                else:
-                    if n not in [i[0] for i in self.chains[c]]:
-                        self.addChain(c, n)
+            post = out[i+1] if i < len(out)-1 else None
+            pre = out[i-1] if i > 0 else None
+            if current.endswith("<") and post:
+                self.addChain(magic(post), magic(current))
+            if current.startswith(">") and pre:
+                self.addChain(magic(pre), magic(current))
+            if not current.endswith("<") and not current.endswith(">") and post:
+                self.addChain(magic(current), magic(post))

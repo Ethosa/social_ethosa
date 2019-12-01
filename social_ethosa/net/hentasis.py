@@ -8,7 +8,7 @@ import re
 
 class Hentasis:
     def __init__(self):
-        self.url = "http://hentasis.top/"
+        self.url = "http://hentasis1.top/"
         self.session = requests.Session()
         self.session.headers = browserFake
 
