@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import printf, requests
+import requests
 
 class BloggerRoot:
     def __init__(self, blogger):
@@ -29,9 +29,9 @@ class Blogger:
         self.pages = Pages(self)
 
         if self.apiKey or (self.clientSecret and self.clientId):
-            printf("Successfully!")
+            sys.stdout.write("Successfully!\n")
         else:
-            printf("Api key is wrong!")
+            sys.stdout.write("Api key is wrong!\n")
 
 
 class Blogs(BloggerRoot):

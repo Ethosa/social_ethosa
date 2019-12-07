@@ -4,7 +4,6 @@
 from ..eMath import *
 from ..utils import Thread_VK
 from .EColor import ecolor
-import asyncio
 import math
 import struct
 import zlib
@@ -15,18 +14,14 @@ class EImage:
         self.width = width
         self.height = height
         self.colors = [[color for x in range(self.height)] for y in range(self.width)]
-        self.fill = lambda color=b"\xFF\xFF\xFF\xFF": asyncio.run(self.fillA(color))
-        self.save = lambda file, mode="bmp": asyncio.run(self.saveA(file, mode))
-        self.flip = lambda: asyncio.run(self.flipA())
-        self.drawRect = lambda x, y, width, height, color=b"\xFF\xFF\xFF\xFF": asyncio.run(self.drawRectA(x, y, width, height, color))
 
-    async def fillA(self, color=b"\xFF\xFF\xFF\xFF"):
+    def fill(self, color=b"\xFF\xFF\xFF\xFF"):
         color = ecolor(color)
         for x in range(self.width):
             for y in range(self.height):
                 self.colors[x][y] = color
 
-    async def flipA(self):
+    def flip(self):
         obj = []
         for x in range(self.width):
             obj.append(self.colors[x][:])
@@ -78,7 +73,7 @@ class EImage:
     def setAt(self, x, y, color=b"\xFF\xFF\xFF\xFF"):
         self.colors[x][y] = ecolor(color)
 
-    async def drawRectA(self, x, y, width, height, color=b"\xFF\xFF\xFF\xFF"):
+    def drawRect(self, x, y, width, height, color=b"\xFF\xFF\xFF\xFF"):
         color = ecolor(color)
         for i in range(x, width+x):
             for j in range(y, height+y):
@@ -178,7 +173,7 @@ class EImage:
         obj.obj = self.colors[:]
         self.colors = obj.rotate(angle, b"\xFF\xFF\xFF\xFF").obj
 
-    async def saveA(self, file, mode="bmp"):
+    def save(self, file, mode="bmp"):
         if mode == "bmp":
             with open(file, "wb") as f:
                 f.write(b'BM') # ID field (42h, 4Dh)

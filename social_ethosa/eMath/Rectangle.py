@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from copy import copy, deepcopy
+from copy import copy
 from .Point import Point
 import math
 

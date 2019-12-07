@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..utils import *
+from ..utils import splitList
 from copy import copy
 import math
 

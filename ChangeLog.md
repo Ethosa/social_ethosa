@@ -1,7 +1,11 @@
 <h1 align="center">ChangeLog</h1>
 
+## 0.5.4
+- bugfix, removed useless methods
+
 ## 0.5.0
 - Optimization and Bugfix
+[Browse files](https://github.com/Ethosa/social_ethosa/tree/61f6e45f44875c4ee6ce35ac5b350902faa972a8)
 
 ## 0.4.9
 - Fixed a lot of bugs from the previous version

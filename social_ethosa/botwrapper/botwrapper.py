@@ -54,23 +54,6 @@ class BotWrapper(object):
         self.count_use += 1
         return randomDate("01.01.%s 00:00:00" % fromYear, "01.01.%s 00:00:00" % toYear, random.random())
 
-    def randomChance(self):
-        """generate random chance
-        Returns:
-            [str] -- [generated chance (7%)]
-        """
-        self.count_use += 1
-        return "%s%%" % random.randint(0, 100)
-
-    def yesOrNo(self):
-        """return random yes or no
-        
-        Returns:
-            [str] -- [yes or no]
-        """
-        self.count_use += 1
-        return random.choice(["Да", "Нет"])
-
     def textReverse(self, text):
         # привет -> тевирп
         self.count_use += 1
@@ -153,11 +136,5 @@ class BotWrapper(object):
         # output: Hello, Username, your money is 1000
         for attr in user.obj:
             text = self.checkAttribute(text, attr, user)
-
-        setter = re.split(r"[\[\]]", text, maxsplit=1)
-        while setter and ("[" in text or "]" in text):
-            exec(setter[len(setter)-1][:-1].strip(), globals(), locals())
-            text = text.replace("[%s" % setter[len(setter)-1], "").strip()
-            setter = re.split(r"[\[\]]", text, maxsplit=1)
 
         return text

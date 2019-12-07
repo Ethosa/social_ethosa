@@ -13,14 +13,6 @@ import sys
 import os
 import re
 
-def autoRun(callObject, *args, **kwargs):
-    # Decorator for auto-call object
-    callObject(*args, **kwargs)
-
-def printf(a, *args):
-    # faster than print
-    sys.stdout.write("%s\n" % (str(a) % args if len(args) > 0 else str(a)))
-
 def downloadFileFromUrl(url, path):
     response = requests.get(url)
     if response.ok:
@@ -65,7 +57,8 @@ def checkPatternString(string, pattern):
 def getValue(obj, string, returned=False):
     return obj[string] if string in obj else returned
 
-def upl(file, name): return { name : open(file, "rb") }
+def upl(file, name):
+    return { name : open(file, "rb") }
 
 def upload_files(upload_url, file):
     return requests.post(upload_url, files=file, verify=False).json()

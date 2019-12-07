@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 
-from ..utils import Thread_VK
+from ..utils import Thread_VK, getValue, upl, upload_files
+import time
 import sys
 
 class Uploader:

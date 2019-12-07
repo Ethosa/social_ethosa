@@ -358,11 +358,6 @@ def smthDef(arg1, arg2, **kwargs):
     print(getValue(kwargs, "argument", None))
 # getValue - сокращенная запись kwargs["argument"] if "argument" in kwargs else None
 
-@autoRun
-# Декоратор автоматически запускает переданную ему функцию
-def hello():
-    print("hi")
-
 downloadFileFromUrl("url", "path to file")
 # Данный метод скачивает файл по ссылке  помещает его в файл
 
@@ -389,7 +384,8 @@ def hi():
 
 @timer.afterEvery(100, 1000)
 # метод after Every запускает эту функцию через 100 миллисекунд и будет вызывать ее каждые последующие 1000 миллисекунд
-def hello(): print("hello")
+def hello():
+  print("hello")
 
 timer.cancel()
 # при вызове метода timer.отмена автоматически закроет все таймеры этого таймера
@@ -463,7 +459,7 @@ m.compile("101") # |||||
 ```
 
 ### EQueue
-Здесь присутствует асинхронная очередь
+Здесь присутствует очередь
 ```python
 queue = EQueue()
 for i in range(10):

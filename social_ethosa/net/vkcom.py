@@ -19,10 +19,10 @@ class Vk:
 
     @vk.on_message_new
     def getMessage(obj):
-        printf(obj)
-        printf('text message:', obj.text) # see https://vk.com/dev/objects/message for more info
-        printf(obj.obj)
-        printf(obj.peer_id)
+        print(obj)
+        print('text message:', obj.text) # see https://vk.com/dev/objects/message for more info
+        print(obj.obj)
+        print(obj.peer_id)
     '''
 
     def __init__(self, token="", version_api="5.103",
@@ -56,14 +56,14 @@ class Vk:
 
         self.vk_api_url = "https://api.vk.com/method/"
 
-        printf("The token is set. Check that it is correct ...")
+        sys.stdout.write("The token is set. Check that it is correct ...\n")
         test = ''.join(
             requests.get(
                 '%smessages.getLongPollServer?access_token=%s&v=%s%s' % (self.vk_api_url,
                     self.token_vk,
                     self.version_api,
                     "&group_id=%s" % (self.group_id) if self.group_id else "")).json())
-        printf("Error!" if test == "error" else 'Succesfull!')
+        sys.stdout.write("Error!\n" if test == "error" else 'Succesfull!\n')
 
         self.uploader = Uploader(vk=self)
 

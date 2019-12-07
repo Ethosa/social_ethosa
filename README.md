@@ -360,11 +360,6 @@ def smthDef(arg1, arg2, **kwargs):
     print(getValue(kwargs, "argument", None))
 # getValue - abbreviation of kwargs["argument"] if "argument" in kwargs else None
 
-@autoRun
-# the decorator simply automatically invokes the object as soon as it is initialized
-def hello():
-    print("hi")
-
 downloadFileFromUrl("url", "path to file")
 # this method downloads the file from the link and places it in the specified path.
 
@@ -468,7 +463,7 @@ m.compile("101") # |||||
 ```
 
 ### EQueue
-There is an asynchronous queue here
+There is an queue here
 ```python
 queue = EQueue()
 for i in range(10):
