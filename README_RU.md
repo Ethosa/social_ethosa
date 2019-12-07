@@ -199,9 +199,9 @@ blogger = Blogger(apiKey="Ваш апи ключ")
 Получение блога по его айди:
 ```python
 blog = blogger.blogs.get(123123)
-printf(blog["name"]) # Вы можете использовать blog как словарь
-printf(blog.name) # или как объект
-printf(blog)
+print(blog["name"]) # Вы можете использовать blog как словарь
+print(blog.name) # или как объект
+print(blog)
 ```
 Получение блога по его URL:
 ```python

@@ -201,9 +201,9 @@ blogger = Blogger(apiKey="Your api key")
 get blog by id:
 ```python
 blog = blogger.blogs.get(123123)
-printf(blog["name"]) # You can use the resulting object as a dictionary
-printf(blog.name) # or as an object :/
-printf(blog)
+print(blog["name"]) # You can use the resulting object as a dictionary
+print(blog.name) # or as an object :/
+print(blog)
 ```
 get blog by url:
 ```python
