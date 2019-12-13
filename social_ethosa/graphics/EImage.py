@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..eMath import *
-from ..utils import Thread_VK
-from .EColor import ecolor
 import math
 import struct
 import zlib
+
+from ..eMath import *
+from ..utils import Thread_VK
+from .EColor import ecolor
 
 class EImage:
     def __init__(self, width=256, height=256, color=b"\xFF\xFF\xFF\xFF"):

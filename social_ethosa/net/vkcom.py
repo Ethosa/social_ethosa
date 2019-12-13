@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
+from copy import copy
+
 from ..utils import *
 from .vkauth import VKAuth
-requests.packages.urllib3.disable_warnings()
 from .vkaudio import Audio
-from copy import copy
 from .uploader import Uploader
+
+requests.packages.urllib3.disable_warnings()
+
 
 class Vk:
     '''

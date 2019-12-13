@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 
-from ..utils import Thread_VK, requests, base64
 from copy import copy
+import requests
+import base64
+
+from ..utils import Thread_VK
 
 class TraceMoe:
     """

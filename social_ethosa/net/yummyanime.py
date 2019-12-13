@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import browserFake
 import requests
 import random
 import time
 import sys
 import re
+
+from ..utils import browserFake
+
 
 class YummyAnime:
     # The main class to interact with yummyanime.club

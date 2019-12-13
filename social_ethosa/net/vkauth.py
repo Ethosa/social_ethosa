@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..utils import browserFake
 import requests
 import sys
 import re
+
+from ..utils import browserFake
 
 
 class VKAuth:

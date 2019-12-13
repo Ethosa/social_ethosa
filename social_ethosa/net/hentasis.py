@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..utils import browserFake
 import requests
 import random
 import re
+
+from ..utils import browserFake
 
 class Hentasis:
     def __init__(self):

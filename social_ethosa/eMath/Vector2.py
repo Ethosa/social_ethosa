@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 from copy import copy
-from .Point import Point
 import math
+
+from .Point import Point
 
 
 class Vector2:

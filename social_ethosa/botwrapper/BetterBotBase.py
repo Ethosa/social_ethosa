@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
-from .BotBase import BotBase
-from .BetterUser import BetterUser
 import pickle
 import json
 import os
+
+from .BotBase import BotBase
+from .BetterUser import BetterUser
 
 class BetterBotBase(BotBase):
     def __init__(self, *args):

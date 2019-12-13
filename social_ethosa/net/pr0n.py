@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..utils import browserFake
 import requests
 import re
+
+from ..utils import browserFake
 
 class PHub:
     RUSSIAN = 99

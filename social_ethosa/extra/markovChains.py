@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
-from .eList import EList
 from random import choice
+
+from .eList import EList
 
 class MarkovChains:
     def __init__(self):

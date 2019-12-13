@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..utils import getValue
 from operator import itemgetter
-from .User import User
 import json
 import os
+
+from ..utils import getValue
+from .User import User
 
 class BotBase:
     """

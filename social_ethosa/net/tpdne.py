@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import Thread_VK, requests
 from copy import copy
+import requests
+
+from ..utils import Thread_VK
 
 class ThisPerson:
     def __init__(self):

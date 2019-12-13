@@ -19,7 +19,6 @@ def downloadFileFromUrl(url, path):
         with open(path, 'wb') as f:
             f.write(response.content)
         return 1
-    else: return 0
 
 def getMaxPhoto(attachments):
     """returns a list of links to images with the highest quality
@@ -125,7 +124,7 @@ def timeIt(count=1, libs=[], launch="thread"):
             setup += "\ndef" + inspect.getsource(function).split('def', 1)[1]
             return min(timeit.Timer("%s()" % name, setup=setup).repeat(1, count))
         if launch == "thread":
-            print("%s() - %s time" % (name, Thread_VK(asd).run()))
+            Thread_VK(sys.stdout.write, "%s() - %s time\n" % (name, asd())).start()
         elif launch == "not thread":
             return print("%s() - %s time" % (name, asd()))
         elif launch == "variable":

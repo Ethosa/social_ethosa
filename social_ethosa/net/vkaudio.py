@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from ..utils import browserFake
-from .vkauth import VKAuth
 import requests
 import json
 import re
+
+from ..utils import browserFake
+from .vkauth import VKAuth
 
 class Audio:
     """

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from ..utils import splitList
 from copy import copy
 import math
+
+from ..utils import splitList
 
 class EList(list):
     COMB_SORT = 0
