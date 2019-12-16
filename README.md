@@ -1,6 +1,7 @@
 <h1 align="center">Social-ethosa</h1>
 
 A Python library that uses requests  
+[![CodeFactor](https://www.codefactor.io/repository/github/ethosa/social_ethosa/badge)](https://www.codefactor.io/repository/github/ethosa/social_ethosa)  
 Documentation in other languages
 - [Russian](https://github.com/Ethosa/social_ethosa/blob/master/README_RU.md)
 
