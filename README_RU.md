@@ -1,6 +1,8 @@
 <h1 align="center">Social-ethosa</h1>
 Библиотека Python, использующая requests
 
+[![CodeFactor](https://www.codefactor.io/repository/github/ethosa/social_ethosa/badge)](https://www.codefactor.io/repository/github/ethosa/social_ethosa)
+
 [Changelog](https://github.com/Ethosa/social_ethosa/blob/master/ChangeLog.md)
 
 Examples:
