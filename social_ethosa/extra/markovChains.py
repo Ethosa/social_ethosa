@@ -33,7 +33,7 @@ class MarkovChains:
 
     def execute(self, string):
         out = string.replace("=", "-").split("-")
-        for i in range(len(out)):
+        for i in enumerate(out):
             current = out[i]
             post = out[i+1] if i < len(out)-1 else None
             pre = out[i-1] if i > 0 else None
