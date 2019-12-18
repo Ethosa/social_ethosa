@@ -11,14 +11,14 @@ Documentation in other languages
 [Changelog](https://github.com/Ethosa/social_ethosa/blob/master/ChangeLog.md)
 
 Examples:
-- [Inline keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_inline.py)
-- [Standart keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_standart.py)
-- [Receiving new messages by the group](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages.py)
-- [Receiving new messages by the group (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages_oop.py)
-- [Receiving new messages by the user](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages.py)
-- [Receiving new messages by the user (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages_oop.py)
-- [Keyboard buttons](https://github.com/Ethosa/social_ethosa/blob/master/examples/buttons.py)
-- [Files upload](https://github.com/Ethosa/social_ethosa/blob/master/examples/uploadFilesVk.py)
+-   [Inline keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_inline.py)
+-   [Standart keyboard](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_standart.py)
+-   [Receiving new messages by the group](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages.py)
+-   [Receiving new messages by the group (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages_oop.py)
+-   [Receiving new messages by the user](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages.py)
+-   [Receiving new messages by the user (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages_oop.py)
+-   [Keyboard buttons](https://github.com/Ethosa/social_ethosa/blob/master/examples/buttons.py)
+-   [Files upload](https://github.com/Ethosa/social_ethosa/blob/master/examples/uploadFilesVk.py)
 
 ## Get started
 Installation: `pip install --upgrade social-ethosa`  
