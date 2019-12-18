@@ -33,7 +33,8 @@ class Point:
         for i in range(len(points)):
             self.points[i] += points[i]
 
-    def __eq__(self, other): return self.points == other.points
+    def __eq__(self, other):
+        return self.points == other.points
 
     def __str__(self):
         return "<Point (%s)>" % ", ".join("%s" % i for i in self.points)
