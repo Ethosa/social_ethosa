@@ -31,13 +31,13 @@ class BetterBotBase(BotBase):
             current = self.loadUser(user[:-len(self.postfix)-1])
             value = defult_value
             if key not in current.obj:
-                exec("current.%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
+                exec("current.%s = %s" % (key, repr(value)))
                 current.obj[key] = defult_value
             self.saveUser(current)
 
         for i in range(len(self.users)):
             value = defult_value
-            exec("self.users[i].%s = %s%s%s" % (key, '"' if type(value) == str else '', value, '"' if type(value) == str else ''))
+            exec("self.users[i].%s = %s" % (key, repr(value)))
             self.users[i].obj[key] = defult_value
 
     def save(self, user):
