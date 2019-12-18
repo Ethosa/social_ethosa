@@ -71,7 +71,7 @@ class Vector2:
         return direction
 
     def __mul__(self, other):
-        if isinstance(other, int) or isinstance(other, float):
+        if isinstance(other, (int, float)):
             self.b.points[0] *= other
             self.b.points[1] *= other
             self.a.points[0] *= other
