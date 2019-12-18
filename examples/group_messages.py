@@ -8,7 +8,7 @@ TOKEN = ""
 GROUP_ID = 123123
 
 # we authorize through the group
-vk = Vk(token=TOKEN, group_id=GROUP_ID, debug=1)
+vk = Vk(token=TOKEN, group_id=GROUP_ID)
 
 # Start listening for new messages in a separate thread
 @vk.on_new_message
