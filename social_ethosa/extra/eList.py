@@ -20,7 +20,7 @@ class EList(list):
         return math.fsum(self)
 
     def __set__(self, value):
-        if isinstance(value, EList) or isinstance(value, list):
+        if isinstance(value, (EList, list)):
             self = value
         else:
             raise ValueError("%s isn't list object" % value)
