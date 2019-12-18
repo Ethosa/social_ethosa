@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 # we import the functionality we need
-from social_ethosa import Button, printf
+from social_ethosa import Button
 
 # let's create a simple text type button
 text_button = Button(type="text", label="Hello world", color=Button.POSITIVE)
