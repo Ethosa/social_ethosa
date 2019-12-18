@@ -47,9 +47,9 @@ def checkPatternString(string, pattern):
     string = "%s%s" % (string, " "*(len(pattern)-len(string)))
     pattern = "%s%s" % (pattern, " "*(len(string)-len(pattern)))
     out = []
-    for i in range(len(string)):
-        if string[i] == pattern[i]:
-            out.append(string[i])
+    for i, s in enumerate(string):
+        if s == pattern[i]:
+            out.append(s)
     return (len(out)/len(string))*100
 
 
@@ -251,7 +251,7 @@ class Timer:
 class Event:
     def __init__(self, update, *args, **kwargs):
         self.update = update
-        if type(update) == list:
+        if isinstance(update, list):
             self.update = UserObj(update).obj
             self.update[0] = self.update["type"]
 
@@ -282,7 +282,7 @@ class Obj:
         currentObj = self.obj
         if attribute in currentObj:
             obj = currentObj[attribute]
-            if isinstance(obj, dict) or isinstance(obj, list):
+            if isinstance(obj, (dict, list)):
                 return Obj(obj, self)
             else:
                 return obj
@@ -317,11 +317,11 @@ class Obj:
             return self.obj.get(number)
 
     def clear(self):
-        if isinstance(self.obj, dict) or isinstance(self.obj, list):
+        if isinstance(self.obj, (dict, list)):
             self.obj.clear()
 
     def copy(self):
-        if isinstance(self.obj, dict) or isinstance(self.obj, list):
+        if isinstance(self.obj, (dict, list)):
             return self.obj.copy()
 
     def keys(self):
@@ -344,7 +344,7 @@ class Obj:
             return self.__getattr__(item)
         else:
             obj = self.obj[item]
-            if isinstance(obj, dict) or isinstance(obj, list):
+            if isinstance(obj, (dict, list)):
                 return Obj(obj, self)
             else:
                 return obj
