@@ -8,7 +8,7 @@ TOKEN = ""
 GROUP_ID = 123123
 
 # we authorize through the group
-vk = Vk(token=TOKEN, group_id=GROUP_ID, debug=1)
+vk = Vk(token=TOKEN, group_id=GROUP_ID)
 
 class Main:
     def __init__(self):
