@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="social-ethosa",
-    version="0.5.4",
+    version="0.5.6",
     author="Ethosa",
     author_email="social.ethosa@gmail.com",
     description="The social ethosa library for Python",
@@ -26,11 +26,12 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     project_urls={
-        "Github" : "https://github.com/Ethosa/social_ethosa",
-        "Documentation" : "https://github.com/Ethosa/social_ethosa/blob/master/README.md",
+        "Github": "https://github.com/Ethosa/social_ethosa",
+        "Documentation": "https://github.com/Ethosa/social_ethosa/blob/master/README.md",
     },
     python_requires=">=3",
     install_requires=[
-        "requests"
+        "requests",
+        "regex"
     ]
 )
