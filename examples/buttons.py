@@ -4,7 +4,7 @@
 from social_ethosa import Button
 
 # let's create a simple text type button
-text_button = Button(type="text", label="Hello world", color=Button.POSITIVE)
+text_button = Button("text", label="Hello world", color=Button.POSITIVE)
 # the color can be one of the following four:
 # Button.PRIMARY
 # Button.SECONDARY
@@ -24,7 +24,7 @@ standart_button = Button()
 # }
 
 # Now let's create 3 special buttons
-location_button = Button(type="location", payload="")
-vkpay_button = Button(type="vkpay", hash="action=transfer-to-group&group_id=1&aid=10")
-vkapps_button = Button(type="vkapps", label="open app", app_id=1, owner_id=1, hash="hello world")
+location_button = Button("location", payload="")
+vkpay_button = Button("vkpay", bhash="action=transfer-to-group&group_id=1&aid=10")
+vkapps_button = Button("vkapps", label="open app", app_id=1, owner_id=1, hash="hello world")
 # it is worth noting that the special buttons do not have a color parameter
