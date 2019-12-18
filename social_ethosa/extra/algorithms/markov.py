@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
+
 class AMarkov:
     def __init__(self, rules={}, text=""):
         self.rules = rules

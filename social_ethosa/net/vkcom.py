@@ -29,11 +29,11 @@ class Vk:
     '''
 
     def __init__(self, token="", version_api="5.103",
-            group_id="", login="", password=""):
+                 group_id="", login="", password=""):
         """initialization method
-        
+
         Required for authorization in VK via token
-        
+
         Arguments:
             token {str} -- VK token
             version_api {float or str} -- the version of VK API
@@ -53,7 +53,7 @@ class Vk:
         self.longpoll = LongPoll(self)
         self.method = Method(self).use
         self.fastMethod = Method(self).fuse
-        self.execute = lambda code: self.fastMethod("execute", {"code" : code})
+        self.execute = lambda code: self.fastMethod("execute", {"code": code})
 
         self.help = Help
 
@@ -63,9 +63,10 @@ class Vk:
         test = ''.join(
             requests.get(
                 '%smessages.getLongPollServer?access_token=%s&v=%s%s' % (self.vk_api_url,
-                    self.token_vk,
-                    self.version_api,
-                    "&group_id=%s" % (self.group_id) if self.group_id else "")).json())
+                                                                         self.token_vk,
+                                                                         self.version_api,
+                                                                         "&group_id=%s" % (self.group_id) if self.group_id else "")
+                        ).json())
         sys.stdout.write("Error!\n" if test == "error" else 'Succesfull!\n')
 
         self.uploader = Uploader(vk=self)
@@ -74,7 +75,6 @@ class Vk:
         """get all user handlers
         """
         return ["on_%s" % i for i in users_event]
-
 
     # Handler wrapper
     # Use it:
@@ -106,9 +106,9 @@ class Vk:
                 attachments = getValue(returned, "attachments", [])
                 sticker_id = getValue(returned, "sticker_id", 0)
                 self.messages.send(message=getValue(returned, "message", returned),
-                        peer_id=getValue(returned, "peer_id", update["peer_id"]),
-                        attachment=",".join(attachments),
-                        sticker_id=sticker_id)
+                                   peer_id=getValue(returned, "peer_id", update["peer_id"]),
+                                   attachment=",".join(attachments),
+                                   sticker_id=sticker_id)
 
             def l():
                 for event in self.longpoll.listen():
@@ -134,7 +134,8 @@ class Vk:
                 return lambda function: self.listenWrapper(method, Obj, function)
             else:
                 return lambda function: self.listenWrapper(users_event[method][0], Obj, function)
-        else: return Method(vk=self, method=method)
+        else:
+            return Method(vk=self, method=method)
 
     def __str__(self):
         return "<Vk %s object at 0x%0x (group_id=%s)>" % (self.version_api, self.__hash__(), self.group_id)
@@ -147,7 +148,7 @@ class VkError(Exception):
 class LongPoll:
     def __init__(self, vk=None):
         """constructor for Longpoll
-        
+
         Keyword Arguments:
             vk {Vk} -- Vk authed object (default: {None})
         """
@@ -159,18 +160,18 @@ class LongPoll:
         self.ts = "0"
         self.session = requests.Session()
         self.session.headers = {
-            "Content-Type" : "application/json"
+            "Content-Type": "application/json"
         }
 
     def listen(self):
         """listening to longpoll
-        
+
         Yields:
             [Event] -- event
         """
         if self.group_id:
             response = self.session.get("%sgroups.getLongPollServer?access_token=%s&v=%s&group_id=%s" %
-                                (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()
+                                        (self.vk_api_url, self.access_token, self.version_api, self.group_id)).json()
             try:
                 response = response['response']
             except Exception as e:
@@ -186,7 +187,8 @@ class LongPoll:
                 updates = getValue(response, 'updates')
 
                 if updates:
-                    for update in updates: yield Event(update)
+                    for update in updates:
+                        yield Event(update)
                 else:
                     emptyUpdates.append(0)
                 if len(emptyUpdates) > 100:
@@ -195,7 +197,7 @@ class LongPoll:
                 yield e
         else:
             response = self.session.get("%smessages.getLongPollServer?access_token=%s&v=%s" %
-                                (self.vk_api_url, self.access_token, self.version_api)).json()
+                                        (self.vk_api_url, self.access_token, self.version_api)).json()
             try:
                 response = response['response']
             except Exception as e:
@@ -212,7 +214,8 @@ class LongPoll:
                 updates = getValue(response, 'updates')
 
                 if updates:
-                    for update in updates: yield Event(update)
+                    for update in updates:
+                        yield Event(update)
                 else:
                     emptyUpdates.append(0)
                 if len(emptyUpdates) > 100:
@@ -253,11 +256,13 @@ class Method:
 
     def __getattr__(self, method):
         method = "%s.%s" % (self.method, method)
+
         def send(**kwargs):
             if method == "messages.send":
                 kwargs["random_id"] = self.getRandomId()
             return self.fuse(method, kwargs)
         return lambda **kwargs: send(**kwargs)
+
 
 class Keyboard:
     """
@@ -277,9 +282,9 @@ class Keyboard:
     """
     def __init__(self, **kwargs):
         self.keyboard = {
-            "one_time" : getValue(kwargs, "one_time", True),
-            "buttons" : getValue(kwargs, "buttons", [[]]),
-            "inline" : getValue(kwargs, "inline", False)
+            "one_time": getValue(kwargs, "one_time", True),
+            "buttons": getValue(kwargs, "buttons", [[]]),
+            "inline": getValue(kwargs, "inline", False)
         }
         if self.keyboard["inline"]:
             self.maxSize = (3, 3)
@@ -333,37 +338,38 @@ class Button:
     SECONDARY = "secondary"
     NEGATIVE = "negative"
     POSITIVE = "positive"
-    def __init__(self, type="text", label="бан", payload="",
-            hash="action=transfer-to-group&group_id=1&aid=10", owner_id="-181108510",
-            app_id="6979588", color="primary"):
-        self.type = type
+
+    def __init__(self, btype="text", label="бан", payload="",
+                 bhash="action=transfer-to-group&group_id=1&aid=10", owner_id="-181108510",
+                 app_id="6979588", color="primary"):
+        self.btype = btype
 
         actions = {
-            "text" : {
-                "type" : "text",
-                "label" : label,
-                "payload" : payload
+            "text": {
+                "type": "text",
+                "label": label,
+                "payload": payload
             },
-            "location" : {
-                "type" : "location",
-                "payload" : payload
+            "location": {
+                "type": "location",
+                "payload": payload
             },
-            "vkpay" : {
-                "type" : "vkpay",
-                "payload" : payload,
-                "hash" : hash
+            "vkpay": {
+                "type": "vkpay",
+                "payload": payload,
+                "hash": bhash
             },
-            "vkapps" : {
-                "type" : "open_app",
-                "payload" : payload,
-                "hash" : hash,
-                "label" : label,
-                "owner_id" : owner_id,
-                "app_id" : app_id
+            "vkapps": {
+                "type": "open_app",
+                "payload": payload,
+                "hash": bhash,
+                "label": label,
+                "owner_id": owner_id,
+                "app_id": app_id
             }
         }
 
-        self.action = getValue(actions, self.type, actions['text'])
+        self.action = getValue(actions, self.btype, actions['text'])
         self.color = color
 
     def setText(self, text):
@@ -374,16 +380,46 @@ class Button:
         self.color = color
 
     def getButton(self):
-        kb = {'action' : self.action, 'color' : self.color}
+        kb = {'action': self.action, 'color': self.color}
         if kb['action']['type'] != 'text':
             del kb['color']
         return kb
 
-    def __new__(self, type="text", label="бан", payload="",
-                hash="action=transfer-to-group&group_id=1&aid=10", owner_id="-181108510",
+    def __new__(self, btype="text", label="бан", payload="",
+                bhash="action=transfer-to-group&group_id=1&aid=10", owner_id="-181108510",
                 app_id="6979588", color="primary"):
-        self.__init__(self, type, label, payload, hash, owner_id, app_id, color)
+        self.__init__(self, btype, label, payload, bhash, owner_id, app_id, color)
         return self.getButton(self)
+
+
+class Template:
+    def __init__(self, templateType="carousel"):
+        self.template = {"template": {
+                "type": templateType,
+                "elements": []
+            }
+        }
+
+    def addElement(self, title="Title", description="Description",
+                   action={'type': 'open_link', 'link': 'https://vk.com/'},
+                   photo_id="-109837093_457242809", buttons=[{'action': {
+                       'type': 'text',
+                       'label': 'Label'
+                   }}]):
+        if len(self.template["template"]["elements"]) < 10:
+            self.template["template"]["elements"].append({
+                    'title': title,
+                    'description': description,
+                    'action': action,
+                    'photo_id': photo_id,
+                    'buttons': buttons
+                })
+
+    def editElement(self, position, key, value):
+        self.template["template"]["elements"][position][key] = value
+
+    def compile(self):
+        return json.dumps(self.template)
 
 
 class Help:
@@ -405,6 +441,7 @@ class Help:
                     for i in response if len(i.split('>')) > 1 and i.split('>')[1].split('</a')[0] != '']
         else:
             return self.__getattr__(self, args[0])
+
     def __getattr__(self, method):
         if '.' not in method:
             resp = requests.get('https://vk.com/dev/%s' % method).text
@@ -416,8 +453,9 @@ class Help:
                 'https://vk.com/dev/%s' % method).text.split('<table class="dev_params_table">')[1].split('</table>')[0]
 
             params = {
-                i.split('<td')[1].split('>')[1].split('</td')[0] : i.split('<td')[2].split('>', 1)[1].split('</td')[0]
-                for i in response.split('<tr') if len(i) > 2 }
+                i.split('<td')[1].split('>')[1].split('</td')[0]: i.split('<td')[2].split('>', 1)[1].split('</td')[0]
+                for i in response.split('<tr') if len(i) > 2
+            }
 
             for i in params.keys():
                 params[i] = params[i].replace('\n', ' ').replace('&lt;', '{').replace('&gt;', '}')

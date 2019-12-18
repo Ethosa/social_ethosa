@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from copy import copy
-import math
 
 from .Point import Point
 
@@ -9,11 +7,11 @@ from .Point import Point
 class Vector2:
     def create(list1, list2):
         """vreate vector
-        
+
         Arguments:
             list1 {[number, number]} -- first point
             list2 {[number, number]} -- second point
-        
+
         Returns:
             [Vector2]
         """
@@ -22,7 +20,7 @@ class Vector2:
 
     def __init__(self, point1, point2):
         """create vector 2d
-        
+
         Arguments:
             point1 {[number, number]} -- first point
             point2 {[number, number]} -- second point
@@ -32,7 +30,7 @@ class Vector2:
 
     def length(self):
         """getting vector length
-        
+
         Returns:
             [float] -- [length of vector]
         """
@@ -45,7 +43,7 @@ class Vector2:
 
     def offset(self, what, x, y):
         """offset point
-        
+
         Arguments:
             what {[Vector point]} -- [vector.a or vector.b]
             x {[number]} -- [offset x]
@@ -63,7 +61,7 @@ class Vector2:
 
     def getDirection(self):
         """get vector direction
-        
+
         Returns:
             [complex number or float] -- [direction]
         """
@@ -73,7 +71,7 @@ class Vector2:
         return direction
 
     def __mul__(self, other):
-        if isinstance(obj, int) or isinstance(obj, float):
+        if isinstance(other, int) or isinstance(other, float):
             self.b.points[0] *= other
             self.b.points[1] *= other
             self.a.points[0] *= other
@@ -85,4 +83,4 @@ class Vector2:
 
     def __str__(self):
         return "<Vector2 A(%s, %s), B(%s, %s)>" % (self.a.points[0], self.a.points[1],
-                                                self.b.points[0], self.b.points[1])
+                                                   self.b.points[0], self.b.points[1])

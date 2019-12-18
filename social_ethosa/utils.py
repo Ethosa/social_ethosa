@@ -4,14 +4,12 @@ from threading import Thread
 import datetime
 import requests
 import inspect
-import base64
 import timeit
-import random
 import time
-import json
 import sys
 import os
 import re
+
 
 def downloadFileFromUrl(url, path):
     response = requests.get(url)
@@ -20,12 +18,13 @@ def downloadFileFromUrl(url, path):
             f.write(response.content)
         return 1
 
+
 def getMaxPhoto(attachments):
     """returns a list of links to images with the highest quality
-    
+
     Arguments:
         attachments {[list]} -- [attachments from vk]
-    
+
     Returns:
         [list] -- [list of links to images with the highest quality]
     """
@@ -43,6 +42,7 @@ def getMaxPhoto(attachments):
             files.append(url)
     return files
 
+
 def checkPatternString(string, pattern):
     string = "%s%s" % (string, " "*(len(pattern)-len(string)))
     pattern = "%s%s" % (pattern, " "*(len(string)-len(pattern)))
@@ -56,46 +56,48 @@ def checkPatternString(string, pattern):
 def getValue(obj, string, returned=False):
     return obj[string] if string in obj else returned
 
+
 def upl(file, name):
-    return { name : open(file, "rb") }
+    return {name: open(file, "rb")}
+
 
 def upload_files(upload_url, file):
     return requests.post(upload_url, files=file, verify=False).json()
 
 
 users_event = {
-    "user_message_flags_replace" : [1, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
-    "user_message_flags_add" : [2, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
-    "user_message_flags_delete" : [3, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
-    "user_message_new" : [4, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
-    "user_message_edit" : [5, "message_id", "mask", "peer_id", "timestamp", "new_text", "attachments"],
-    "user_read_input_messages" : [6, "peer_id", "local_id"],
-    "user_read_out_messages" : [7, "peer_id", "local_id"],
-    "friend_online" : [8, "user_id", "extra", "timestamp"],
-    "friend_offline" : [9, "user_id", "flags", "timestamp"],
-    "user_dialog_flags_delete" : [10, "peer_id", "mask"],
-    "user_dialog_flags_replace" : [11, "peer_id", "flags"],
-    "user_dialog_flags_add" : [12, "peer_id", "mask"],
-    "delete_messages" : [13, "peer_id", "local_id"],
-    "restore_messages" : [14, "peer_id", "local_id"],
-    "chat_edt" : [51, "chat_edit", "self"],
-    "chat_info_edit" : [52, "type_id", "peer_id", "info"],
-    "user_typing_dialog" : [61, "user_id", "flags"],
-    "user_typing_chat" : [62, "user_id", "chat_id"],
-    "users_typing_chat" : [63, "user_ids", "peer_id", "total_count", "ts"],
-    "users_record_audio" : [64, "user_ids", "peer_id", "total_count", "ts"],
-    "user_was_call" : [70, "user_id", "call_id"],
-    "count_left" : [80, "count"],
-    "notification_settings_edit" : [114, "peer_id", "sound", "disable_until"]
+    "user_message_flags_replace": [1, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
+    "user_message_flags_add": [2, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
+    "user_message_flags_delete": [3, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
+    "user_message_new": [4, "message_id", "flags", "peer_id", "timestamp", "text", "object", "attachments", "random_id"],
+    "user_message_edit": [5, "message_id", "mask", "peer_id", "timestamp", "new_text", "attachments"],
+    "user_read_input_messages": [6, "peer_id", "local_id"],
+    "user_read_out_messages": [7, "peer_id", "local_id"],
+    "friend_online": [8, "user_id", "extra", "timestamp"],
+    "friend_offline": [9, "user_id", "flags", "timestamp"],
+    "user_dialog_flags_delete": [10, "peer_id", "mask"],
+    "user_dialog_flags_replace": [11, "peer_id", "flags"],
+    "user_dialog_flags_add": [12, "peer_id", "mask"],
+    "delete_messages": [13, "peer_id", "local_id"],
+    "restore_messages": [14, "peer_id", "local_id"],
+    "chat_edt": [51, "chat_edit", "self"],
+    "chat_info_edit": [52, "type_id", "peer_id", "info"],
+    "user_typing_dialog": [61, "user_id", "flags"],
+    "user_typing_chat": [62, "user_id", "chat_id"],
+    "users_typing_chat": [63, "user_ids", "peer_id", "total_count", "ts"],
+    "users_record_audio": [64, "user_ids", "peer_id", "total_count", "ts"],
+    "user_was_call": [70, "user_id", "call_id"],
+    "count_left": [80, "count"],
+    "notification_settings_edit": [114, "peer_id", "sound", "disable_until"]
 }
 
 browserFake = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
-    'Accept-Encoding':'gzip, deflate',
-    'Connection':'keep-alive',
-    'DNT':'1'
+    'Accept-Language': 'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
+    'Accept-Encoding': 'gzip, deflate',
+    'Connection': 'keep-alive',
+    'DNT': '1'
 }
 
 
@@ -108,8 +110,10 @@ class Thread_VK(Thread):
         self.function = function
         self.args = args
         self.kwargs = kwargs
+
     def run(self):
         return self.function(*self.args, **self.kwargs)
+
 
 def timeIt(count=1, libs=[], launch="thread"):
     # Use this as a decorator to measure the execution time of a function.
@@ -119,6 +123,7 @@ def timeIt(count=1, libs=[], launch="thread"):
     def timer(function):
         global Thread_VK
         name = function.__name__
+
         def asd():
             setup = "\n".join(["import %s" % i for i in libs])
             setup += "\ndef" + inspect.getsource(function).split('def', 1)[1]
@@ -131,9 +136,10 @@ def timeIt(count=1, libs=[], launch="thread"):
             return "%s() - %s time" % (name, asd())
     return timer
 
+
 def updateLibrary(version=None):
     """function to update the library
-    
+
     Keyword Arguments:
         version {[str]} -- [library version] (default: {None})
     """
@@ -141,7 +147,8 @@ def updateLibrary(version=None):
         os.system("pip install social-ethosa==%s" % version)
     else:
         os.system("pip install social-ethosa --upgrade")
-    
+
+
 def splitList(lst, number):
     # This function is intended for equal division of the list, for example:
     # splitList([1, 2, 3, 4, 5], 2) return [[1, 2], [2, 3], [5]]
@@ -162,17 +169,18 @@ def splitList(lst, number):
         splitted.pop()
     return splitted
 
+
 def resplit(string, s=",", forSplit="/", splitNum=-1):
     """split string
-    
+
     Arguments:
         string {[str]} -- string for split
-    
+
     Keyword Arguments:
         s {str} -- [split symbol] (default: {","})
         forSplit {str} -- [exception symbol] (default: {"/"})
         splitNum {number} -- [split number] (default: {-1})
-    
+
     Returns:
         [list] -- [splitted list]
     """
@@ -185,15 +193,15 @@ class Timer:
     Timer is used to call certain functions after N seconds or milliseconds,
     or you can use it to execute functions every N seconds or milliseconds after Y seconds or milliseconds.
     You can specify whether to use seconds or milliseconds using the setSeconds and setMilliseconds methods
-    """ 
+    """
     def __init__(self, *args, **kwargs):
         self.canceled = 0
         self.isWorking = lambda: 0
-        self.ms = 1000 # this parameter controls which unit of measure to use for waiting
+        self.ms = 1000  # this parameter controls which unit of measure to use for waiting
 
     def after(self, ms):
         """calls the function after a certain amount of time
-        
+
         Arguments:
             ms {[int]} -- time in milliseconds (default) or seconds
         """
@@ -207,13 +215,14 @@ class Timer:
 
     def afterEvery(self, ms1, ms2):
         """calls the function after a certain time each time after a time interval
-        
+
         Arguments:
             ms1 {[int]} -- time in milliseconds (default) or seconds
             ms2 {[int]} -- time in milliseconds (default) or seconds
         """
         time.sleep(ms1/self.ms)
         self.isWorking = lambda: 1
+
         def decorator(function):
             def func():
                 while not self.canceled:
@@ -283,6 +292,7 @@ class Obj:
 
     def __contains__(self, value):
         return value in self.obj
+
     def contains(self, value):
         return value in self.obj
 
@@ -349,7 +359,7 @@ class Obj:
 class UserObj:
     def __init__(self, obj):
         self.objs = obj
-        self.obj = {"type" : obj[0]}
+        self.obj = {"type": obj[0]}
         self.type = obj[0]
         for tp in users_event:
             if self.type == users_event[tp][0]:
@@ -360,5 +370,6 @@ class UserObj:
                         exec("self.%s = obj[current]" % i, locals(), globals())
                     current += 1
                 break
+
     def __str__(self):
         return "%s" % self.obj

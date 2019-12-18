@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-from copy import copy
 from random import randint
+
 
 class EQueue:
     def __init__(self):
@@ -13,7 +13,7 @@ class EQueue:
 
     def getNext(self):
         """get first object in queue
-        
+
         Returns:
             any
         """
@@ -22,7 +22,7 @@ class EQueue:
 
     def getLast(self):
         """get last object in queue
-        
+
         Returns:
             any
         """
@@ -31,7 +31,7 @@ class EQueue:
 
     def getRandom(self):
         """get random object in queue
-        
+
         Returns:
             any
         """
@@ -40,7 +40,7 @@ class EQueue:
 
     def onAdd(self, function):
         """call function on added new object
-        
+
         Arguments:
             function {function, method or class} -- callable object
         """
@@ -48,7 +48,7 @@ class EQueue:
 
     def add(self, val):
         """add new object in queue
-        
+
         Arguments:
             val {any}
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 from copy import copy
-import math
+
 
 class ArithmeticSequence:
     def __init__(self, *args):
@@ -32,7 +32,7 @@ class ArithmeticSequence:
         for i in range(number):
             s += self.d
         return s
-    
+
     def getSum(self, number):
         lst = []
         s = copy(self.start)
@@ -85,7 +85,7 @@ class GeometricSequence:
         for i in range(number):
             s *= self.d
         return s
-    
+
     def getSum(self, number):
         lst = []
         s = copy(self.start)

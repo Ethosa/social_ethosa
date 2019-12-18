@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
+from ..utils import browserFake
 import requests
-import sys
+
 
 class YandexRoot:
     # Yandex Root-the main class in order to reduce the code of obtaining a token when initializing the class.
     def __init__(self, token=""):
         self.token = token
         self.session = requests.Session()
+
 
 class YTranslator(YandexRoot):
     # YTranslator - class to use Yandex Translate
@@ -48,7 +50,7 @@ class YDictionary(YandexRoot):
         self.lookupUrl = "https://dictionary.yandex.net/api/v1/dicservice.json/lookup"
 
     def getLangs(self):
-        data = {"key" : self.token}
+        data = {"key": self.token}
         return self.session.post(self.getLangsUrl, data=data).json()
 
     def lookup(self, lang, text, **kwargs):
@@ -68,7 +70,7 @@ class YPredictor(YandexRoot):
 
     def getLangs(self, **kwargs):
         kwargs["key"] = self.token
-        return self.session.post(self.getLangsUrl, data=data).json()
+        return self.session.post(self.getLangsUrl, data=kwargs).json()
 
     def complete(self, lang, q, **kwargs):
         kwargs["key"] = self.token
@@ -97,20 +99,13 @@ class YSpeller(YandexRoot):
 class YImagesSearch:
     def __init__(self):
         self.session = requests.Session()
-        self.session.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language':'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
-            'Accept-Encoding':'gzip, deflate',
-            'Connection':'keep-alive',
-            'DNT':'1'
-        }
+        self.session.headers = browserFake
         self.url = "https://yandex.ru/images/search"
 
     def search(self, q):
         data = {
-            "text" : q,
-            "from" : "tabbar"
+            "text": q,
+            "from": "tabbar"
         }
         response = self.session.post(self.url, params=data).text.split('<h1 class="a11y-hidden">Результаты поиска</h1>', 1)[1].split('<div class="serp-item serp-item_type_search')
         out = []
@@ -121,4 +116,3 @@ class YImagesSearch:
                     r = "http:%s" % r
                 out.append(r)
         return out
-

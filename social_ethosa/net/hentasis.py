@@ -7,6 +7,7 @@ import re
 
 from ..utils import browserFake
 
+
 class Hentasis:
     def __init__(self):
         self.url = "http://hentasis1.top/"
@@ -15,10 +16,10 @@ class Hentasis:
 
     def getPage(self, pageNum=1):
         """get hentai page
-        
+
         Keyword Arguments:
             pageNum {number} -- number of hentai page (default: {1})
-        
+
         Returns:
             HMainPage -- main page
         """
@@ -27,7 +28,7 @@ class Hentasis:
 
     def getRandom(self):
         """get random hentai
-        
+
         Returns:
             HPage -- hentai page
         """
@@ -80,4 +81,3 @@ class HPage:
         self.page = session.get(self.url).text
         self.videos = re.findall(r"http://.+mp4", self.page)
         self.dict = h
-

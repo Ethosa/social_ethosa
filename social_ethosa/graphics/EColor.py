@@ -4,12 +4,13 @@
 import re
 
 colors = {
-    "white" : b"\xFF\xFF\xFF\xFF",
-    "black" : b"\x00\x00\x00\xFF",
-    "red" : b"\x00\x00\xFF\xFF",
-    "green" : b"\x00\xFF\x00\xFF",
-    "blue" : b"\xFF\x00\x00\xFF"
+    "white": b"\xFF\xFF\xFF\xFF",
+    "black": b"\x00\x00\x00\xFF",
+    "red": b"\x00\x00\xFF\xFF",
+    "green": b"\x00\xFF\x00\xFF",
+    "blue": b"\xFF\x00\x00\xFF"
 }
+
 
 def ecolor(color=b"\xFF\xFF\xFF\xFF"):
     if isinstance(color, tuple) or isinstance(color, list):

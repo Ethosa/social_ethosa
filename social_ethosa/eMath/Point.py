@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from copy import copy
 import math
+
 
 class Point:
     def __init__(self, *args):

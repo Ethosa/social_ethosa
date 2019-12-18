@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from .net.vkcom import Thread_VK
 import time
+import random
+from .net.vkcom import Thread_VK
+
 
 class UtilsManager:
     def __init__(self, vk):
-        self.vk = vk # vk parameter must be user
+        """utils manager, using vk
+
+        Arguments:
+            vk {Vk}
+        """
+        self.vk = vk
 
     def getLastPost(self, owner_id=None, domain=None):
         if owner_id:
@@ -29,7 +36,7 @@ class UtilsManager:
         # timer must contain the number of seconds after which the status changes
         # text must contain a string or a list of strings
         # group_id - arbitrarily
-        
+
         def start():
             returned = True
             if type(text) == str:

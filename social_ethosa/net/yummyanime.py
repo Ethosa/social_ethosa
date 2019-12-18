@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 import requests
-import random
 import time
 import sys
-import re
 
-from ..utils import browserFake
+from ..utils import browserFake, Thread_VK
 
 
 class YummyAnime:
@@ -31,12 +29,13 @@ class YummyAnime:
 
     def logIn(self, login, password):
         """auth in YummyAnime profile
-        
+
         Arguments:
             login {str}
             password {str}
         """
-        self.mainPage = self.session.post(self.loginUrl, data={"email" : login, "password" : password}).text
+        self.mainPage = self.session.post(self.loginUrl,
+                                          data={"email": login, "password": password}).text
         if '<li title="Мой профиль">' in self.mainPage:
             self.userName = self.mainPage.split('<span id="login" class="user-name-text">', 1)[1].split("</span>", 1)[0].strip()
             self.logged = 1
@@ -46,7 +45,7 @@ class YummyAnime:
 
     def isLogin(self):
         """return True, if current session authorized
-        
+
         Returns:
             bool
         """
@@ -61,7 +60,7 @@ class YummyAnime:
 
     def getRandomAnime(self):
         """get random anime page
-        
+
         Returns:
             YummyPage
         """
@@ -69,18 +68,18 @@ class YummyAnime:
 
     def getUpdates(self, page=1):
         """get last anime updates
-        
+
         Keyword Arguments:
             page {int} -- number of page (default: {1})
-        
+
         Returns:
             YummyUpdates
         """
-        return YummyUpdates(self.session.get(self.updatesPage, params={"page" : page}), self.session)
+        return YummyUpdates(self.session.get(self.updatesPage, params={"page": page}), self.session)
 
     def getProfile(self):
         """return profile info
-        
+
         Returns:
             YummyProfile
         """
@@ -89,20 +88,21 @@ class YummyAnime:
 
     def onNewUpdate(self, timer=60):
         """listener for new anime updates
-        
+
         Keyword Arguments:
             timer {number} -- time for recall method getLastUpdates() (default: {60})
-        
+
         Returns:
             decorator
         """
         def asd1(func):
             """start listener
-            
+
             Arguments:
                 func {fucntion, method or class} -- callable object
             """
             self.lastUpdate = self.getUpdates()[0]
+
             def asd():
                 while 1.0:
                     lastUpdate = self.getUpdates()[0]
@@ -111,7 +111,7 @@ class YummyAnime:
                         func(self.lastUpdate)
                     time.sleep(timer)
             Thread_VK(asd).start()
-        return func
+        return asd1
 
 
 class YummyPage:
@@ -123,13 +123,13 @@ class YummyPage:
         self.name = self.content.split("<h1>", 1)[1].split("</h1>", 1)[0].strip()
         try:
             self.rating = {
-                "rating" : self.content.split('<span class="main-rating">', 1)[1].split("</span>", 1)[0].strip(),
-                "voices" : self.content.split('<span class="main-rating-info">', 1)[1].split("</span>", 1)[0].strip()
+                "rating": self.content.split('<span class="main-rating">', 1)[1].split("</span>", 1)[0].strip(),
+                "voices": self.content.split('<span class="main-rating-info">', 1)[1].split("</span>", 1)[0].strip()
             }
         except:
             self.rating = {
-                "rating" : "Для этого аниме",
-                "voices" : "рейтинг недоступен."
+                "rating": "Для этого аниме",
+                "voices": "рейтинг недоступен."
             }
         self.views = self.content.split('<span>Просмотров:</span>', 1)[1].split('<i', 1)[0].strip()
         try:
@@ -152,8 +152,8 @@ class YummyPage:
             genreList = self.content.split('<span class="genre">Жанр:</span>', 1)[1].split('<ul class="categories-list">', 1)[1].split("</ul>", 1)[0].split('href="')
             genreList.pop(0)
             self.genreList = [{
-            "url" : "https://yummyanime.club%s" % i.split('"', 1)[0],
-            "name" : i.split('>', 1)[1].split('<', 1)[0].strip()
+                "url": "https://yummyanime.club%s" % i.split('"', 1)[0],
+                "name": i.split('>', 1)[1].split('<', 1)[0].strip()
             } for i in genreList]
         except:
             self.genreList = ""
@@ -165,19 +165,19 @@ class YummyPage:
             genreList = self.content.split('<span class="genre">Студия:</span>', 1)[1].split('<ul class="categories-list">', 1)[1].split("</ul>", 1)[0].split('href="')
             genreList.pop(0)
             self.studioList = [{
-                "url" : "https://yummyanime.club%s" % i.split('"', 1)[0],
-                "name" : i.split('>', 1)[1].split('<', 1)[0].strip()
+                "url": "https://yummyanime.club%s" % i.split('"', 1)[0],
+                "name": i.split('>', 1)[1].split('<', 1)[0].strip()
             } for i in genreList]
         except:
-            self.studioList = [{"name" : ""}]
+            self.studioList = [{"name": ""}]
         try:
             producer = self.content.split('<span>Режиссер:</span>', 1)[1].split('</a>', 1)[0]
             self.producer = {
-                "name" : producer.split('>', 1)[1].strip(),
-                "url" : "https://yummyanime.club%s" % producer.split('href="', 1)[1].split('"', 1)[0]
+                "name": producer.split('>', 1)[1].strip(),
+                "url": "https://yummyanime.club%s" % producer.split('href="', 1)[1].split('"', 1)[0]
             }
         except:
-            self.producer = {"name" : ""}
+            self.producer = {"name": ""}
         try:
             self.type = self.content.split("<span>Тип:</span>", 1)[1].split('</li>', 1)[0].strip()
         except:
@@ -196,9 +196,9 @@ class YummyPage:
                 self.voiceActing = self.voiceActing.split('dropdown">')
                 self.voiceActing.pop(0)
                 self.voiceActing = [{
-                    "name" : i.split('<a class="studio-name">', 1)[1].split('</a>', 1)[0].strip(),
-                    "vocalized" : [name.split('</li>', 1)[0].strip()
-                                    for name in i.split('<ul class="dub-content">', 1)[0].split('</ul>')[0].split('<li class="list">')]
+                    "name": i.split('<a class="studio-name">', 1)[1].split('</a>', 1)[0].strip(),
+                    "vocalized": [name.split('</li>', 1)[0].strip()
+                                  for name in i.split('<ul class="dub-content">', 1)[0].split('</ul>')[0].split('<li class="list">')]
                 } for i in self.voiceActing]
         except:
             self.voiceActing = []
@@ -218,7 +218,7 @@ class YummyPage:
             self.posterImageUrl = ""
 
     def __str__(self):
-        return """%s (%s) 
+        return """%s (%s)
 Рейтинг: [%s %s]
 Просмотры: %s
 Сезон: %s
@@ -234,13 +234,13 @@ class YummyPage:
 Озвучили: %s
 ------------------
 %s""" % (self.name, self.year,
-        self.rating["rating"], self.rating["voices"], self.views, self.season,
-        ", ".join(i["name"] for i in self.genreList),
-        self.producer["name"], ", ".join(i["name"] for i in self.studioList),
-        self.type, self.translate, self.series, self.original, self.ageRating,
-        self.url, self.voiceActing if type(self.voiceActing) == str else
-            ", ".join(i["name"] for i in self.voiceActing),
-        self.description)
+         self.rating["rating"], self.rating["voices"], self.views, self.season,
+         ", ".join(i["name"] for i in self.genreList),
+         self.producer["name"], ", ".join(i["name"] for i in self.studioList),
+         self.type, self.translate, self.series, self.original, self.ageRating,
+         self.url, self.voiceActing if type(self.voiceActing) == str else
+         ", ".join(i["name"] for i in self.voiceActing),
+         self.description)
 
 
 class YummyUpdates:

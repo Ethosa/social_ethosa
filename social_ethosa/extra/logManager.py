@@ -4,6 +4,7 @@
 from contextlib import contextmanager
 import time
 
+
 class LogManager:
     def __new__(self, fileName, text=""):
         self.fileName = fileName

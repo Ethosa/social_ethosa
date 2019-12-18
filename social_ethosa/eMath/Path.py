@@ -3,14 +3,15 @@
 from .Point import Point
 from .Point2D import Point2D
 
+
 class Path:
     def __init__(self, *args):
         self.path = [i if isinstance(i, Point) or isinstance(i, Point2D) else
-                    Point(i) if isinstance(i, list) else i for i in args]
+                     Point(i) if isinstance(i, list) else i for i in args]
 
     def add(self, pnt):
         self.path.append(pnt if isinstance(pnt, Point) or isinstance(pnt, Point2D) else
-                    Point(pnt) if isinstance(pnt, list) else pnt)
+                         Point(pnt) if isinstance(pnt, list) else pnt)
 
     def length(self):
         l = 0

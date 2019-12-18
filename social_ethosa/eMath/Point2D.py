@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-from copy import copy
-import math
 
 from .Point import Point
+
 
 class Point2D(Point):
     def __init__(self, x, y):

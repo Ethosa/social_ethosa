@@ -9,14 +9,14 @@ import regex
 
 class BetterBotWrapper:
     """BetterBotWrapper class
-    
+
     You can use it to store a database of answers
     """
     def __init__(self, bbw=None):
         """constructor for BetterBotWrapper class
-        
+
         creates an instance of a class
-        
+
         Keyword Arguments:
             bbw {BetterBotWrapper} -- other (default: {None})
         """
@@ -24,20 +24,20 @@ class BetterBotWrapper:
 
     def addPattern(self, q, a, mode="equals", answer_type="method"):
         """create new pattern
-        
+
         Arguments:
             q {str} -- question
             a {str} -- answer
-        
+
         Keyword Arguments:
             mode {str} -- answer mode, may be "equals", "startswith",
                             "endswith", "find" (default: {"equals"})
             answer_type {str} -- answer type, may be "method" (default: {"method"})
         """
         answer = {
-            "answer" : a,
-            "mode" : mode,
-            "answer_type" : answer_type
+            "answer": a,
+            "mode": mode,
+            "answer_type": answer_type
         }
         if q not in self.base:
             self.base[q] = [answer]
@@ -46,10 +46,10 @@ class BetterBotWrapper:
 
     def answer(self, q):
         """get the answer to the question
-        
+
         Arguments:
             q {str} -- question
-        
+
         Returns:
             object -- answer
         """
@@ -80,7 +80,7 @@ class BetterBotWrapper:
 
     def removePattern(self, q):
         """remove pattern from db
-        
+
         Arguments:
             q {str} -- question
         """

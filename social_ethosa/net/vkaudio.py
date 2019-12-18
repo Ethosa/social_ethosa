@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
-import requests
 import json
-import re
-
-from ..utils import browserFake
 from .vkauth import VKAuth
+
 
 class Audio:
     """
@@ -40,12 +37,11 @@ class Audio:
                 current_full_id = audio.split('data-full-id="', 1)[1].split('"')[0]
                 current_data_audio = json.loads(audio.split('data-audio="', 1)[1].split('" onmouseover')[0])
                 audios.append({
-                        'data-full-id' : current_full_id,
-                        'data-audio' : self.parse(current_data_audio)
+                        'data-full-id': current_full_id,
+                        'data-audio': self.parse(current_data_audio)
                     })
 
         return audios[offset:] if not count else audios[offset:count+offset]
-        
 
     def getCount(self, owner_id=None):
         return len(self.get(owner_id if owner_id else self.user_id))
@@ -62,12 +58,12 @@ class Audio:
         artist = response.split('<span class="ai_artist">', 1)[1].split('</span>', 1)[0]
 
         return {
-            'url' : audio_url,
-            'duration' : data_audio['duration'],
-            'content_id' : data_audio['content_id'],
-            'genre_id' : data_audio['puid22'],
-            'title' : title,
-            'artist' : artist
+            'url': audio_url,
+            'duration': data_audio['duration'],
+            'content_id': data_audio['content_id'],
+            'genre_id': data_audio['puid22'],
+            'title': title,
+            'artist': artist
         }
 
     def search(self, q=None):
@@ -80,14 +76,14 @@ class Audio:
         playlists.pop(0)
 
         allPlaylists = [{
-                    'url' : playlist.split('href="', 1)[1].split('"', 1)[0],
-                    'cover' : playlist.split('audioPlaylists__itemCover', 1)[1].split("url('", 1)[1].split("');", 1)[0],
-                    'title' : playlist.split('audioPlaylists__itemTitle">', 1)[1].split('</', 1)[0],
-                    'subtitle' : playlist.split('audioPlaylists__itemSubtitle">', 1)[1].split('<', 1)[0],
-                    'year' : playlist.split('audioPlaylists__itemSubtitle">', 2)[2].split('<', 1)[0]
-                } for playlist in playlists]
-        allArtists = [{ artist.split('OwnerRow__title">')[1].split('<', 1)[0] : artist.split('href="', 1)[1].split('"', 1)[0] }
-                        for artist in artists]
+            'url': playlist.split('href="', 1)[1].split('"', 1)[0],
+            'cover': playlist.split('audioPlaylists__itemCover', 1)[1].split("url('", 1)[1].split("');", 1)[0],
+            'title': playlist.split('audioPlaylists__itemTitle">', 1)[1].split('</', 1)[0],
+            'subtitle': playlist.split('audioPlaylists__itemSubtitle">', 1)[1].split('<', 1)[0],
+            'year': playlist.split('audioPlaylists__itemSubtitle">', 2)[2].split('<', 1)[0]
+        } for playlist in playlists]
+        allArtists = [{artist.split('OwnerRow__title">')[1].split('<', 1)[0]: artist.split('href="', 1)[1].split('"', 1)[0]}
+                      for artist in artists]
 
         url = "https://m.vk.com%s" % response.split('AudioBlock AudioBlock_audios Pad', 1)[1].split("Pad__corner al_empty", 1)[1].split('href="', 1)[1].split('"', 1)[0]
         response = self.session.get(url).text
@@ -100,28 +96,30 @@ class Audio:
             if '<input type="hidden" value="' in audio:
                 data_audio = json.loads(audio.split('data-ads="', 1)[1].split('" ', 1)[0].replace('&quot;', '"'))
                 allAudios.append({
-                        'url' : audio.split('<input type="hidden" value="', 1)[1].split('"', 1)[0],
-                        'image' : audio.split('ai_info')[1].split(':url(', 1)[1].split(')', 1)[0] if 'ai_info' in audio and ':url(' in audio else None,
-                        'duration' : data_audio['duration'],
-                        'content_id' : data_audio['content_id'],
-                        'genre_id' : data_audio['puid22'],
-                        'title' : audio.split('<span class="ai_title">', 1)[1].split('</span>', 1)[0],
-                        'artist' : audio.split('<span class="ai_artist">', 1)[1].split('</span>', 1)[0]
+                        'url': audio.split('<input type="hidden" value="', 1)[1].split('"', 1)[0],
+                        'image': audio.split('ai_info')[1].split(':url(', 1)[1].split(')', 1)[0] if 'ai_info' in audio and ':url(' in audio else None,
+                        'duration': data_audio['duration'],
+                        'content_id': data_audio['content_id'],
+                        'genre_id': data_audio['puid22'],
+                        'title': audio.split('<span class="ai_title">', 1)[1].split('</span>', 1)[0],
+                        'artist': audio.split('<span class="ai_artist">', 1)[1].split('</span>', 1)[0]
                     })
 
         return {
-            'playlists' : allPlaylists,
-            'audios' : allAudios,
-            'artists' : allArtists
+            'playlists': allPlaylists,
+            'audios': allAudios,
+            'artists': allArtists
         }
 
     def parse(self, data_audio):
-        return { 'id' : data_audio[0],
-            'owner_id' : data_audio[1],
-            'artist' : data_audio[4],
-            'title' : data_audio[3],
-            'duration' : data_audio[5],
-            'cover' : data_audio[14].split(','),
-            'is_hq' : data_audio[-2],
-            'no_search' : data_audio[-3],
-            'genre_id' : data_audio[-10]['puid22']}
+        return {
+            'id': data_audio[0],
+            'owner_id': data_audio[1],
+            'artist': data_audio[4],
+            'title': data_audio[3],
+            'duration': data_audio[5],
+            'cover': data_audio[14].split(','),
+            'is_hq': data_audio[-2],
+            'no_search': data_audio[-3],
+            'genre_id': data_audio[-10]['puid22']
+        }

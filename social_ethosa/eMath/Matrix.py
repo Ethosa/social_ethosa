@@ -3,6 +3,7 @@
 from copy import copy
 import math
 
+
 class Matrix:
     def createUnitMatrix(width, height):
         matrix = []
@@ -92,26 +93,13 @@ class Matrix:
                 ty = (x-offsetX)*rMx[1][0] + (y-offsetY)*rMx[1][1] + offsetY
                 itx = int(tx)
                 ity = int(ty)
-                # rtx = round(tx)
-                # rty = round(ty)
-                # mtx = math.ceil(tx)
-                # mty = math.ceil(ty)
-                # if not [itx, ity] in timed:
                 if itx < -self.width:
                     itx += self.width//2
                 if ity < -self.height:
                     ity += self.height//2
                 matrix.obj[itx][ity] = self.obj[x][y]
-                    # timed.append([itx, ity])
-                # elif not [rtx, rty] in timed:
-                #     matrix.obj[rtx][rty] = self.obj[x][y]
-                #     timed.append([rtx, rty])
-                # elif not [mtx, mty] in timed:
-                #     matrix.obj[mtx][mty] = self.obj[x][y]
-                #     timed.append([mtx, mty])
             print(y)
         return matrix
-        
 
     def lol(self):
         offset = [1, self.height-1]
@@ -256,8 +244,6 @@ class Matrix:
         elif isinstance(other, Matrix):
             if self.width == other.height:
                 s = 0
-                width = self.width
-                height = other.height
                 matrix = []
                 matrixTimed = []
 
@@ -274,18 +260,24 @@ class Matrix:
                 return self
 
     def __imul__(self, other): return self.__mul__(other)
+
     def __len__(self): return len(self.obj)
+
     def __isub__(self, other): return self.__sub__(other)
+
     def __pos__(self): return -self
 
     def __eq__(self, other):
         if isinstance(other, Matrix):
-            if other.obj == self.obj: return 1
-            else: return 0
-        else: return 0
+            if other.obj == self.obj:
+                return 1
+            else:
+                return 0
+        else:
+            return 0
 
     def __str__(self):
         return "%s\n" % "\n".join(" ".join("%s" % i if len("%s" % i) == self.widthFill else
-                                    "%s%s" % (" "*(self.widthFill-len("%s" % i)), i) if len("%s" % i) < 6 else "%s" % i
-                                    for i in self.obj[x])
-                        for x in range(len(self.obj)))
+                                  "%s%s" % (" "*(self.widthFill-len("%s" % i)), i) if len("%s" % i) < 6 else "%s" % i
+                                           for i in self.obj[x])
+                                  for x in range(len(self.obj)))

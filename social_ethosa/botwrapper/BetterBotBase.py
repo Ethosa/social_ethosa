@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 import pickle
-import json
 import os
 
 from .BotBase import BotBase
 from .BetterUser import BetterUser
+
 
 class BetterBotBase(BotBase):
     def __init__(self, *args):
         super().__init__(*args)
         self.postfix = args[1] if len(args) > 1 else "dat"
 
-    def addNew(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
+    def addNew(self, uid, name='Пользователь',
+               role='user', status="", money=0, **kwargs):
         user = self.pattern(uid=uid, name=name, role=role, status=status, money=money, **kwargs)
 
         user = BetterUser(**user)
@@ -45,7 +46,7 @@ class BetterBotBase(BotBase):
 
     def load(self, user_id):
         with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'rb') as f:
-            user =  pickle.load(f)
+            user = pickle.load(f)
 
         if user not in self.users:
             self.users.append(user)
@@ -60,5 +61,5 @@ class BetterBotBase(BotBase):
         args.append("uid")
 
         return [{
-            key : eval("user.%s" % key, {"user" : user}) for key in args
+            key: eval("user.%s" % key, {"user": user}) for key in args
         } for user in allUsers]

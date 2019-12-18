@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 
-import textwrap
-import re
+import regex
+
 
 class Regexp:
     def __init__(self, text=""):
@@ -11,12 +11,12 @@ class Regexp:
     def findEmail(self, text=""):
         if not text:
             text = self.text
-        return re.findall(r"\S*@\S*", text)
+        return regex.findall(r"\S*@\S*", text)
 
     def findPhone(self, text=""):
         if not text:
             text = self.text
-        numbers = re.findall(r"\+?\d{11,}", text)
+        numbers = regex.findall(r"\+?\d{11,}", text)
         out = []
         for n in numbers:
             n = n[::-1]
@@ -26,4 +26,4 @@ class Regexp:
     def findUrl(self, text=""):
         if not text:
             text = self.text
-        return re.findall(r"https://\S+\.\S+", text)
+        return regex.findall(r"https://\S+\.\S+", text)

@@ -2,8 +2,10 @@
 # author: ethosa
 from copy import copy
 import requests
+import random
 
 from ..utils import Thread_VK
+
 
 class ThisPerson:
     def __init__(self):
@@ -18,7 +20,7 @@ class ThisPerson:
 
     def getRandomPerson(self):
         """get random human image
-        
+
         Returns:
             bytes -- content for write in file.
         """
@@ -28,7 +30,7 @@ class ThisPerson:
 
     def getRandomWaifu(self):
         """get random anime image
-        
+
         Returns:
             bytes -- content for write in file.
         """
@@ -38,7 +40,7 @@ class ThisPerson:
 
     def getBestRandomWaifu(self):
         """get random anime image with better quality
-        
+
         Returns:
             bytes -- content for write in file.
         """
@@ -48,7 +50,7 @@ class ThisPerson:
 
     def getRandomCat(self):
         """get random cat image
-        
+
         Returns:
             bytes -- content for write in file.
         """
@@ -58,7 +60,7 @@ class ThisPerson:
 
     def writeFile(self, path, content):
         """write getted bytes to file
-        
+
         Arguments:
             path {str} -- path to image (the image may not exist)
             content {bytes} -- bytes for write in file
@@ -68,7 +70,7 @@ class ThisPerson:
 
     def onReceiving(self, func):
         """run new images listener
-        
+
         Arguments:
             func {method, function or class} -- the object to be called
         """

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 import requests
+import json
+
 
 class JDoodle:
     """
@@ -21,7 +23,7 @@ class JDoodle:
     """
     def __init__(self, language="python3", clientId="", clientSecret=""):
         """initialize JDoodle
-        
+
         Keyword Arguments:
             language {str} -- computer language (default: {"python3"})
             clientId {str} -- client id (default: {""})
@@ -37,7 +39,7 @@ class JDoodle:
 
     def setLanguage(self, language):
         """set language code
-        
+
         Arguments:
             langName {str}
         """
@@ -45,7 +47,7 @@ class JDoodle:
 
     def setScript(self, script):
         """set code for compile
-        
+
         Arguments:
             script {str}
         """
@@ -53,7 +55,7 @@ class JDoodle:
 
     def setStdin(self, stdin):
         """set input to compile
-        
+
         Arguments:
             stdin {str}
         """
@@ -61,7 +63,7 @@ class JDoodle:
 
     def setVersionIndex(self, versionindex):
         """set language version index
-        
+
         Arguments:
             versionindex {int}
         """
@@ -69,34 +71,38 @@ class JDoodle:
 
     def compile(self, language="python3", versionIndex=0, script="", stdin=""):
         """compile source code
-        
+
         Keyword Arguments:
             language {str} -- script language (default: {"python3"})
             versionIndex {number} -- language version (default: {0})
             script {str} -- source code (default: {""})
             stdin {str} -- input (default: {""})
-        
+
         Returns:
             dict -- compiled code
         """
-        data = { "clientId" : self.clientId,
-            "clientSecret" : self.clientSecret,
-            "script" : script if script else self.script,
-            "language" : language if language else self.language,
-            "stdin" : stdin if stdin else self.stdin,
-            "versionIndex" : versionIndex if versionindex else self.versionindex }
-        headers = { "Content-Type": "application/json" }
+        data = {
+            "clientId": self.clientId,
+            "clientSecret": self.clientSecret,
+            "script": script if script else self.script,
+            "language": language if language else self.language,
+            "stdin": stdin if stdin else self.stdin,
+            "versionIndex": versionIndex if versionIndex else self.versionIndex
+        }
+        headers = {"Content-Type": "application/json"}
         response = requests.post(self.url, data=json.dumps(data), headers=headers).json()
         return response
 
     def getUsed(self):
         """get used info
-        
+
         Returns:
            dict  -- used info
         """
-        data = { "clientId" : self.clientId,
-            "clientSecret" : self.clientSecret }
-        headers = { "Content-Type": "application/json" }
+        data = {
+            "clientId": self.clientId,
+            "clientSecret": self.clientSecret
+        }
+        headers = {"Content-Type": "application/json"}
         response = requests.post(self.url1, data=json.dumps(data), headers=headers).json()
         return response

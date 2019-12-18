@@ -3,6 +3,7 @@
 
 from ..utils import getValue
 
+
 class User:
     def __init__(self, *args, **kwargs):
         self._obj = kwargs
@@ -23,4 +24,3 @@ class User:
         value = getValue(self.obj, attribute)
         exec("self.%s = %s" % (attribute, repr(value)))
         return eval("self.%s" % attribute)
-        

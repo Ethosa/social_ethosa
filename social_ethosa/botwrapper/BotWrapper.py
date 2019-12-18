@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 import requests
-import datetime
-import pickle
 import random
 import time
 import json
 import math
-import os
-import re
+
 
 def strTimeProp(start, end, format, prop):
     stime = time.mktime(time.strptime(start, format))
     etime = time.mktime(time.strptime(end, format))
     ptime = stime + prop * (etime - stime)
     return time.strftime(format, time.localtime(ptime))
+
+
 def randomDate(start, end, prop):
     return strTimeProp(start, end, '%d.%m.%Y %H:%M:%S', prop)
+
 
 class BotWrapper(object):
 
@@ -37,17 +37,17 @@ class BotWrapper(object):
         self.validate_for_calc = list('1234567890^-+/*')
         eng = list('''QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?qwertyuiop[]asdfghjkl;'zxcvbnm,./&''')
         rus = list('''ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,йцукенгшщзхъфывапролджэячсмитьбю.?''')
-        self.eng_rus = {eng[i] : rus[i] for i in range(len(rus))}
-        self.rus_eng = {rus[i] : eng[i] for i in range(len(rus))}
+        self.eng_rus = {eng[i]: rus[i] for i in range(len(rus))}
+        self.rus_eng = {rus[i]: eng[i] for i in range(len(rus))}
         self.smiles = ["&#127815;", "&#127821;", "&#127826;", "&#127827;"]
 
     def randomDate(self, fromYear="2001", toYear="3001"):
         """generate random date
-        
+
         Keyword Arguments:
             fromYear {str} -- [start generate year] (default: {"2001"})
             toYear {str} -- [end generate year] (default: {"3001"})
-        
+
         Returns:
             [str] -- [generated date]
         """
@@ -71,10 +71,10 @@ class BotWrapper(object):
 
     def delirium(self, number=1):
         """generate random text
-        
+
         Keyword Arguments:
             number {number} -- [number of sentense] (default: {1})
-        
+
         Returns:
             [str] -- [generated text]
         """
@@ -85,29 +85,29 @@ class BotWrapper(object):
 
     def calc(self, text):
         """calculator
-        
+
         Arguments:
             text {[str]} -- [example for calculation]
-        
+
         Returns:
             [str] -- [result]
         """
         self.count_use += 1
-        text = text.replace("^", "**") # ''.join(i for i in text if i in self.validate_for_calc)
+        text = text.replace("^", "**")  # ''.join(i for i in text if i in self.validate_for_calc)
         glb = {
-            "pi" : math.pi, "e" : math.e,
-            "sin" : math.sin, "cos" : math.cos,
-            "factorial" : math.factorial, "ceil" : math.ceil,
-            "floor" : math.floor, "floor" : math.floor,
-            "pow" : math.pow, "log" : math.log,
-            "sqrt" : math.sqrt, "tan" : math.tan,
-            "arccos" : math.acos, "arcsin" : math.asin,
-            "arctan" : math.atan, "degrees" : math.degrees,
-            "radians" : math.radians, "sinh" : math.sinh,
-            "cosh" : math.cosh, "tanh" : math.tanh,
-            "arccosh" : math.acosh, "arcsinh" : math.asinh,
-            "arctanh" : math.atanh, 'print' : lambda *args: " ".join(args),
-            'exit' : lambda *args: " ".join(args)
+            "pi": math.pi, "e": math.e,
+            "sin": math.sin, "cos": math.cos,
+            "factorial": math.factorial, "ceil": math.ceil,
+            "floor": math.floor, "floor": math.floor,
+            "pow": math.pow, "log": math.log,
+            "sqrt": math.sqrt, "tan": math.tan,
+            "arccos": math.acos, "arcsin": math.asin,
+            "arctan": math.atan, "degrees": math.degrees,
+            "radians": math.radians, "sinh": math.sinh,
+            "cosh": math.cosh, "tanh": math.tanh,
+            "arccosh": math.acosh, "arcsinh": math.asinh,
+            "arctanh": math.atanh, 'print': lambda *args: " ".join(args),
+            'exit': lambda *args: " ".join(args)
         }
         return eval(text, glb, {})
 

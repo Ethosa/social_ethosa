@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 from copy import copy
-import math
-
-from .Point import Point
 
 
 class Rectangle:
@@ -31,6 +28,7 @@ class Rectangle:
         return self.left <= x <= self.right and self.top <= y <= self.bottom
 
     def width(self): return self.right - self.left
+
     def height(self): return self.bottom - self.top
 
     def __str__(self):

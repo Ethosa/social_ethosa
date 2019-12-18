@@ -2,9 +2,9 @@
 # author: Ethosa
 
 import requests
-import re
 
 from ..utils import browserFake
+
 
 class PHub:
     RUSSIAN = 99
@@ -80,6 +80,7 @@ class PHub:
     SCISSORS = 532
     ASS = 4
     PORNSTARS = "categories/pornstar"
+
     def __init__(self):
         self.url = "https://rt.pornhub.com/"
         self.session = requests.Session()
@@ -87,21 +88,21 @@ class PHub:
 
     def search(self, q):
         response = PHPage(self.session.get("%svideo/search" % self.url, params={
-                "search" : q
+                "search": q
             }), self.session)
         return response
 
     def getPage(self, number=1, min_duration=0, c=""):
         if isinstance(c, str):
             response = PHPage(self.session.get("%s%s" % (self.url, c), params={
-                    "page" : number,
-                    "min_duration" : min_duration
+                    "page": number,
+                    "min_duration": min_duration
                 }))
         else:
             response = PHPage(self.session.get("%svideo" % self.url, params={
-                    "page" : number,
-                    "min_duration" : min_duration,
-                    "c" : c
+                    "page": number,
+                    "min_duration": min_duration,
+                    "c": c
                 }), self.session)
         return response
 

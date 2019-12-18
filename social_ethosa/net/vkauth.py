@@ -26,8 +26,8 @@ class VKAuth:
         lg_h = lg_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
         ip_h = re.findall("<input.+ip_h.+", data)[0]
         ip_h = ip_h.split("value=\"", 1)[1].split("\"", 1)[0].strip()
-        form = {'act' : 'login', 'role' : 'al_frame', 'expire' : '',
-                'recaptcha' : '', 'captcha_sid' : '', 'captcha_key' : '',
+        form = {'act': 'login', 'role': 'al_frame', 'expire': '',
+                'recaptcha': '', 'captcha_sid': '', 'captcha_key': '',
                 '_origin': 'https://vk.com', 'ip_h': ip_h,
                 'lg_h': lg_h, 'ul': '',
                 'email': self.login, 'pass': self.password}
@@ -51,4 +51,3 @@ class VKAuth:
         else:
             token = ""
         return token
-        

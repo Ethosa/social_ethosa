@@ -6,10 +6,12 @@ import math
 
 from ..utils import splitList
 
+
 class EList(list):
     COMB_SORT = 0
     GNOME_SORT = 1
     ODD_EVEN_SORT = 2
+
     def __init__(self, arg):
         super().__init__(arg)
         self.sitem = 0
@@ -47,10 +49,11 @@ class EList(list):
                 low = mid + 1
             elif key < self[mid]:
                 high = mid - 1
-            else: return mid
+            else:
+                return mid
 
-        if key == self[low]: return low
-        else: return None
+        if key == self[low]:
+            return low
 
     def sortMethod(self, method, reverse=False):
         if method == EList.COMB_SORT:

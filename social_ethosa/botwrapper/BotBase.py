@@ -2,11 +2,14 @@
 # author: Ethosa
 
 from operator import itemgetter
+import shutil
+import math
 import json
 import os
 
 from ..utils import getValue
 from .User import User
+
 
 class BotBase:
     """
@@ -24,17 +27,18 @@ class BotBase:
         self.path = args[0] if args else "users"
         self.users = []
         self.pattern = lambda **kwargs: {
-            "uid" : getValue(kwargs, "uid", 1),
-            "name" : getValue(kwargs, "name", "Пользователь"),
-            "money" : getValue(kwargs, "money", 0),
-            "role" : getValue(kwargs, "role", "user"),
-            "status" : getValue(kwargs, "status", "")
+            "uid": getValue(kwargs, "uid", 1),
+            "name": getValue(kwargs, "name", "Пользователь"),
+            "money": getValue(kwargs, "money", 0),
+            "role": getValue(kwargs, "role", "user"),
+            "status": getValue(kwargs, "status", "")
         }
         self.postfix = args[1] if len(args) > 1 else "json"
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 
-    def addNew(self, uid, name='Пользователь', role='user', status="", money=0 ,**kwargs):
+    def addNew(self, uid, name='Пользователь',
+               role='user', status="", money=0, **kwargs):
         user = self.pattern(uid=uid, name=name, role=role, status=status, money=money, **kwargs)
 
         with open("%s/%s.%s" % (self.path, uid, self.postfix), 'w', encoding='utf-8') as f:
@@ -50,7 +54,7 @@ class BotBase:
     def addNewValue(self, key, defult_value=0):
         for user in os.listdir(self.path):
             with open("%s/%s" % (self.path, user), 'r', encoding='utf-8') as f:
-                current =  json.loads(f.read())
+                current = json.loads(f.read())
 
             if key not in current:
                 current[key] = defult_value
@@ -74,7 +78,7 @@ class BotBase:
 
     def load(self, user_id):
         with open("%s/%s.%s" % (self.path, user_id, self.postfix), 'r', encoding='utf-8') as f:
-            user =  json.loads(f.read())
+            user = json.loads(f.read())
 
         user = User(**user)
         if user not in self.users:
@@ -92,14 +96,14 @@ class BotBase:
                 if vk:
                     name = vk.users.get(user_ids=uid)['response'][0]["first_name"]
                 else:
-                    name="Пользователь"
+                    name = "Пользователь"
                 return self.addNew(uid=uid, name=name, **kwargs)
             else:
                 return self.load(uid)
-                
+
     def clearPattern(self):
         self.pattern = lambda **kwargs: {
-            "uid" : getValue(kwargs, "uid", 0)
+            "uid": getValue(kwargs, "uid", 0)
         }
 
     def setPattern(self, pattern):
@@ -107,14 +111,14 @@ class BotBase:
         pattern["name"] = "user"
         pattern["money"] = 0
         self.pattern = lambda **kwargs: {
-            i : getValue(kwargs, i, pattern[i]) for i in pattern
+            i: getValue(kwargs, i, pattern[i]) for i in pattern
         }
 
     def addPattern(self, key, defult_value):
         current_pattern = self.pattern()
         current_pattern[key] = defult_value
         self.pattern = lambda **kwargs: {
-            i : getValue(kwargs, i, current_pattern[i]) for i in current_pattern
+            i: getValue(kwargs, i, current_pattern[i]) for i in current_pattern
         }
 
     def makeBackupCopy(self, directory):
@@ -135,7 +139,7 @@ class BotBase:
         args.append("uid")
 
         return [{
-            key : user[key] for key in args
+            key: user[key] for key in args
         } for user in allUsers]
 
     def getSortedByKeys(self, key, count=None, offset=0, sortType="1-9", formatting=False, otherKeys=[]):
@@ -154,12 +158,11 @@ class BotBase:
         if not returnUsers:
             users = None
         if not roundInt:
-            return {"amount" : a, "users" : users}
+            return {"amount": a, "users": users}
         elif roundInt > 0:
-            return {"amount" : math.ceil(a), "users" : users}
+            return {"amount": math.ceil(a), "users": users}
         elif roundInt < 0:
-            return {"amount" : math.floor(a), "users" : users}
-
+            return {"amount": math.floor(a), "users": users}
 
     def __getattr__(self, attribute):
         if attribute.startswith("model"):

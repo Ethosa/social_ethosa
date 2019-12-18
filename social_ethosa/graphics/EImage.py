@@ -6,8 +6,8 @@ import struct
 import zlib
 
 from ..eMath import *
-from ..utils import Thread_VK
 from .EColor import ecolor
+
 
 class EImage:
     def __init__(self, width=256, height=256, color=b"\xFF\xFF\xFF\xFF"):
@@ -93,7 +93,6 @@ class EImage:
                 x, y = int(x1 + i * x_spacing), int(y1 + i * y_spacing)
                 self.colors[x][y] = self.calcAlpha(self.colors[x][y], color)
 
-
     def drawCircle(self, x, y, r, color=b"\xFF\xFF\xFF\xFF", width=1):
         color = ecolor(color)
         # The lower this value the higher quality the circle is with more points generated
@@ -116,7 +115,7 @@ class EImage:
         for p in range(len(path.path)):
             if p+1 < len(path.path):
                 self.drawLine(path.path[p].points[0], path.path[p].points[1],
-                    path.path[p+1].points[0], path.path[p+1].points[1], color, width)
+                              path.path[p+1].points[0], path.path[p+1].points[1], color, width)
 
     def drawPathBezier(self, path, color=b"\xFF\xFF\xFF\xFF", width=1):
         color = ecolor(color)
@@ -138,7 +137,8 @@ class EImage:
             if i+1 < len(points):
                 self.drawLine(points[i][0], points[i][1], points[i+1][0], points[i+1][1], color, width)
 
-    def floodFill(self, x,y, clr=b"\xFF\xFF\xFF\xFF", clr1=b"\x00\x00\x00\x00", mode="custom"):
+    def floodFill(self, x, y, clr=b"\xFF\xFF\xFF\xFF",
+                  clr1=b"\x00\x00\x00\x00", mode="custom"):
         clr = ecolor(clr)
         if mode == "auto":
             a = self.colors[x][y]
@@ -153,10 +153,10 @@ class EImage:
                 if a != clr:
                     continue
                 self.colors[x][y] = self.calcAlpha(self.colors[x][y], clr1)
-                toFill.append([x-1,y])
-                toFill.append([x+1,y])
-                toFill.append([x,y-1])
-                toFill.append([x,y+1])
+                toFill.append([x-1, y])
+                toFill.append([x+1, y])
+                toFill.append([x, y-1])
+                toFill.append([x, y+1])
 
     def filter(self, f):
         edgex = int(self.width/2)
@@ -177,31 +177,31 @@ class EImage:
     def save(self, file, mode="bmp"):
         if mode == "bmp":
             with open(file, "wb") as f:
-                f.write(b'BM') # ID field (42h, 4Dh)
-                f.write(b'\x9a\x00\x00\x00') # 154 bytes (122+32) Size of the BMP file
-                f.write(b'\x00\x00') # Unused
-                f.write(b'\x00\x00') # Unused
-                f.write(b'z\x00\x00\x00') # 122 bytes (14+108) Offset where the pixel array (bitmap data) can be found
-                f.write(b'l\x00\x00\x00') # 108 bytes Number of bytes in the DIB header (from this point)
-                f.write((self.width).to_bytes(4,byteorder="little")) # self.width pixels (left to right order) Width of the bitmap in pixels
-                f.write((self.height).to_bytes(4,byteorder="little")) # self.height pixels (bottom to top order) Height of the bitmap in pixels
-                f.write(b'\x01\x00') # 1 plane Number of color planes being used
-                f.write(b' \x00') # 32 bits Number of bits per pixel
-                f.write(b'\x03\x00\x00\x00') # 3 BI_BITFIELDS, no pixel array compression used
-                f.write(b' \x00\x00\x00') # 32 bytes Size of the raw bitmap data (including padding)
-                f.write(b'\x13\x0b\x00\x00') # 2835 pixels/metre horizontal Print resolution of the image,
-                f.write(b'\x13\x0b\x00\x00') # 2835 pixels/metre vertical   72 DPI × 39.3701 inches per metre yields 2834.6472
-                f.write(b'\x00\x00\x00\x00') # 0 colors Number of colors in the palette
-                f.write(b'\x00\x00\x00\x00') # 0 important colors 0 means all colors are important
-                f.write(b'\x00\x00\xFF\x00') # 00FF0000 in big-endian Red channel bit mask (valid because BI_BITFIELDS is specified)
-                f.write(b'\x00\xFF\x00\x00') # 0000FF00 in big-endian Green channel bit mask (valid because BI_BITFIELDS is specified)
-                f.write(b'\xFF\x00\x00\x00') # 000000FF in big-endian Blue channel bit mask (valid because BI_BITFIELDS is specified)
-                f.write(b'\x00\x00\x00\xFF') # FF000000 in big-endian Alpha channel bit mask
-                f.write(b' niW') # little-endian "Win " LCS_WINDOWS_COLOR_SPACE
-                f.write(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00') # CIEXYZTRIPLE Color Space endpoints Unused for LCS "Win " or "sRGB"
-                f.write(b'\x00\x00\x00\x00') # 0 Red Gamma Unused for LCS "Win " or "sRGB"
-                f.write(b'\x00\x00\x00\x00') # 0 Green Gamma Unused for LCS "Win " or "sRGB"
-                f.write(b'\x00\x00\x00\x00') # 0 Blue Gamma Unused for LCS "Win " or "sRGB"
+                f.write(b'BM')  # ID field (42h, 4Dh)
+                f.write(b'\x9a\x00\x00\x00')  # 154 bytes (122+32) Size of the BMP file
+                f.write(b'\x00\x00')  # Unused
+                f.write(b'\x00\x00')  # Unused
+                f.write(b'z\x00\x00\x00')  # 122 bytes (14+108) Offset where the pixel array (bitmap data) can be found
+                f.write(b'l\x00\x00\x00')  # 108 bytes Number of bytes in the DIB header (from this point)
+                f.write((self.width).to_bytes(4, byteorder="little"))  # self.width pixels (left to right order) Width of the bitmap in pixels
+                f.write((self.height).to_bytes(4, byteorder="little"))  # self.height pixels (bottom to top order) Height of the bitmap in pixels
+                f.write(b'\x01\x00')  # 1 plane Number of color planes being used
+                f.write(b' \x00')  # 32 bits Number of bits per pixel
+                f.write(b'\x03\x00\x00\x00')  # 3 BI_BITFIELDS, no pixel array compression used
+                f.write(b' \x00\x00\x00')  # 32 bytes Size of the raw bitmap data (including padding)
+                f.write(b'\x13\x0b\x00\x00')  # 2835 pixels/metre horizontal Print resolution of the image,
+                f.write(b'\x13\x0b\x00\x00')  # 2835 pixels/metre vertical   72 DPI × 39.3701 inches per metre yields 2834.6472
+                f.write(b'\x00\x00\x00\x00')  # 0 colors Number of colors in the palette
+                f.write(b'\x00\x00\x00\x00')  # 0 important colors 0 means all colors are important
+                f.write(b'\x00\x00\xFF\x00')  # 00FF0000 in big-endian Red channel bit mask (valid because BI_BITFIELDS is specified)
+                f.write(b'\x00\xFF\x00\x00')  # 0000FF00 in big-endian Green channel bit mask (valid because BI_BITFIELDS is specified)
+                f.write(b'\xFF\x00\x00\x00')  # 000000FF in big-endian Blue channel bit mask (valid because BI_BITFIELDS is specified)
+                f.write(b'\x00\x00\x00\xFF')  # FF000000 in big-endian Alpha channel bit mask
+                f.write(b' niW')  # little-endian "Win " LCS_WINDOWS_COLOR_SPACE
+                f.write(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')  # CIEXYZTRIPLE Color Space endpoints Unused for LCS "Win " or "sRGB"
+                f.write(b'\x00\x00\x00\x00')  # 0 Red Gamma Unused for LCS "Win " or "sRGB"
+                f.write(b'\x00\x00\x00\x00')  # 0 Green Gamma Unused for LCS "Win " or "sRGB"
+                f.write(b'\x00\x00\x00\x00')  # 0 Blue Gamma Unused for LCS "Win " or "sRGB"
                 for x in range(self.width):
                     self.colors[x] = self.colors[x][::-1]
                 for x in range(self.height):
@@ -211,11 +211,11 @@ class EImage:
             # generate these chunks depending on image type
             png = b"\x89" + "PNG\r\n\x1A\n".encode('ascii')
             # IHDR`
-            colortype = 0 # true gray image (no palette)
-            bitdepth = 8 # with one byte per pixel (0..255)
-            compression = 0 # zlib (no choice here)
-            filtertype = 0 # adaptive (each scanline seperately)
-            interlaced = 0 # no
+            colortype = 0  # true gray image (no palette)
+            bitdepth = 8  # with one byte per pixel (0..255)
+            compression = 0  # zlib (no choice here)
+            filtertype = 0  # adaptive (each scanline seperately)
+            interlaced = 0  # no
             IHDR = self.I4(self.width) + self.I4(self.height) + self.I1INT(bitdepth)
             IHDR += self.I1INT(colortype) + self.I1INT(compression)
             IHDR += self.I1INT(filtertype) + self.I1INT(interlaced)
@@ -226,26 +226,28 @@ class EImage:
             raw = b""
             self.transpose()
             for y in range(self.height):
-                raw += b"\0" # no filter for this scanline
+                raw += b"\0"  # no filter for this scanline
                 for x in range(self.width):
                     c = self.I1(int.from_bytes(self.colors[y][x], "little"))
                     raw += c
             compressor = zlib.compressobj()
             compressed = compressor.compress(raw)
-            compressed += compressor.flush() #!!
+            compressed += compressor.flush()  # !!
             block = "IDAT".encode('ascii') + compressed
             png += self.I4(len(compressed)) + block + self.I4(zlib.crc32(block))
 
             # IEND
             block = "IEND".encode('ascii')
             png += self.I4(0) + block + self.I4(zlib.crc32(block))
-            with open(file,"wb") as f:
+            with open(file, "wb") as f:
                 f.write(png)
 
     def I1(self, value):
         return struct.pack("!B", value & (2**8-1))
+
     def I1INT(self, value):
         return struct.pack("!B", value)
+
     def I4(self, value):
         return struct.pack("!I", value)
 
@@ -253,6 +255,7 @@ class EImage:
         # xys should be a sequence of 2-tuples (Bezier control points)
         n = len(xys)
         combinations = self.pascal_row(n-1)
+
         def bezier(ts):
             # This uses the generalized formula for bezier curves
             result = []
@@ -274,11 +277,11 @@ class EImage:
             x /= denominator
             result.append(x)
             numerator -= 1
-        if n&1 == 0:
+        if n & 1 == 0:
             # n is even
             result.extend(reversed(result[:-1]))
         else:
-            result.extend(reversed(result)) 
+            result.extend(result[::-1])
         return result
 
     def calcAlpha(self, dst, src):
