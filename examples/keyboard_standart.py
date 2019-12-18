@@ -2,7 +2,7 @@
 # author: Ethosa
 
 # we import the functionality we need
-from social_ethosa import Keyboard, Button, __version__ as seVersion, printf
+from social_ethosa import Keyboard, Button, __version__ as seVersion
 
 # Let's create a single button
 my_first_button = Button("text", label="Hello world :)")
@@ -31,7 +31,7 @@ keyboard.visualize()
 compiled = keyboard.compile()
 
 # Displaying the compiled version
-printf(compiled)
+print(compiled)
 
 # get the version of the library itself
-printf("\nversion %s", seVersion)
+print("\nversion", seVersion)
