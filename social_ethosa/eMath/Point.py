@@ -25,8 +25,8 @@ class Point:
 
     def middlePoint(self, pnt):
         pnt1 = Point(self)
-        for p in range(len(pnt1.points)):
-            pnt1.points[p] = (self.points[p]+pnt.points[p])//2
+        for p, point in enumerate(pnt1.points):
+            pnt1.points[p] = (self.points[p]+point)//2
         return pnt1
 
     def offset(self, points):

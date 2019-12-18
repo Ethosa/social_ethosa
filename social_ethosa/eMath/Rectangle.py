@@ -27,9 +27,11 @@ class Rectangle:
     def equalsXY(self, x, y):
         return self.left <= x <= self.right and self.top <= y <= self.bottom
 
-    def width(self): return self.right - self.left
+    def width(self):
+        return self.right - self.left
 
-    def height(self): return self.bottom - self.top
+    def height(self):
+        return self.bottom - self.top
 
     def __str__(self):
         return "<Rectangle (%s, %s, %s, %s)>" % (self.left, self.top, self.right, self.bottom)
