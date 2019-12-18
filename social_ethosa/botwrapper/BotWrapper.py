@@ -98,7 +98,7 @@ class BotWrapper(object):
             "pi": math.pi, "e": math.e,
             "sin": math.sin, "cos": math.cos,
             "factorial": math.factorial, "ceil": math.ceil,
-            "floor": math.floor, "floor": math.floor,
+            "floor": math.floor, 'exit': lambda *args: " ".join(args),
             "pow": math.pow, "log": math.log,
             "sqrt": math.sqrt, "tan": math.tan,
             "arccos": math.acos, "arcsin": math.asin,
@@ -106,8 +106,7 @@ class BotWrapper(object):
             "radians": math.radians, "sinh": math.sinh,
             "cosh": math.cosh, "tanh": math.tanh,
             "arccosh": math.acosh, "arcsinh": math.asinh,
-            "arctanh": math.atanh, 'print': lambda *args: " ".join(args),
-            'exit': lambda *args: " ".join(args)
+            "arctanh": math.atanh, 'print': lambda *args: " ".join(args)
         }
         return eval(text, glb, {})
 
