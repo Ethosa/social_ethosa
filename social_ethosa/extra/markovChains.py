@@ -69,8 +69,7 @@ class MarkovChains:
             addChain("z", "x")
         """
         out = string.replace("=", "-").split("-")
-        for i in enumerate(out):
-            current = out[i]
+        for i, current in enumerate(out):
             post = out[i+1] if i < len(out)-1 else None
             pre = out[i-1] if i > 0 else None
             if current.endswith("<") and post:
