@@ -7,7 +7,7 @@ from social_ethosa import Vk
 TOKEN = ""
 
 # we authorize through the user
-vk = Vk(token=TOKEN, debug=1)
+vk = Vk(token=TOKEN)
 
 # Start listening for new messages in a separate thread
 @vk.on_user_new_message
