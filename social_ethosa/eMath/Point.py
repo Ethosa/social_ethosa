@@ -8,7 +8,7 @@ class Point:
         if len(args) == 1:
             if isinstance(args[0], Point):
                 self.points = args[0].points
-            elif isinstance(args[0], list) or isinstance(args[0], tuple):
+            elif isinstance(args[0], (list, tuple)):
                 self.points = args[0]
             else:
                 self.points = [0, 0]
@@ -19,7 +19,7 @@ class Point:
 
     def euclideanDistance(self, *args):
         r = Point(*args)
-        sum_sqr = sum([(self.points[i] - r.points[i])**2 for i in range(len(self.points))])
+        sum_sqr = sum([(i - j)**2 for i, j in zip(self.points, r.points)])
         distance = math.sqrt(sum_sqr)
         return distance
 
