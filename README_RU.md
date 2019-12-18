@@ -7,14 +7,14 @@
 [Changelog](https://github.com/Ethosa/social_ethosa/blob/master/ChangeLog.md)
 
 Examples:
-- [Inline-клавиатура](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_inline.py)
-- [Стандартная клавиатура](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_standart.py)
-- [Получение сообщений группой](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages.py)
-- [Получение сообщений группой (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages_oop.py)
-- [Получение сообщений пользователем](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages.py)
-- [Получение сообщений пользователем (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages_oop.py)
-- [Кнопки в клавиатуре](https://github.com/Ethosa/social_ethosa/blob/master/examples/buttons.py)
-- [Загрузка файлов](https://github.com/Ethosa/social_ethosa/blob/master/examples/uploadFilesVk.py)
+-   [Inline-клавиатура](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_inline.py)
+-   [Стандартная клавиатура](https://github.com/Ethosa/social_ethosa/tree/master/examples/keyboard_standart.py)
+-   [Получение сообщений группой](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages.py)
+-   [Получение сообщений группой (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/group_messages_oop.py)
+-   [Получение сообщений пользователем](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages.py)
+-   [Получение сообщений пользователем (OOP)](https://github.com/Ethosa/social_ethosa/tree/master/examples/user_messages_oop.py)
+-   [Кнопки в клавиатуре](https://github.com/Ethosa/social_ethosa/blob/master/examples/buttons.py)
+-   [Загрузка файлов](https://github.com/Ethosa/social_ethosa/blob/master/examples/uploadFilesVk.py)
 
 ## Get started
 Установка: `pip install --upgrade social-ethosa`  
