@@ -60,7 +60,7 @@ class HMainPage:
             current["rusSub"] = h.split('<div class="mov-label"><b>Русские субтитры:</b></div>', 1)[1].split('<', 1)[0].strip()
             try:
                 current["produser"] = h.split('<div class="mov-label"><b>Режиссер:</b></div>', 1)[1].split('<', 1)[0].strip()
-            except:
+            except IndexError:
                 current["produser"] = ""
             current["studio"] = h.split('div class="mov-label"><b>Студия:</b></div>', 1)[1].split('<', 1)[0].strip()
             current["studio"] = h.split('div class="mov-label"><b>Студия:</b></div>', 1)[1].split('<', 1)[0].strip()
