@@ -39,7 +39,7 @@ class UtilsManager:
 
         def start():
             returned = True
-            if type(text) == str:
+            if isinstance(text, str):
                 while returned:
                     if group_id:
                         self.vk.status.set(text=text, group_id=group_id)
@@ -48,7 +48,7 @@ class UtilsManager:
                     if onChange:
                         returned = onChange()
                     time.sleep(timer)
-            elif type(text) == list or type(text) == tuple:
+            elif isinstance(text, (list, tuple)):
                 while returned:
                     if group_id:
                         self.vk.status.set(text=random.choice(text), group_id=group_id)
