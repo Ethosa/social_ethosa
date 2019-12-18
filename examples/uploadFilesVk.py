@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 # we import the functionality we need
-from social_ethosa import Vk, printf
+from social_ethosa import Vk
 
 # Declare constant variables
 TOKEN = ""
