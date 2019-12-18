@@ -30,8 +30,8 @@ class Point:
         return pnt1
 
     def offset(self, points):
-        for i in range(len(points)):
-            self.points[i] += points[i]
+        for i, point in enumerate(points):
+            self.points[i] += point
 
     def __eq__(self, other):
         return self.points == other.points
