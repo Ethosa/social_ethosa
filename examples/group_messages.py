@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Ethosa
 # Import what we need
-from social_ethosa import Vk, printf
+from social_ethosa import Vk
 
 # Declare constant variables
 TOKEN = ""
@@ -14,4 +14,4 @@ vk = Vk(token=TOKEN, group_id=GROUP_ID, debug=1)
 @vk.on_new_message
 def get_new_message(msg):
     # Output the received message
-    printf(msg)
+    print(msg)
