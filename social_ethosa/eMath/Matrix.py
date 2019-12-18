@@ -36,7 +36,7 @@ class Matrix:
                 self.width, self.height = copy(args[0].width), copy(args[0].height)
                 self.obj = args[0].obj[:]
                 self.widthFill = copy(args[0].widthFill)
-            if isinstance(args[0], list) or isinstance(args[0], tuple):
+            if isinstance(args[0], (list, tuple)):
                 self.width = len(args[0])
                 self.height = len(args[0][0])
                 self.obj = args[0]
@@ -259,13 +259,17 @@ class Matrix:
             else:
                 return self
 
-    def __imul__(self, other): return self.__mul__(other)
+    def __imul__(self, other):
+        return self.__mul__(other)
 
-    def __len__(self): return len(self.obj)
+    def __len__(self):
+        return len(self.obj)
 
-    def __isub__(self, other): return self.__sub__(other)
+    def __isub__(self, other):
+        return self.__sub__(other)
 
-    def __pos__(self): return -self
+    def __pos__(self):
+        return -self
 
     def __eq__(self, other):
         if isinstance(other, Matrix):
