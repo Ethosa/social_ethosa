@@ -133,7 +133,7 @@ class EImage:
     def drawBezier(self, pnts, color=b"\xFF\xFF\xFF\xFF", width=1):
         t = [t/100 for t in range(101)]
         points = self.make_bezier(pnts)(t)
-        for i in range(len(points)):
+        for i in enumerate(points):
             if i+1 < len(points):
                 self.drawLine(points[i][0], points[i][1], points[i+1][0], points[i+1][1], color, width)
 
