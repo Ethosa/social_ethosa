@@ -126,7 +126,7 @@ class YummyPage:
                 "rating": self.content.split('<span class="main-rating">', 1)[1].split("</span>", 1)[0].strip(),
                 "voices": self.content.split('<span class="main-rating-info">', 1)[1].split("</span>", 1)[0].strip()
             }
-        except:
+        except IndexError:
             self.rating = {
                 "rating": "Для этого аниме",
                 "voices": "рейтинг недоступен."
@@ -134,19 +134,19 @@ class YummyPage:
         self.views = self.content.split('<span>Просмотров:</span>', 1)[1].split('<i', 1)[0].strip()
         try:
             self.status = self.content.split('<span class="badge review">', 1)[1].split('</span>', 1)[0].strip()
-        except:
+        except IndexError:
             self.status = ""
         try:
             self.year = self.content.split('<span>Год: </span>', 1)[1].split('</li>', 1)[0].strip()
-        except:
+        except IndexError:
             self.year = ""
         try:
             self.season = self.content.split('<span>Сезон:</span>', 1).split('</li>', 1)[0].strip()
-        except:
+        except IndexError:
             self.season = ""
         try:
             self.ageRating = self.content.split('<span>Возрастной рейтинг:</span>', 1)[1].split('</li>', 1)[0].strip()
-        except:
+        except IndexError:
             self.ageRating = ""
         try:
             genreList = self.content.split('<span class="genre">Жанр:</span>', 1)[1].split('<ul class="categories-list">', 1)[1].split("</ul>", 1)[0].split('href="')
@@ -155,11 +155,11 @@ class YummyPage:
                 "url": "https://yummyanime.club%s" % i.split('"', 1)[0],
                 "name": i.split('>', 1)[1].split('<', 1)[0].strip()
             } for i in genreList]
-        except:
+        except IndexError:
             self.genreList = ""
         try:
             self.original = self.content.split('<span>Первоисточник:</span>', 1)[1].split('</li>', 1)[0].strip()
-        except:
+        except IndexError:
             self.original = ""
         try:
             genreList = self.content.split('<span class="genre">Студия:</span>', 1)[1].split('<ul class="categories-list">', 1)[1].split("</ul>", 1)[0].split('href="')
@@ -168,7 +168,7 @@ class YummyPage:
                 "url": "https://yummyanime.club%s" % i.split('"', 1)[0],
                 "name": i.split('>', 1)[1].split('<', 1)[0].strip()
             } for i in genreList]
-        except:
+        except IndexError:
             self.studioList = [{"name": ""}]
         try:
             producer = self.content.split('<span>Режиссер:</span>', 1)[1].split('</a>', 1)[0]
@@ -176,19 +176,19 @@ class YummyPage:
                 "name": producer.split('>', 1)[1].strip(),
                 "url": "https://yummyanime.club%s" % producer.split('href="', 1)[1].split('"', 1)[0]
             }
-        except:
+        except IndexError:
             self.producer = {"name": ""}
         try:
             self.type = self.content.split("<span>Тип:</span>", 1)[1].split('</li>', 1)[0].strip()
-        except:
+        except IndexError:
             self.type = ""
         try:
             self.series = self.content.split("<span>Серии:</span>", 1)[1].split('</li>')[0].strip()
-        except:
+        except IndexError:
             self.series = ""
         try:
             self.translate = self.content.split('<span>Перевод:</span>', 1)[1].split('</li>', 1)[0].strip()
-        except:
+        except IndexError:
             self.translate = ""
         try:
             self.voiceActing = self.content.split('<span>Озвучка:</span>', 1)[1].split('</li>            </ul>\n\n            <div ', 1)[0].strip().replace("&amp;", "&")
@@ -200,7 +200,7 @@ class YummyPage:
                     "vocalized": [name.split('</li>', 1)[0].strip()
                                   for name in i.split('<ul class="dub-content">', 1)[0].split('</ul>')[0].split('<li class="list">')]
                 } for i in self.voiceActing]
-        except:
+        except IndexError:
             self.voiceActing = []
         try:
             self.description = self.content.split('<div id="content-desc-text"><p>', 1)[1].split('</p>', 1)[0].strip()
@@ -209,12 +209,12 @@ class YummyPage:
                 start = self.description.find("<")
                 end = self.description.find(">")
                 self.description = self.description[:start] + self.description[end+1:]
-        except:
+        except IndexError:
             self.description = ""
         try:
             self.posterImageUrl = self.content.split('<div class="poster-block">', 1)[1].split('src="', 1)[1].split('"', 1)[0].strip()
             self.posterImageUrl = "https://yummyanime.club%s" % self.posterImageUrl
-        except:
+        except IndexError:
             self.posterImageUrl = ""
 
     def __str__(self):
@@ -238,7 +238,7 @@ class YummyPage:
          ", ".join(i["name"] for i in self.genreList),
          self.producer["name"], ", ".join(i["name"] for i in self.studioList),
          self.type, self.translate, self.series, self.original, self.ageRating,
-         self.url, self.voiceActing if type(self.voiceActing) == str else
+         self.url, self.voiceActing if isinstance(self.voiceActing, str) else
          ", ".join(i["name"] for i in self.voiceActing),
          self.description)
 
