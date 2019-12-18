@@ -13,7 +13,7 @@ class ArithmeticSequence:
             if isinstance(obj, ArithmeticSequence):
                 self.start = copy(obj.start)
                 self.d = copy(obj.d)
-            elif isinstance(obj, list) or isinstance(obj, tuple):
+            elif isinstance(obj, (list, tuple)):
                 if len(obj) == 0:
                     self.start = 0
                     self.d = 1
@@ -62,7 +62,7 @@ class GeometricSequence:
             if isinstance(obj, GeometricSequence):
                 self.start = copy(obj.start)
                 self.d = copy(obj.start)
-            elif isinstance(obj, list) or isinstance(obj, tuple):
+            elif isinstance(obj, (list, tuple)):
                 if obj[0] == 0:
                     self.start = obj[0] + 1
                     self.d = (obj[1]+1) / self.start
