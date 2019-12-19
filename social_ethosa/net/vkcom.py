@@ -47,6 +47,9 @@ class Vk:
             auther = VKAuth(login, password)
             auther.logIn()
             token = auther.getToken()
+            self.session = auther.session
+        else:
+            self.session = requests.Session()
         self.token_vk = token
         self.version_api = version_api
         self.group_id = group_id
@@ -236,13 +239,14 @@ class Method:
             self.access_token = vk.token_vk
             self.version_api = vk.version_api
             self.getRandomId = vk.getRandomId
+            self.session = vk.session
         self.method = method
 
     def use(self, method, **kwargs):
         url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
-        response = requests.post(url, data=kwargs).json()
+        response = self.session.post(url, data=kwargs).json()
         if "error" in response:
             raise VkError("error in method call <%s>" % response)
         return response
@@ -251,7 +255,7 @@ class Method:
         url = "https://api.vk.com/method/%s" % method
         kwargs['access_token'] = self.access_token
         kwargs['v'] = self.version_api
-        response = requests.post(url, data=kwargs).json()
+        response = self.session.post(url, data=kwargs).json()
         if "error" in response:
             raise VkError("error in method call <%s>" % response)
         return response
