@@ -396,10 +396,9 @@ class Button:
 
 class Template:
     def __init__(self, templateType="carousel"):
-        self.template = {"template": {
-                "type": templateType,
-                "elements": []
-            }
+        self.template = {
+            "type": templateType,
+            "elements": []
         }
 
     def addElement(self, title="Title", description="Description",
@@ -408,8 +407,8 @@ class Template:
                        'type': 'text',
                        'label': 'Label'
                    }}]):
-        if len(self.template["template"]["elements"]) < 10:
-            self.template["template"]["elements"].append({
+        if len(self.template["elements"]) < 10:
+            self.template["elements"].append({
                     'title': title,
                     'description': description,
                     'action': action,
@@ -418,7 +417,7 @@ class Template:
                 })
 
     def editElement(self, position, key, value):
-        self.template["template"]["elements"][position][key] = value
+        self.template["elements"][position][key] = value
 
     def compile(self):
         return json.dumps(self.template)
