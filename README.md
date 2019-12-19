@@ -3,6 +3,7 @@
 A Python library that uses requests  
 [![CodeFactor](https://www.codefactor.io/repository/github/ethosa/social_ethosa/badge)](https://www.codefactor.io/repository/github/ethosa/social_ethosa)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/adf54e1441594a3ba8a3df6bf3549fb4)](https://www.codacy.com/manual/Ethosa/social_ethosa?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ethosa/social_ethosa&amp;utm_campaign=Badge_Grade)
+[![PyPI version](https://badge.fury.io/py/social-ethosa.svg)](https://badge.fury.io/py/social-ethosa)
 [![License: LGPLv3](https://img.shields.io/github/license/Ethosa/social_ethosa)](https://github.com/Ethosa/social_ethosa/blob/master/LICENSE)
 
 Documentation in other languages
