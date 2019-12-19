@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: ethosa
 from copy import copy
+import random
+import json
 
 from ..utils import *
 from .vkauth import VKAuth
