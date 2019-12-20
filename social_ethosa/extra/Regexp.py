@@ -26,4 +26,4 @@ class Regexp:
     def findUrl(self, text=""):
         if not text:
             text = self.text
-        return regex.findall(r"https://\S+\.\S+", text)
+        return regex.findall(r"http[s]*?://\S+\.\S+", text)
