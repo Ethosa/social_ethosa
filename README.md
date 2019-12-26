@@ -30,7 +30,7 @@ from social_ethosa import *
 
 ## Vkcom
 ```python
-vk = Vk(token="Your token is here", group_id=12345, debug=True, lang="en")
+vk = Vk(token="Your token is here", group_id=12345)
 # the group_id parameter should be used if you are going to log in through a group.
 # In this example, we will use group authorization.
 
