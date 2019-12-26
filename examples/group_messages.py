@@ -11,7 +11,7 @@ GROUP_ID = 123123
 vk = Vk(token=TOKEN, group_id=GROUP_ID)
 
 # Start listening for new messages in a separate thread
-@vk.on_new_message
+@vk.on_message_new
 def get_new_message(msg):
     # Output the received message
     print(msg)
