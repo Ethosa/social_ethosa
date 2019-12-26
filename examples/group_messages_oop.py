@@ -13,7 +13,7 @@ vk = Vk(token=TOKEN, group_id=GROUP_ID)
 class Main:
     def __init__(self):
         # Start listening for new messages in a separate thread
-        vk.on_new_message(self.get_new_message)
+        vk.on_message_new(self.get_new_message)
 
     def get_new_message(self, msg):
         # Output the received message
