@@ -39,10 +39,10 @@ vk = Vk(token="Your token is here", group_id=12345)
 # The decorator's name is taken from the official names, but with the prefix " on_"
 # https://vk.com/dev/groups_events
 def getMessage(message):
-  text = message.text
-  peer_id = message.peer_id
-  from_id = message.from_id
-  attachments = message.attachments
+  text = message["object"]["text"]
+  peer_id = message["object"]["peer_id"]
+  from_id = message["object"]["from_id"]
+  attachments = message["object"]["attachments"]
 ```
 
 using the file Uploader:
