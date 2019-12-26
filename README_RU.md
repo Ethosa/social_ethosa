@@ -3,6 +3,8 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/ethosa/social_ethosa/badge)](https://www.codefactor.io/repository/github/ethosa/social_ethosa)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/adf54e1441594a3ba8a3df6bf3549fb4)](https://www.codacy.com/manual/Ethosa/social_ethosa?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ethosa/social_ethosa&amp;utm_campaign=Badge_Grade)
+[![PyPI version](https://badge.fury.io/py/social-ethosa.svg)](https://badge.fury.io/py/social-ethosa)
+[![License: LGPLv3](https://img.shields.io/github/license/Ethosa/social_ethosa)](https://github.com/Ethosa/social_ethosa/blob/master/LICENSE)
 
 [Changelog](https://github.com/Ethosa/social_ethosa/blob/master/ChangeLog.md)
 
@@ -25,7 +27,7 @@ from social_ethosa import *
 
 ## Vkcom
 ```python
-vk = Vk(token="Your token is here", group_id=12345, debug=True, lang="en")
+vk = Vk(token="Your token is here", group_id=12345)
 # group_id параметр необходим в том случае, если вы собираетесь авторизироваться через группу
 # В этом примере мы будем использовать авторизацию через группу.
 
@@ -34,10 +36,10 @@ vk = Vk(token="Your token is here", group_id=12345, debug=True, lang="en")
 # Название декоратора взято из официальной документации vk.com, но с префиксом "on_"
 # Пожалуйста, ознакомьтесь с документацией по ссылке https://vk.com/dev/groups_events
 def getMessage(message):
-  text = message.text
-  peer_id = message.peer_id
-  from_id = message.from_id
-  attachments = message.attachments
+  text = message["object"]["text"]
+  peer_id = message["object"]["peer_id"]
+  from_id = message["object"]["from_id"]
+  attachments = message["object"]["attachments"]
 ```
 
 Использование загрузчика файлов:
@@ -57,7 +59,7 @@ response = vk.uploader.uploadFile("path") # ы также можете испо�
 login = "89007003535"
 password = "qwertyuiop"
 
-audio = Audio(login=login, password=password, debug=1)
+audio = Audio(login=login, password=password)
 audios = audio.get()
 # Поскольку методы аудио недоступны в официальном API, мне пришлось сделать парсер сайта
 ```
