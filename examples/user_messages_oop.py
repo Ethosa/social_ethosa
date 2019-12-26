@@ -12,7 +12,7 @@ vk = Vk(token=TOKEN)
 class Main:
     def __init__(self):
         # Start listening for new messages in a separate thread
-        vk.on_user_new_message(self.get_new_message)
+        vk.on_user_message_new(self.get_new_message)
 
     def get_new_message(self, msg):
         # Output the received message
