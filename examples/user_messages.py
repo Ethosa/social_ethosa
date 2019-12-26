@@ -10,7 +10,7 @@ TOKEN = ""
 vk = Vk(token=TOKEN)
 
 # Start listening for new messages in a separate thread
-@vk.on_user_new_message
+@vk.on_user_message_new
 def get_new_message(msg):
     # Output the received message
     print(msg)
