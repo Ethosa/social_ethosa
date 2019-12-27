@@ -6,7 +6,6 @@ import json
 
 from ..utils import *
 from .vkauth import VKAuth
-from .vkaudio import Audio
 from .uploader import Uploader
 
 requests.packages.urllib3.disable_warnings()

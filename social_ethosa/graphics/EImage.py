@@ -133,9 +133,9 @@ class EImage:
     def drawBezier(self, pnts, color=b"\xFF\xFF\xFF\xFF", width=1):
         t = [t/100 for t in range(101)]
         points = self.make_bezier(pnts)(t)
-        for i in enumerate(points):
+        for i, pnt in enumerate(points):
             if i+1 < len(points):
-                self.drawLine(points[i][0], points[i][1], points[i+1][0], points[i+1][1], color, width)
+                self.drawLine(pnt[0], pnt[1], points[i+1][0], points[i+1][1], color, width)
 
     def floodFill(self, x, y, clr=b"\xFF\xFF\xFF\xFF",
                   clr1=b"\x00\x00\x00\x00", mode="custom"):
@@ -162,7 +162,7 @@ class EImage:
         edgex = int(self.width/2)
         edgey = int(self.height/2)
         for x in range(edgex, self.width-edgex):
-            for x in range(edgey, self.height-edgey):
+            for y in range(edgey, self.height-edgey):
                 colorArray = self.colors[:]
                 for fx in range(self.width):
                     for fy in range(self.height):
@@ -263,7 +263,12 @@ class EImage:
                 tpowers = (t**i for i in range(n))
                 upowers = [(1-t)**i for i in range(n)][::-1]
                 coefs = [c*a*b for c, a, b in zip(combinations, tpowers, upowers)]
-                result.append([int(sum([coef*p for coef, p in zip(coefs, ps)])) for ps in zip(*xys)])
+                result.append([int(
+                                   sum(
+                                       [coef*p for coef, p in zip(coefs, ps)]
+                                       )
+                                   )
+                               for ps in zip(*xys)])
             return result
         return bezier
 
@@ -279,9 +284,10 @@ class EImage:
             numerator -= 1
         if n & 1 == 0:
             # n is even
-            result.extend(reversed(result[:-1]))
+            result.extend(reversed(result[::-1]))
         else:
             result.extend(result[::-1])
+        print(result)
         return result
 
     def calcAlpha(self, dst, src):

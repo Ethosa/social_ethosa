@@ -22,7 +22,7 @@ class BetterBotWrapper:
         """
         self.base = copy(bbw.base) if bbw else {}
 
-    def addPattern(self, q, a, mode="equals", answer_type="method"):
+    def addPattern(self, q, a, mode="==", answer_type="method"):
         """create new pattern
 
         Arguments:
@@ -30,15 +30,16 @@ class BetterBotWrapper:
             a {str} -- answer
 
         Keyword Arguments:
-            mode {str} -- answer mode, may be "equals", "startswith",
-                            "endswith", "find" (default: {"equals"})
+            mode {str} -- answer mode, may be "==", ":==",
+                            "==:", "re" (default: {"=="})
             answer_type {str} -- answer type, may be "method" (default: {"method"})
         """
         answer = {
-            "answer": a,
+            "answer": a.__name__,
             "mode": mode,
             "answer_type": answer_type
         }
+        exec("self.%s = a" % (a.__name__))
         if q not in self.base:
             self.base[q] = [answer]
         else:
@@ -55,25 +56,26 @@ class BetterBotWrapper:
         """
         for i in self.base:
             for j in self.base[i]:
-                if j["mode"] == "equals":
+                f = eval("self.%s" % j["answer"])
+                if j["mode"] == "==":
                     if q == i:
                         if j["answer_type"] == "method":
-                            return j["answer"](q)
-                elif j["mode"] == "startswith":
+                            return f(q)
+                elif j["mode"] == ":==":
                     if q.startswith(i):
                         if j["answer_type"] == "method":
-                            return j["answer"](q[len(i):].strip())
-                elif j["mode"] == "endswith":
+                            return f(q[len(i):].strip())
+                elif j["mode"] == "==:":
                     if q.endswith(i):
                         if j["answer_type"] == "method":
                             return j["answer"](q[:-len(i)].strip())
-                elif j["mode"] == "find":
+                elif j["mode"] == "re":
                     if regex.search(i, q):
-                        searched = regex.findall(i, q)
+                        searched = regex.search(i, q)
                         if j["answer_type"] == "method":
-                            return j["answer"](searched, " ".join(searched))
+                            return f(searched, q)
 
-    def pattern(self, q, mode="equals"):
+    def pattern(self, q, mode="=="):
         def answer(m):
             self.addPattern(q, m, mode)
         return answer
@@ -85,7 +87,3 @@ class BetterBotWrapper:
             q {str} -- question
         """
         del self.base[q]
-
-    def save(self, filename):
-        with open(filename, "rb") as f:
-            pickle.dump(f, self)

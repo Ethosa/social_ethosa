@@ -2,6 +2,7 @@
 # author: ethosa
 
 from .vkcom import *
+from .vkaudio import *
 from .jdoodlecom import *
 from .tracemoe import *
 from .tpdne import *
