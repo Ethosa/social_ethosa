@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="social-ethosa",
-    version="0.6.2",
+    version="0.6.4",
     author="Ethosa",
     author_email="social.ethosa@gmail.com",
     description="The social ethosa library for Python",
