@@ -141,7 +141,7 @@ class YummyPage:
         except IndexError:
             self.year = ""
         try:
-            self.season = self.content.split('<span>Сезон:</span>', 1).split('</li>', 1)[0].strip()
+            self.season = self.content.split('<span>Сезон:</span>', 1)[1].split('</li>', 1)[0].strip()
         except IndexError:
             self.season = ""
         try:
