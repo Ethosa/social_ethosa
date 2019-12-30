@@ -143,7 +143,7 @@ class BotBase:
         } for user in allUsers]
 
     def getSortedByKeys(self, key, count=None, offset=0, sortType="1-9", formatting=False, otherKeys=[]):
-        sortedUsers = sorted(self.getUsersByKeys(key, "name", *otherKeys),
+        sortedUsers = sorted(self.getByKeys(key, "name", *otherKeys),
                              key=itemgetter(key), reverse=True
                              if sortType == "1-9" else False if sortType == "9-1" else True)
         if formatting:
@@ -155,7 +155,7 @@ class BotBase:
             return sortedUsers[offset:]
 
     def calcMiddleValueByKey(self, key, otherKeys=[], roundInt=0, returnUsers=False):
-        users = self.getUsersByKeys(key, "name", *otherKeys)
+        users = self.getByKeys(key, "name", *otherKeys)
         a = sum([user[key] if isinstance(user[key], int) else len(user[key]) for user in users])/len(users)
         if not returnUsers:
             users = None
