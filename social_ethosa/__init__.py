@@ -6,7 +6,7 @@ from .botwrapper import *
 from .UtilsManager import *
 
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 __authors__ = ["Ethosa"]
 __copyright__ = "2019"
 __license__ = "LGPLv3"
