@@ -59,7 +59,7 @@ class Vk:
         self.fastMethod = Method(self).fuse
         self.execute = lambda code: self.fastMethod("execute", {"code": code})
 
-        self.help = Help
+        self.help = Help(self)
 
         self.vk_api_url = "https://api.vk.com/method/"
 
@@ -276,14 +276,14 @@ class Keyboard:
     use it for add keyboard in message
 
     keyboard = Keyboard()
-    keyboard.addButton(Button(type='text', label='lol'))
+    keyboard.addButton(Button('text', label='lol'))
     keyboard.addLine()
-    keyboard.addButton(Button(type='text', label='hello', color=ButtonColor.POSITIVE))
-    keyboard.addButton(Button(type='text', label='world', color=ButtonColor.NEGATIVE))
+    keyboard.addButton(Button('text', label='hello', color=Button.POSITIVE))
+    keyboard.addButton(Button('text', label='world', color=Button.NEGATIVE))
     # types "location", "vkpay", "vkapps" can't got colors. also this types places on all width line.
-    keyboard.addButton(Button(type='location''))
-    keyboard.addButton(Button(type='vkapps'', label='hello, world!'))
-    keyboard.addButton(Button(type='vkpay''))
+    keyboard.addButton(Button('location''))
+    keyboard.addButton(Button('vkapps'', label='hello, world!'))
+    keyboard.addButton(Button('vkpay''))
     """
     def __init__(self, **kwargs):
         self.keyboard = {
@@ -318,9 +318,6 @@ class Keyboard:
     def clear(self):
         self.keyboard["buttons"] = [[]]
 
-    def createAndPlaceButton(self, *args, **kwargs):
-        self.addButton(Button(*args, **kwargs))
-
     def visualize(self):
         for line in self.keyboard["buttons"]:
             sys.stdout.write("%s\n" % " ".join(["[%s]" % button["action"]["label"]
@@ -334,10 +331,10 @@ class Button:
 
     Button use for Keyboard.
     Usage:
-    red_button = Button(label='hello!', color=ButtonColor.NEGATIVE)
+    red_button = Button(label='hello!', color=Button.NEGATIVE)
 
     and use red button:
-    keyboard.add_button(red_button) # easy and helpfull!
+    keyboard.addButton(red_button) # easy and helpfull!
     """
     PRIMARY = "primary"
     SECONDARY = "secondary"
@@ -375,13 +372,6 @@ class Button:
         }
 
         self.action = getValue(actions, self.btype, actions['text'])
-        self.color = color
-
-    def setText(self, text):
-        if "label" in self.action:
-            self.action["label"] = text
-
-    def setColor(self, color):
         self.color = color
 
     def getButton(self):
@@ -437,23 +427,22 @@ class Help:
 
     vk.help('messages.send') - return list of all params method
     """
-    def __new__(self, *args, **kwargs):
-        if not args:
-            resp = requests.get('https://vk.com/dev/methods').text
+    def __init__(self, vk):
+        self.session = vk.session
+
+    def __call__(self, method=""):
+        if not method:
+            resp = self.session.get('https://vk.com/dev/methods').text
             response = resp.split('<div id="dev_mlist_submenu_methods" style="">')[1].split('</div>')[0].split('<a')
             return [i.split('>')[1].split('</a')[0].lower()
                     for i in response if len(i.split('>')) > 1 and i.split('>')[1].split('</a')[0] != '']
-        else:
-            return self.__getattr__(self, args[0])
-
-    def __getattr__(self, method):
-        if '.' not in method:
-            resp = requests.get('https://vk.com/dev/%s' % method).text
+        elif '.' not in method:
+            resp = self.session.get('https://vk.com/dev/%s' % method).text
             response = resp.split('<span class="dev_methods_list_span">')
             response = [i.split('</span>', 1)[0] for i in response if len(i.split('</span>', 1)[0]) <= 35]
             return response
         else:
-            response = requests.get(
+            response = self.session.get(
                 'https://vk.com/dev/%s' % method).text.split('<table class="dev_params_table">')[1].split('</table>')[0]
 
             params = {
