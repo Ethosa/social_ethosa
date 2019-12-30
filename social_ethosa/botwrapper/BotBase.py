@@ -133,7 +133,7 @@ class BotBase:
             shutil.copy(current_path, "%s/%s" % (new_path, user), follow_symlinks=True)
 
     def getByKeys(self, *args):
-        allUsers = [self.loadUser(i[:-len(self.postfix)-1]).obj for i in os.listdir(self.path)]
+        allUsers = [self.load(i[:-len(self.postfix)-1]).obj for i in os.listdir(self.path)]
 
         args = [i for i in args]
         args.append("uid")

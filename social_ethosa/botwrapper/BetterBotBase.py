@@ -28,7 +28,7 @@ class BetterBotBase(BotBase):
 
     def addNewValue(self, key, defult_value=0):
         for user in os.listdir(self.path):
-            current = self.loadUser(user[:-len(self.postfix)-1])
+            current = self.load(user[:-len(self.postfix)-1])
             value = defult_value
             if key not in current.obj:
                 exec("current.%s = %s" % (key, repr(value)))
@@ -55,7 +55,7 @@ class BetterBotBase(BotBase):
             return self.users[self.users.index(user)]
 
     def getByKeys(self, *args):
-        allUsers = [self.loadUser(i[:-len(self.postfix)-1]) for i in os.listdir(self.path)]
+        allUsers = [self.load(i[:-len(self.postfix)-1]) for i in os.listdir(self.path)]
 
         args = [i for i in args]
         args.append("uid")
