@@ -33,7 +33,7 @@ class BetterBotBase(BotBase):
             if key not in current.obj:
                 exec("current.%s = %s" % (key, repr(value)))
                 current.obj[key] = defult_value
-            self.saveUser(current)
+            self.save(current)
 
         for i in range(len(self.users)):
             value = defult_value
